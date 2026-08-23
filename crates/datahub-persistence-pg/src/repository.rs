@@ -70,6 +70,13 @@ pub struct StoredFormulaSet {
     pub revision_id: RevisionId,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct BuildSchemaSnapshot {
+    pub schema: StoredSchema,
+    pub rows: Vec<StoredRow>,
+    pub data_revision_id: Option<RevisionId>,
+}
+
 #[derive(Debug, Clone)]
 pub struct RowWrite {
     pub row: ConfigRow,
@@ -90,6 +97,8 @@ pub struct BuildRecord {
     pub project_id: ProjectId,
     pub target: String,
     pub status: String,
+    pub input_hash: Option<String>,
+    pub manifest: Option<Value>,
     pub artifacts: Vec<BuildArtifact>,
 }
 
@@ -581,6 +590,54 @@ pub async fn list_rows(
     rows.iter().map(row_from_row).collect()
 }
 
+/// Loads all build inputs from one repeatable-read, read-only snapshot.
+///
+/// # Errors
+/// Returns database or stored-document decoding errors.
+pub async fn load_build_snapshot(
+    pool: &PgPool,
+    project_id: ProjectId,
+) -> Result<Vec<BuildSchemaSnapshot>, RepositoryError> {
+    let mut tx = pool.begin().await?;
+    sqlx::query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY")
+        .execute(&mut *tx)
+        .await?;
+    let schema_rows = sqlx::query(
+        "SELECT document, version, current_revision_id FROM datahub_schemas WHERE project_id = $1 ORDER BY id",
+    )
+    .bind(project_id.as_uuid())
+    .fetch_all(&mut *tx)
+    .await?;
+    let mut snapshots = Vec::with_capacity(schema_rows.len());
+    for schema_row in &schema_rows {
+        let schema = schema_from_row(schema_row)?;
+        let row_rows = sqlx::query(
+            "SELECT document, version FROM datahub_config_rows WHERE schema_id = $1 ORDER BY id",
+        )
+        .bind(schema.definition.id.as_uuid())
+        .fetch_all(&mut *tx)
+        .await?;
+        let rows = row_rows
+            .iter()
+            .map(row_from_row)
+            .collect::<Result<Vec<_>, RepositoryError>>()?;
+        let data_revision_id = sqlx::query_scalar::<_, Uuid>(
+            "SELECT revision_id FROM datahub_data_revisions WHERE schema_id = $1 ORDER BY created_at DESC, revision_id DESC LIMIT 1",
+        )
+        .bind(schema.definition.id.as_uuid())
+        .fetch_optional(&mut *tx)
+        .await?
+        .map(RevisionId::from_uuid);
+        snapshots.push(BuildSchemaSnapshot {
+            schema,
+            rows,
+            data_revision_id,
+        });
+    }
+    tx.commit().await?;
+    Ok(snapshots)
+}
+
 /// Loads the current formula set for a schema.
 ///
 /// # Errors
@@ -696,22 +753,27 @@ pub async fn row_exists(
 ///
 /// # Errors
 /// Returns serialization or database errors and rolls back atomically.
+#[allow(clippy::too_many_arguments)]
 pub async fn record_build(
     pool: &PgPool,
     id: BuildId,
     project_id: ProjectId,
     actor: UserId,
     target: &str,
+    input_hash: &str,
+    manifest: &Value,
     artifacts: &[BuildArtifact],
 ) -> Result<BuildRecord, RepositoryError> {
     let mut tx = pool.begin().await?;
     sqlx::query(
-        "INSERT INTO datahub_jobs (id, project_id, kind, status, payload, result, attempts) VALUES ($1, $2, 'build', 'succeeded', $3, $4, 1)",
+        "INSERT INTO datahub_jobs (id, project_id, kind, status, payload, result, attempts, input_hash, manifest) VALUES ($1, $2, 'build', 'succeeded', $3, $4, 1, $5, $6)",
     )
     .bind(id.as_uuid())
     .bind(project_id.as_uuid())
     .bind(json!({"target": target}))
     .bind(json!({"artifact_count": artifacts.len()}))
+    .bind(input_hash)
+    .bind(manifest)
     .execute(&mut *tx)
     .await?;
     for artifact in artifacts {
@@ -733,7 +795,7 @@ pub async fn record_build(
         "build.succeeded",
         "build",
         id.as_uuid(),
-        &json!({"target": target, "artifact_count": artifacts.len()}),
+        &json!({"target": target, "artifact_count": artifacts.len(), "input_hash": input_hash}),
         &format!("build:{id}:succeeded"),
     )
     .await?;
@@ -743,6 +805,8 @@ pub async fn record_build(
         project_id,
         target: target.to_owned(),
         status: "succeeded".into(),
+        input_hash: Some(input_hash.to_owned()),
+        manifest: Some(manifest.clone()),
         artifacts: artifacts.to_vec(),
     })
 }
@@ -756,7 +820,7 @@ pub async fn list_builds(
     project_id: ProjectId,
 ) -> Result<Vec<BuildRecord>, RepositoryError> {
     let rows = sqlx::query(
-        "SELECT id, status, payload->>'target' AS target FROM datahub_jobs WHERE project_id = $1 AND kind = 'build' ORDER BY created_at DESC, id DESC",
+        "SELECT id, status, payload->>'target' AS target, input_hash, manifest FROM datahub_jobs WHERE project_id = $1 AND kind = 'build' ORDER BY created_at DESC, id DESC",
     )
     .bind(project_id.as_uuid())
     .fetch_all(pool)
@@ -786,6 +850,8 @@ pub async fn list_builds(
             project_id,
             target: row.try_get("target")?,
             status: row.try_get("status")?,
+            input_hash: row.try_get("input_hash")?,
+            manifest: row.try_get("manifest")?,
             artifacts,
         });
     }

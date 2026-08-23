@@ -92,6 +92,8 @@ export interface BuildRecord {
   project_id: string
   target: string
   status: 'queued' | 'running' | 'succeeded' | 'failed'
+  input_hash: string | null
+  manifest: Record<string, unknown> | null
   artifacts: BuildArtifact[]
 }
 
