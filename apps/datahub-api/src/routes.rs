@@ -1,3 +1,5 @@
+use std::collections::BTreeMap;
+
 use axum::{
     Json, Router,
     extract::{DefaultBodyLimit, Path, State},
@@ -6,7 +8,10 @@ use axum::{
 };
 use datahub_auth::{digest_token, hash_password, issue_token, verify_password};
 use datahub_export::{
-    ExportError, generate_code_for_audience, generate_csv_for_audience, generate_json_for_audience,
+    Artifact as GeneratedArtifact, BuildRowInput, BuildSchemaInput, ExportError,
+    generate_bson_for_audience, generate_build_manifest, generate_code_for_audience,
+    generate_csv_for_audience, generate_json_for_audience, generate_lua_for_audience,
+    generate_protobuf_for_audience, generate_xml_for_audience,
 };
 use datahub_formula::{
     EvaluationRuntime, FormulaDefinition, FormulaSet, evaluate_formulas, parse_formula,
@@ -17,12 +22,12 @@ use datahub_kernel::{
     UserId, validate_row, validate_schema,
 };
 use datahub_persistence_pg::{
-    BuildArtifact, BuildRecord, ProjectRecord, RowWrite, SessionPrincipal, StoredFormulaSet,
-    StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member, create_initial_user,
-    create_project, create_session, create_user, list_builds, list_projects, list_rows,
-    list_schemas, load_formula_set, project_role, record_build, row_exists, save_formula_set,
-    save_row, save_rows_atomic, save_schema, session_principal, sync_status, user_by_username,
-    user_count,
+    BuildArtifact, BuildRecord, BuildSchemaSnapshot, ProjectRecord, RowWrite, SessionPrincipal,
+    StoredFormulaSet, StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member,
+    create_initial_user, create_project, create_session, create_user, list_builds, list_projects,
+    list_rows, list_schemas, load_build_snapshot, load_formula_set, project_role, record_build,
+    row_exists, save_formula_set, save_row, save_rows_atomic, save_schema, session_principal,
+    sync_status, user_by_username, user_count,
 };
 use datahub_xlsx::{VersionedRow, XlsxError, export_workbook, import_workbook};
 use serde::{Deserialize, Serialize};
@@ -1046,31 +1051,42 @@ async fn create_build_handler(
 ) -> Result<Json<BuildRecord>, ApiError> {
     let principal = authenticate(&state, &headers, true).await?;
     authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
-    let schemas = list_schemas(&state.pool, project_id).await?;
-    let mut artifacts = Vec::new();
-    for schema in schemas.iter().filter(|schema| {
-        schema.definition.target.includes(request.target)
-            && schema.definition.target.includes_audience(request.audience)
+    let snapshots = load_build_snapshot(&state.pool, project_id).await?;
+    let mut generated = Vec::new();
+    let mut inputs = Vec::new();
+    for snapshot in snapshots.iter().filter(|snapshot| {
+        snapshot.schema.definition.target.includes(request.target)
+            && snapshot
+                .schema
+                .definition
+                .target
+                .includes_audience(request.audience)
     }) {
-        let stored_rows = list_rows(&state.pool, schema.definition.id).await?;
-        let rows = stored_rows
-            .into_iter()
-            .map(|stored| stored.row)
-            .collect::<Vec<_>>();
-        for artifact in [
-            generate_code_for_audience(&schema.definition, request.target, request.audience),
-            generate_json_for_audience(&schema.definition, &rows, request.target, request.audience),
-            generate_csv_for_audience(&schema.definition, &rows, request.target, request.audience),
-        ] {
-            let artifact = artifact.map_err(export_error)?;
-            artifacts.push(BuildArtifact {
-                path: artifact.path,
-                media_type: artifact.media_type,
-                sha256: artifact.sha256,
-                content: artifact.content,
-            });
-        }
+        let (mut schema_artifacts, input) =
+            generate_schema_artifacts(snapshot, request.target, request.audience)?;
+        generated.append(&mut schema_artifacts);
+        inputs.push(input);
     }
+    let manifest_artifact = generate_build_manifest(
+        request.target,
+        request.audience,
+        inputs,
+        BTreeMap::from([("built-in".into(), env!("CARGO_PKG_VERSION").into())]),
+        &generated,
+    );
+    let input_hash = manifest_artifact.sha256.clone();
+    let manifest = serde_json::from_slice(&manifest_artifact.content)
+        .map_err(|_| ApiError::internal("build manifest serialization failed"))?;
+    generated.push(manifest_artifact);
+    let artifacts = generated
+        .into_iter()
+        .map(|artifact| BuildArtifact {
+            path: artifact.path,
+            media_type: artifact.media_type,
+            sha256: artifact.sha256,
+            content: artifact.content,
+        })
+        .collect::<Vec<_>>();
     let language = match request.target {
         CompilationTarget::Rust => "rust",
         CompilationTarget::CSharp => "c_sharp",
@@ -1089,10 +1105,55 @@ async fn create_build_handler(
             project_id,
             principal.user_id,
             &target,
+            &input_hash,
+            &manifest,
             &artifacts,
         )
         .await?,
     ))
+}
+
+fn generate_schema_artifacts(
+    snapshot: &BuildSchemaSnapshot,
+    target: CompilationTarget,
+    audience: Audience,
+) -> Result<(Vec<GeneratedArtifact>, BuildSchemaInput), ApiError> {
+    let definition = &snapshot.schema.definition;
+    let rows = snapshot
+        .rows
+        .iter()
+        .map(|stored| stored.row.clone())
+        .collect::<Vec<_>>();
+    let mut artifacts = vec![
+        generate_code_for_audience(definition, target, audience).map_err(export_error)?,
+        generate_json_for_audience(definition, &rows, target, audience).map_err(export_error)?,
+        generate_csv_for_audience(definition, &rows, target, audience).map_err(export_error)?,
+        generate_xml_for_audience(definition, &rows, target, audience).map_err(export_error)?,
+        generate_bson_for_audience(definition, &rows, target, audience).map_err(export_error)?,
+    ];
+    artifacts.extend(
+        generate_protobuf_for_audience(definition, &rows, target, audience)
+            .map_err(export_error)?,
+    );
+    artifacts.push(
+        generate_lua_for_audience(definition, &rows, target, audience).map_err(export_error)?,
+    );
+    let input = BuildSchemaInput {
+        schema_id: definition.id,
+        schema_revision_id: snapshot.schema.revision_id,
+        schema_version: snapshot.schema.version,
+        data_revision_id: snapshot.data_revision_id,
+        rows: snapshot
+            .rows
+            .iter()
+            .map(|row| BuildRowInput {
+                row_id: row.row.id,
+                row_revision_id: row.row.revision_id,
+                version: row.version,
+            })
+            .collect(),
+    };
+    Ok((artifacts, input))
 }
 
 async fn sync_status_handler(
@@ -1108,7 +1169,9 @@ async fn sync_status_handler(
 fn export_error(error: ExportError) -> ApiError {
     match error {
         ExportError::Validation(issues) => ApiError::validation(json!(issues)),
-        ExportError::Serialization(_) => ApiError::internal("artifact generation failed"),
+        ExportError::Serialization(_) | ExportError::ProtobufWireIdCollision { .. } => {
+            ApiError::internal("artifact generation failed")
+        }
     }
 }
 

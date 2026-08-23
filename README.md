@@ -7,7 +7,8 @@ The current implementation includes local Argon2id accounts, bearer/CSRF
 sessions, project RBAC, immutable Schema/Data revisions, typed configuration
 validation, per-field C/S/E target filtering, multi-field Schema design,
 server-filtered VTable blocks with inline optimistic editing, deterministic
-Rust/C#/TypeScript plus JSON/CSV artifacts, stable FieldId formulas with
+Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifacts, revision-pinned
+build manifests with stable Protobuf wire IDs, stable FieldId formulas with
 Native/Wasmtime execution, stable-ID XLSX preview/atomic import, and
 transactional-outbox projection to PostgreSQL. Formula, XLSX, build, and sync
 state is available through the web console and API.
@@ -39,7 +40,8 @@ The gate runs Rust and web checks, builds an isolated Docker stack on alternate
 loopback ports, verifies HTTP, RBAC, validation, target isolation, build
 artifacts, SQL migrations, outbox projection, and PostgreSQL volume persistence.
 It also proves Native/Wasm formula parity and full XLSX rollback on a stale-row
-conflict. It does not require a paid CI service.
+conflict, parses the built-in codecs, compares deterministic rebuild hashes, and
+compiles generated Rust, C#, and TypeScript. It does not require a paid CI service.
 
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.

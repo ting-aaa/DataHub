@@ -348,25 +348,109 @@ try {
         throw "Invalid row returned HTTP $validationStatus instead of 422"
     }
 
-    Write-Host '==> Deterministic build and PostgreSQL outbox projection tests'
+    Write-Host '==> Deterministic build, codec, generated-code, and PostgreSQL outbox tests'
+    $compileRoot = [IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetTempPath()) "datahub-generated-$([guid]::NewGuid())"))
+    $systemTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+    if (-not $compileRoot.StartsWith($systemTempRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Generated-code test directory escaped the system temp root: $compileRoot"
+    }
+    New-Item -ItemType Directory -Path $compileRoot | Out-Null
+    $firstRustBuild = $null
     foreach ($target in @('rust', 'c_sharp', 'type_script')) {
         $build = Invoke-RestMethod -Method Post `
             -Uri "$apiRoot/projects/$($project.id)/builds" `
             -Headers $adminHeaders -ContentType 'application/json' `
             -Body (@{ target = $target } | ConvertTo-Json)
-        if ($build.status -ne 'succeeded' -or $build.artifacts.Count -ne 3) {
-            throw "Build for $target did not produce code, JSON, and CSV artifacts"
+        if ($build.status -ne 'succeeded' -or $build.artifacts.Count -ne 9) {
+            throw "Build for $target did not produce code, six data codecs, Protobuf schema, and manifest"
+        }
+        if ($build.input_hash -notmatch '^[0-9a-f]{64}$' -or $null -eq $build.manifest) {
+            throw "Build for $target did not persist its input hash and manifest"
         }
         foreach ($artifact in $build.artifacts) {
             if ($artifact.sha256 -notmatch '^[0-9a-f]{64}$' -or $artifact.content.Count -eq 0) {
                 throw "Build artifact $($artifact.path) is empty or missing its SHA-256 hash"
             }
         }
-        $clientJson = $build.artifacts | Where-Object { $_.path -like '*.json' } | Select-Object -First 1
+        $manifestArtifact = $build.artifacts | Where-Object { $_.path -eq 'manifest.json' } | Select-Object -First 1
+        if ($manifestArtifact.sha256 -ne $build.input_hash -or $build.manifest.format -ne 'datahub-build-v1' -or
+            $build.manifest.artifacts.Count -ne 8) {
+            throw "Build for $target returned an inconsistent deterministic manifest"
+        }
+        $requiredExtensions = @('.json', '.csv', '.xml', '.bson', '.proto', '.pb', '.lua')
+        foreach ($extension in $requiredExtensions) {
+            if (($build.artifacts | Where-Object {
+                $_.path.StartsWith('data/', [StringComparison]::Ordinal) -and $_.path.EndsWith($extension)
+            }).Count -ne 1) {
+                throw "Build for $target did not emit exactly one $extension artifact"
+            }
+        }
+        $clientJson = $build.artifacts | Where-Object { $_.path -like 'data/*.json' } | Select-Object -First 1
         $clientJsonText = [Text.Encoding]::UTF8.GetString([byte[]]$clientJson.content)
         if ($clientJsonText -match 'serverSecret') {
             throw "Client $target build leaked the server-only field"
         }
+
+        $source = $build.artifacts | Where-Object { $_.path -like 'code/*' } | Select-Object -First 1
+        switch ($target) {
+            'rust' {
+                $firstRustBuild = $build
+                $rustRoot = Join-Path $compileRoot 'rust'
+                New-Item -ItemType Directory -Path (Join-Path $rustRoot 'src') | Out-Null
+                [IO.File]::WriteAllBytes((Join-Path $rustRoot 'src/lib.rs'), [byte[]]$source.content)
+                @'
+[package]
+name = "datahub-generated-check"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+'@ | Set-Content -LiteralPath (Join-Path $rustRoot 'Cargo.toml') -Encoding utf8
+                Invoke-Checked 'Compile generated Rust' {
+                    cargo check --quiet --manifest-path (Join-Path $rustRoot 'Cargo.toml')
+                }
+            }
+            'c_sharp' {
+                $csharpRoot = Join-Path $compileRoot 'csharp'
+                New-Item -ItemType Directory -Path $csharpRoot | Out-Null
+                [IO.File]::WriteAllBytes((Join-Path $csharpRoot 'Generated.cs'), [byte[]]$source.content)
+                @'
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>
+'@ | Set-Content -LiteralPath (Join-Path $csharpRoot 'Generated.csproj') -Encoding utf8
+                Invoke-Checked 'Compile generated C#' {
+                    dotnet build (Join-Path $csharpRoot 'Generated.csproj') --nologo --verbosity quiet
+                }
+            }
+            'type_script' {
+                $typescriptPath = Join-Path $compileRoot 'generated.ts'
+                [IO.File]::WriteAllBytes($typescriptPath, [byte[]]$source.content)
+                Invoke-Checked 'Compile generated TypeScript' {
+                    pnpm --dir web exec tsc $typescriptPath --noEmit --strict --target ES2022 --module ESNext --skipLibCheck
+                }
+            }
+        }
+    }
+
+    $secondRustBuild = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/builds" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ target = 'rust' } | ConvertTo-Json)
+    if ($secondRustBuild.input_hash -ne $firstRustBuild.input_hash) {
+        throw 'Identical build inputs produced different manifest hashes'
+    }
+    $firstDigests = @($firstRustBuild.artifacts | Sort-Object path | ForEach-Object { "$($_.path):$($_.sha256)" })
+    $secondDigests = @($secondRustBuild.artifacts | Sort-Object path | ForEach-Object { "$($_.path):$($_.sha256)" })
+    if (Compare-Object -ReferenceObject $firstDigests -DifferenceObject $secondDigests) {
+        throw 'Identical build inputs produced different artifact hashes'
     }
 
     $serverBuild = Invoke-RestMethod -Method Post `
@@ -472,5 +556,16 @@ try {
 }
 finally {
     docker compose -p $qualityProject down --volumes --remove-orphans
+    if ($null -ne $compileRoot -and (Test-Path -LiteralPath $compileRoot)) {
+        $resolvedCompileRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $compileRoot).Path)
+        $resolvedTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+        if ($resolvedCompileRoot.StartsWith($resolvedTempRoot, [StringComparison]::OrdinalIgnoreCase) -and
+            (Split-Path -Leaf $resolvedCompileRoot).StartsWith('datahub-generated-', [StringComparison]::Ordinal)) {
+            Remove-Item -LiteralPath $resolvedCompileRoot -Recurse -Force
+        }
+        else {
+            Write-Warning "Refused to remove unexpected generated-code directory: $resolvedCompileRoot"
+        }
+    }
     Pop-Location
 }
