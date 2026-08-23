@@ -13,7 +13,10 @@ Native/Wasmtime execution, stable-ID XLSX preview/atomic import, and
 transactional-outbox projection to PostgreSQL. A WIT Component plugin host adds
 hash-pinned exact-version installation with no ambient WASI/network access and
 bounded fuel, time, memory, input, and output. Formula, XLSX, build, and sync
-state is available through the web console and API.
+state is available through the web console and API. PostgreSQL synchronization
+uses isolated exponential retries, dead letters, durable checkpoints, full
+rebuilds, stable-ID DDL plans with destructive-change approval, and immutable
+environment releases with approval, publishing, and exact-snapshot rollback.
 
 ## Run the stack
 
@@ -43,7 +46,10 @@ loopback ports, verifies HTTP, RBAC, validation, target isolation, build
 artifacts, SQL migrations, outbox projection, and PostgreSQL volume persistence.
 It also proves Native/Wasm formula parity and full XLSX rollback on a stale-row
 conflict, parses the built-in codecs, compares deterministic rebuild hashes, and
-compiles generated Rust, C#, and TypeScript. It does not require a paid CI service.
+compiles generated Rust, C#, and TypeScript. Release approval enforcement,
+historical rollback reproducibility, DDL approval, poison-event dead lettering,
+checkpoint recovery, and full resync are exercised against the live Docker
+stack. It does not require a paid CI service.
 
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.

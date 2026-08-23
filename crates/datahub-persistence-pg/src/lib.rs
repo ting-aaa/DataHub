@@ -5,11 +5,15 @@ use sqlx::{PgPool, postgres::PgPoolOptions};
 mod repository;
 
 pub use repository::{
-    BuildArtifact, BuildRecord, BuildSchemaSnapshot, ProjectRecord, RepositoryError, RowWrite,
-    SessionPrincipal, StoredFormulaSet, StoredRow, StoredSchema, SyncStatus, UserAccount,
-    add_project_member, create_initial_user, create_project, create_session, create_user,
-    list_builds, list_projects, list_rows, list_schemas, load_build_snapshot, load_formula_set,
-    process_outbox_batch, project_role, record_build, row_exists, save_formula_set, save_row,
+    BuildArtifact, BuildRecord, BuildSchemaSnapshot, EnvironmentRecord, ProjectRecord,
+    ProjectionOperation, ProjectionPlan, ReleaseRecord, RepositoryError, RowWrite,
+    SessionPrincipal, StoredFormulaSet, StoredRow, StoredSchema, SyncCheckpoint, SyncStatus,
+    UserAccount, add_project_member, apply_projection_plan, approve_projection_plan,
+    approve_release, create_environment, create_initial_user, create_project,
+    create_projection_plan, create_release, create_session, create_user, full_resync, list_builds,
+    list_environments, list_projection_plans, list_projects, list_releases, list_rows,
+    list_schemas, load_build_snapshot, load_formula_set, process_outbox_batch, project_role,
+    publish_release, record_build, rollback_release, row_exists, save_formula_set, save_row,
     save_rows_atomic, save_schema, session_principal, sync_status, user_by_username, user_count,
 };
 

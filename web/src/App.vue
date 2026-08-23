@@ -12,8 +12,11 @@ import {
   type BuildArtifact,
   type BuildRecord,
   type ConfigValue,
+  type EnvironmentRecord,
   type FieldDefinition,
+  type ProjectionPlan,
   type Project,
+  type ReleaseRecord,
   type SchemaDefinition,
   type Session,
   type StoredRow,
@@ -127,6 +130,9 @@ const loadingNextBlock = ref(false)
 const gridActivity = ref('')
 const builds = ref<BuildRecord[]>([])
 const sync = ref<SyncStatus | null>(null)
+const projectionPlans = ref<ProjectionPlan[]>([])
+const environments = ref<EnvironmentRecord[]>([])
+const releases = ref<ReleaseRecord[]>([])
 const buildTarget = ref<'rust' | 'c_sharp' | 'type_script'>('rust')
 const buildAudience = ref<'client' | 'server' | 'editor'>('client')
 const formulaDrafts = ref<FormulaDraft[]>([{ key: uuidv7(), fieldId: '', source: '' }])
@@ -138,6 +144,8 @@ const xlsxPreview = ref<XlsxPreview | null>(null)
 
 const credentials = reactive({ username: '', password: '' })
 const projectDraft = reactive({ name: '', description: '' })
+const environmentDraft = reactive({ name: 'production', requires_approval: true })
+const releaseDraft = reactive({ environment_id: '', build_id: '', version: '1.0.0' })
 const schemaDraft = reactive({
   name: '',
   description: '',
@@ -162,6 +170,9 @@ const selectedSchema = computed(
 )
 const canWrite = computed(() =>
   ['editor', 'approver', 'admin'].includes(selectedProject.value?.role ?? ''),
+)
+const canApprove = computed(() =>
+  ['approver', 'admin'].includes(selectedProject.value?.role ?? ''),
 )
 const statusType = computed(() => (health.value?.status === 'ok' ? 'success' : 'danger'))
 const tableOptions = computed(() => ({
@@ -788,12 +799,20 @@ async function refreshOperations(): Promise<void> {
   if (!selectedProjectId.value || !session.value) {
     builds.value = []
     sync.value = null
+    projectionPlans.value = []
+    environments.value = []
+    releases.value = []
     return
   }
-  ;[builds.value, sync.value] = await Promise.all([
+  ;[builds.value, sync.value, projectionPlans.value, environments.value, releases.value] = await Promise.all([
     api<BuildRecord[]>(`/projects/${selectedProjectId.value}/builds`, {}, session.value),
     api<SyncStatus>(`/projects/${selectedProjectId.value}/sync-status`, {}, session.value),
+    api<ProjectionPlan[]>(`/projects/${selectedProjectId.value}/projection-plans`, {}, session.value),
+    api<EnvironmentRecord[]>(`/projects/${selectedProjectId.value}/environments`, {}, session.value),
+    api<ReleaseRecord[]>(`/projects/${selectedProjectId.value}/releases`, {}, session.value),
   ])
+  releaseDraft.environment_id ||= environments.value[0]?.id ?? ''
+  releaseDraft.build_id ||= builds.value[0]?.id ?? ''
 }
 
 async function createBuild(): Promise<void> {
@@ -814,6 +833,124 @@ async function createBuild(): Promise<void> {
     showError(reason)
   } finally {
     busy.value = false
+  }
+}
+
+async function rebuildProjection(): Promise<void> {
+  if (!selectedProjectId.value) return
+  busy.value = true
+  try {
+    await api<SyncStatus>(
+      `/projects/${selectedProjectId.value}/sync/resync`,
+      { method: 'POST' },
+      session.value,
+    )
+    await refreshOperations()
+    ElMessage.success('PostgreSQL 投影已从主数据重建')
+  } catch (reason) {
+    showError(reason)
+  } finally {
+    busy.value = false
+  }
+}
+
+async function createProjectionPlanForSchema(): Promise<void> {
+  if (!selectedProjectId.value || !selectedSchemaId.value) return
+  try {
+    await api<ProjectionPlan>(
+      `/projects/${selectedProjectId.value}/projection-plans`,
+      { method: 'POST', body: JSON.stringify({ schema_id: selectedSchemaId.value }) },
+      session.value,
+    )
+    await refreshOperations()
+    ElMessage.success('DDL 计划已生成')
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function approveProjectionPlan(plan: ProjectionPlan): Promise<void> {
+  try {
+    await api<ProjectionPlan>(
+      `/projects/${selectedProjectId.value}/projection-plans/${plan.id}/approve`,
+      { method: 'POST' },
+      session.value,
+    )
+    await refreshOperations()
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function applyProjectionPlan(plan: ProjectionPlan): Promise<void> {
+  try {
+    await api<ProjectionPlan>(
+      `/projects/${selectedProjectId.value}/projection-plans/${plan.id}/apply`,
+      { method: 'POST' },
+      session.value,
+    )
+    await refreshOperations()
+    ElMessage.success('DDL 计划已应用')
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function createEnvironmentRecord(): Promise<void> {
+  if (!environmentDraft.name.trim()) return
+  try {
+    const created = await api<EnvironmentRecord>(
+      `/projects/${selectedProjectId.value}/environments`,
+      { method: 'POST', body: JSON.stringify(environmentDraft) },
+      session.value,
+    )
+    releaseDraft.environment_id = created.id
+    await refreshOperations()
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function createReleaseRecord(): Promise<void> {
+  if (!releaseDraft.environment_id || !releaseDraft.build_id || !releaseDraft.version) return
+  try {
+    await api<ReleaseRecord>(
+      `/projects/${selectedProjectId.value}/releases`,
+      { method: 'POST', body: JSON.stringify(releaseDraft) },
+      session.value,
+    )
+    await refreshOperations()
+    ElMessage.success('不可变发布快照已创建')
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function transitionRelease(release: ReleaseRecord, action: 'approve' | 'publish'): Promise<void> {
+  try {
+    await api<ReleaseRecord>(
+      `/projects/${selectedProjectId.value}/releases/${release.id}/${action}`,
+      { method: 'POST' },
+      session.value,
+    )
+    await refreshOperations()
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function rollbackTo(release: ReleaseRecord): Promise<void> {
+  const version = `rollback-${release.version}-${Date.now()}`
+  try {
+    await api<ReleaseRecord>(
+      `/projects/${selectedProjectId.value}/environments/${release.environment_id}/rollback`,
+      { method: 'POST', body: JSON.stringify({ target_release_id: release.id, version }) },
+      session.value,
+    )
+    await refreshOperations()
+    ElMessage.success(`已回滚到 ${release.version} 的制品快照`)
+  } catch (reason) {
+    showError(reason)
   }
 }
 
@@ -1269,16 +1406,86 @@ onMounted(initialize)
               <template #header>
                 <div class="section-heading">
                   <strong>PostgreSQL 同步</strong>
-                  <el-button plain @click="refreshOperations">刷新</el-button>
+                  <div>
+                    <el-button plain @click="refreshOperations">刷新</el-button>
+                    <el-button :disabled="!canWrite" @click="rebuildProjection">完整重建</el-button>
+                  </div>
                 </div>
               </template>
               <el-descriptions v-if="sync" :column="2" border>
                 <el-descriptions-item label="待处理">{{ sync.pending }}</el-descriptions-item>
+                <el-descriptions-item label="重试中">{{ sync.retrying }}</el-descriptions-item>
+                <el-descriptions-item label="死信">{{ sync.dead_lettered }}</el-descriptions-item>
                 <el-descriptions-item label="已处理">{{ sync.processed }}</el-descriptions-item>
                 <el-descriptions-item label="Schema 投影">{{ sync.projected_schemas }}</el-descriptions-item>
                 <el-descriptions-item label="Row 投影">{{ sync.projected_rows }}</el-descriptions-item>
-                <el-descriptions-item label="失败">{{ sync.failed }}</el-descriptions-item>
+                <el-descriptions-item label="检查点">{{ sync.checkpoint?.status ?? '尚未创建' }}</el-descriptions-item>
               </el-descriptions>
+              <el-divider />
+              <div class="section-heading">
+                <strong>DDL 计划</strong>
+                <el-button :disabled="!canWrite || !selectedSchemaId" @click="createProjectionPlanForSchema">
+                  为当前 Schema 生成
+                </el-button>
+              </div>
+              <el-collapse v-if="projectionPlans.length">
+                <el-collapse-item
+                  v-for="plan in projectionPlans"
+                  :key="plan.id"
+                  :title="`${plan.status} · ${plan.destructive ? '破坏性' : '兼容'} · ${plan.operations.length} 项`"
+                >
+                  <pre v-for="operation in plan.operations" :key="operation.sql">{{ operation.sql }}</pre>
+                  <el-button
+                    v-if="plan.status === 'draft' && plan.destructive"
+                    :disabled="!canApprove"
+                    @click="approveProjectionPlan(plan)"
+                  >
+                    审批
+                  </el-button>
+                  <el-button
+                    v-if="(plan.status === 'draft' && !plan.destructive) || plan.status === 'approved'"
+                    type="primary"
+                    :disabled="!canWrite"
+                    @click="applyProjectionPlan(plan)"
+                  >
+                    应用
+                  </el-button>
+                </el-collapse-item>
+              </el-collapse>
+            </el-card>
+
+            <el-card shadow="never">
+              <template #header><strong>环境与不可变发布</strong></template>
+              <div class="row-create">
+                <el-input v-model="environmentDraft.name" placeholder="环境名称" />
+                <el-checkbox v-model="environmentDraft.requires_approval">强制审批</el-checkbox>
+                <el-button :disabled="!canApprove" @click="createEnvironmentRecord">创建环境</el-button>
+              </div>
+              <el-divider />
+              <div class="row-create">
+                <el-select v-model="releaseDraft.environment_id" placeholder="环境">
+                  <el-option v-for="environment in environments" :key="environment.id" :label="environment.name" :value="environment.id" />
+                </el-select>
+                <el-select v-model="releaseDraft.build_id" placeholder="构建">
+                  <el-option v-for="build in builds" :key="build.id" :label="`${build.target} · ${build.input_hash?.slice(0, 8)}`" :value="build.id" />
+                </el-select>
+                <el-input v-model="releaseDraft.version" placeholder="版本" />
+                <el-button type="primary" :disabled="!canWrite" @click="createReleaseRecord">创建发布</el-button>
+              </div>
+              <el-collapse v-if="releases.length">
+                <el-collapse-item
+                  v-for="release in releases"
+                  :key="release.id"
+                  :title="`${release.version} · ${release.status} · ${release.input_hash.slice(0, 12)}`"
+                >
+                  <small>Build {{ release.build_id }} · Environment {{ release.environment_id }}</small>
+                  <div class="row-create">
+                    <el-button v-if="release.status === 'draft'" :disabled="!canApprove" @click="transitionRelease(release, 'approve')">审批</el-button>
+                    <el-button v-if="release.status === 'draft' || release.status === 'approved'" :disabled="!canWrite" type="success" @click="transitionRelease(release, 'publish')">发布</el-button>
+                    <el-button v-if="release.status === 'published' || release.status === 'superseded'" :disabled="!canApprove" type="warning" @click="rollbackTo(release)">回滚到此版本</el-button>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
             </el-card>
           </div>
         </template>

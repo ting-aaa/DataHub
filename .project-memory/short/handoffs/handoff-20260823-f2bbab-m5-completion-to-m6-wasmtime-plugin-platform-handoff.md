@@ -9,9 +9,7 @@
   "event_id": "datahub-handoff-m5-to-m6-v1",
   "id": "HANDOFF-20260823-F2BBAB",
   "kind": "handoff",
-  "next_actions": [
-    "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -28,7 +26,7 @@
     "PLAN-20260823-9B6D1E",
     "Git evidence: clean feature/m6-plugin-sandbox at 2aaf6c8."
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch.",
   "supersedes": [
     "HANDOFF-20260823-E37206"
@@ -45,7 +43,7 @@
   "tier": "short",
   "title": "M5 completion to M6 Wasmtime plugin platform handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:03:24Z",
+  "updated_at": "2026-08-23T21:23:21Z",
   "valid_as_of": "2026-08-24"
 }
 -->

@@ -58,3 +58,17 @@ DataHub/
 Domain behavior belongs in `crates/`; `apps/` should remain thin composition
 roots. Infrastructure adapters depend on domain crates, never the reverse. Web
 code consumes HTTP contracts and does not connect directly to PostgreSQL.
+
+## Synchronization and releases
+
+Each outbox event is isolated in its own transaction. Failed projection events
+use bounded exponential retry and become dead letters after five attempts, so a
+poison event cannot block later work. Per-project checkpoints and an atomic full
+resync rebuild generic projections from canonical data.
+
+Stable FieldIds become generated PostgreSQL column identifiers. Compatible DDL
+plans can be applied by editors; column removal and type changes are explicitly
+marked destructive and require an approver. Releases copy the deterministic
+build hash and manifest into immutable environment history. Publishing advances
+one environment pointer, while rollback creates another immutable release that
+references and reproduces the chosen historical snapshot.
