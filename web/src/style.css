@@ -74,6 +74,12 @@ button, input, textarea, select { font: inherit; }
 .grid-hint { margin: 0 0 10px; color: #74859b; font-size: .78rem; }
 .block-loading { padding: 8px; color: #63748a; font-size: .78rem; text-align: center; }
 .grid-card .vtable { border-radius: 8px; }
+.m4-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; margin-top: 18px; }
+.formula-row { display: grid; grid-template-columns: minmax(150px, .7fr) minmax(220px, 1.3fr) auto; gap: 8px; margin-bottom: 8px; }
+.formula-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 10px; }
+.xlsx-picker { display: grid; gap: 8px; margin-bottom: 14px; padding: 18px; border: 1px dashed #b8cbe3; border-radius: 10px; color: #586a82; background: #f8fafd; font-size: .82rem; }
+.xlsx-picker input { color: #33445e; }
+.m4-layout .el-alert, .m4-layout .el-button { margin-bottom: 12px; }
 .operations-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; margin-top: 18px; }
 .artifact { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 10px; border: 0; border-radius: 8px; color: #29405f; background: #f2f6fb; cursor: pointer; text-align: left; }
 .artifact + .artifact { margin-top: 6px; }
@@ -88,6 +94,7 @@ button, input, textarea, select { font: inherit; }
   .schema-layout { grid-template-columns: 1fr; }
   .field-editor-grid { grid-template-columns: 1fr; }
   .view-toolbar { grid-template-columns: 1fr 1fr; }
+  .m4-layout { grid-template-columns: 1fr; }
   .operations-layout { grid-template-columns: 1fr; }
 }
 
@@ -97,4 +104,5 @@ button, input, textarea, select { font: inherit; }
   .content { padding: 22px 14px; }
   .section-heading { align-items: flex-start; flex-direction: column; }
   .row-create { width: 100%; }
+  .formula-row { grid-template-columns: 1fr; }
 }

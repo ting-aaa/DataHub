@@ -10,7 +10,7 @@
   "id": "PLAN-20260823-9B6D1E",
   "kind": "plan",
   "next_actions": [
-    "Integrate completed M3, then implement and verify M4 formula and XLSX capabilities."
+    "Integrate completed M4, then implement and verify M5 deterministic build/export capabilities."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -31,10 +31,11 @@
     "RPT-20260823-FE85CD",
     "RPT-20260823-118D95",
     "RPT-20260823-CA61E0",
-    "RPT-20260823-E99D5D"
+    "RPT-20260823-E99D5D",
+    "RPT-20260823-38DC17"
   ],
   "status": "active",
-  "summary": "M0-M3 are complete; M4-M8 remain pending under the free automated local gate.",
+  "summary": "M0-M4 are complete; M5-M8 remain pending under the free automated local gate.",
   "supersedes": [],
   "tags": [
     "automated-testing",
@@ -47,7 +48,7 @@
   "tier": "short",
   "title": "DataHub v1 milestone plan with free local automation",
   "type_version": 1,
-  "updated_at": "2026-08-23T20:11:04Z",
+  "updated_at": "2026-08-23T20:42:56Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -60,7 +61,8 @@
 - M1 domain/kernel: completed, including resolved UUIDv7/type/target/testing gaps.
 - M2 persistence/auth: completed through migrations 0002-0003, revisions, audit/outbox, auth/RBAC, builds and projection foundations.
 - M3 schema/configuration UX: completed with multi-field design, typed rows, inline VTable editing, block prefetch/cache, optimistic saves, filter/sort and browser acceptance.
-- M4-M8: pending; partial export/build/projection foundations do not complete M5 or M7.
+- M4 formula/XLSX: completed with stable FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic persistence.
+- M5-M8: pending; partial export/build/projection foundations do not complete M5 or M7.
 
 ## M0 Transition - Completed
 
@@ -84,9 +86,11 @@ Implement /api/v1 contracts and OpenAPI for schema and data workflows. Build Vue
 
 Bootstrap/login/project/schema/row/build/sync APIs and console flows work. Migration 0004 and the API provide bounded TableView blocks, safe server filters/sorts, expiry and data-revision snapshots. Multi-field schema design, typed row creation, independent C/S/E targeting, hard-reference checks, inline VTable editing, optimistic versions, block prefetch/cache deduplication and browser filter/sort acceptance are implemented and verified.
 
-## M4 Formula and XLSX - Pending
+## M4 Formula and XLSX - Completed
 
 Implement FieldId-based formula AST, dependency graph, cycle detection, native/WASM evaluation, computed fields and auditable bulk commands. Add XLSX template/export/import preview/diff/atomic commit with hidden stable metadata; read only cached Excel formula values and reject missing caches. Test round trips, renames, stale templates, cycles and rollback.
+
+The datahub-formula and datahub-xlsx crates, migration 0005, PostgreSQL repositories, API and Vue console complete the planned M4 flow. Formula parsing binds display names to stable FieldIds, reports full dependency cycles and evaluates with Native/Wasmtime parity. XLSX hidden metadata preserves schema/revision/field/row/version identity, rejects foreign or stale workbooks and missing formula caches, and commits atomically with audit/outbox coverage. The free gate passed 26 Rust tests, 10 Web tests and Docker/PostgreSQL acceptance.
 
 ## M5 Deterministic Build and Export - Pending
 

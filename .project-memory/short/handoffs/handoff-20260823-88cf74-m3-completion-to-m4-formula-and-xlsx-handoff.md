@@ -9,9 +9,7 @@
   "event_id": "datahub-handoff-m3-to-m4-v1",
   "id": "HANDOFF-20260823-88CF74",
   "kind": "handoff",
-  "next_actions": [
-    "Integrate M3, create the M4 branch and implement formula/XLSX acceptance with automated tests."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -26,7 +24,7 @@
     "RPT-20260823-E99D5D",
     "PLAN-20260823-9B6D1E"
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips.",
   "supersedes": [
     "HANDOFF-20260823-CB0534"
@@ -41,7 +39,7 @@
   "tier": "short",
   "title": "M3 completion to M4 formula and XLSX handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T20:10:58Z",
+  "updated_at": "2026-08-23T20:42:56Z",
   "valid_as_of": "2026-08-24"
 }
 -->

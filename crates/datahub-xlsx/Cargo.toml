@@ -1,0 +1,20 @@
+[package]
+name = "datahub-xlsx"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+calamine.workspace = true
+datahub-kernel.workspace = true
+rust_xlsxwriter.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+zip.workspace = true
+
+[lints]
+workspace = true

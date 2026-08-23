@@ -5,11 +5,12 @@ use sqlx::{PgPool, postgres::PgPoolOptions};
 mod repository;
 
 pub use repository::{
-    BuildArtifact, BuildRecord, ProjectRecord, RepositoryError, SessionPrincipal, StoredRow,
-    StoredSchema, SyncStatus, UserAccount, add_project_member, create_initial_user, create_project,
-    create_session, create_user, list_builds, list_projects, list_rows, list_schemas,
-    process_outbox_batch, project_role, record_build, row_exists, save_row, save_schema,
-    session_principal, sync_status, user_by_username, user_count,
+    BuildArtifact, BuildRecord, ProjectRecord, RepositoryError, RowWrite, SessionPrincipal,
+    StoredFormulaSet, StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member,
+    create_initial_user, create_project, create_session, create_user, list_builds, list_projects,
+    list_rows, list_schemas, load_formula_set, process_outbox_batch, project_role, record_build,
+    row_exists, save_formula_set, save_row, save_rows_atomic, save_schema, session_principal,
+    sync_status, user_by_username, user_count,
 };
 
 /// Opens the `PostgreSQL` pool used by a `DataHub` process.

@@ -63,6 +63,37 @@ interface VTableComponent {
   vTableInstance: VTableInstance | { value: VTableInstance | null } | null
 }
 
+interface FormulaDraft {
+  key: string
+  fieldId: string
+  source: string
+}
+
+interface StoredFormulaSet {
+  schema_revision_id: string
+  document: { definitions: Record<string, { field_id: string; source: string }> }
+  version: number
+}
+
+interface FormulaChange {
+  row_id: string
+  expected_version: number
+  before: { values: Record<string, ConfigValue> }
+  after: { values: Record<string, ConfigValue> }
+}
+
+interface XlsxArtifact {
+  file_name: string
+  content_type: string
+  content: number[]
+}
+
+interface XlsxPreview {
+  created: number
+  updated: number
+  rows: unknown[]
+}
+
 function newSchemaFieldDraft(index = 0): SchemaFieldDraft {
   return {
     key: uuidv7(),
@@ -98,6 +129,12 @@ const builds = ref<BuildRecord[]>([])
 const sync = ref<SyncStatus | null>(null)
 const buildTarget = ref<'rust' | 'c_sharp' | 'type_script'>('rust')
 const buildAudience = ref<'client' | 'server' | 'editor'>('client')
+const formulaDrafts = ref<FormulaDraft[]>([{ key: uuidv7(), fieldId: '', source: '' }])
+const formulaVersion = ref<number | null>(null)
+const formulaRuntime = ref<'native' | 'wasm'>('native')
+const formulaPreview = ref<FormulaChange[]>([])
+const xlsxContent = ref<number[] | null>(null)
+const xlsxPreview = ref<XlsxPreview | null>(null)
 
 const credentials = reactive({ username: '', password: '' })
 const projectDraft = reactive({ name: '', description: '' })
@@ -267,7 +304,7 @@ async function refreshSchemas(): Promise<void> {
   if (!schemas.value.some((schema) => schema.definition.id === selectedSchemaId.value)) {
     selectedSchemaId.value = schemas.value[0]?.definition.id ?? ''
   }
-  await refreshRows()
+  await Promise.all([refreshRows(), refreshFormulas()])
 }
 
 async function createSchema(): Promise<void> {
@@ -399,7 +436,130 @@ async function selectSchema(schemaId: string): Promise<void> {
   viewQuery.filterValue = ''
   viewQuery.sortFieldId = ''
   gridActivity.value = ''
-  await refreshRows()
+  await Promise.all([refreshRows(), refreshFormulas()])
+}
+
+async function refreshFormulas(): Promise<void> {
+  formulaPreview.value = []
+  if (!selectedProjectId.value || !selectedSchemaId.value || !session.value) {
+    formulaVersion.value = null
+    formulaDrafts.value = [{ key: uuidv7(), fieldId: '', source: '' }]
+    return
+  }
+  const stored = await api<StoredFormulaSet | null>(
+    `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/formulas`,
+    {},
+    session.value,
+  )
+  formulaVersion.value = stored?.version ?? null
+  const definitions = stored ? Object.values(stored.document.definitions) : []
+  formulaDrafts.value = definitions.length
+    ? definitions.map((definition) => ({
+        key: uuidv7(),
+        fieldId: definition.field_id,
+        source: definition.source,
+      }))
+    : [{ key: uuidv7(), fieldId: '', source: '' }]
+}
+
+function addFormula(): void {
+  formulaDrafts.value.push({ key: uuidv7(), fieldId: '', source: '' })
+}
+
+function removeFormula(index: number): void {
+  formulaDrafts.value.splice(index, 1)
+  if (!formulaDrafts.value.length) addFormula()
+}
+
+async function saveFormulaSet(): Promise<void> {
+  if (!selectedProjectId.value || !selectedSchemaId.value) return
+  try {
+    const definitions = formulaDrafts.value
+      .filter((draft) => draft.fieldId && draft.source.trim())
+      .map((draft) => ({ field_id: draft.fieldId, source: draft.source.trim() }))
+    const stored = await api<StoredFormulaSet>(
+      `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/formulas`,
+      {
+        method: 'PUT',
+        body: JSON.stringify({ definitions, expected_version: formulaVersion.value }),
+      },
+      session.value,
+    )
+    formulaVersion.value = stored.version
+    formulaPreview.value = []
+    ElMessage.success('公式集已保存并生成不可变 revision')
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function runFormulas(commit: boolean): Promise<void> {
+  if (!selectedProjectId.value || !selectedSchemaId.value) return
+  try {
+    const endpoint = commit ? 'apply' : 'preview'
+    const result = await api<FormulaChange[] | StoredRow[]>(
+      `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/formulas/${endpoint}`,
+      { method: 'POST', body: JSON.stringify({ runtime: formulaRuntime.value }) },
+      session.value,
+    )
+    if (commit) {
+      await refreshRows()
+      formulaPreview.value = []
+      ElMessage.success(`公式已原子应用到 ${(result as StoredRow[]).length} 行`)
+    } else {
+      formulaPreview.value = result as FormulaChange[]
+    }
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function downloadXlsx(): Promise<void> {
+  if (!selectedProjectId.value || !selectedSchemaId.value) return
+  try {
+    const artifact = await api<XlsxArtifact>(
+      `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/xlsx/export`,
+      { method: 'POST' },
+      session.value,
+    )
+    downloadBytes(artifact.content, artifact.content_type, artifact.file_name)
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function selectXlsx(event: Event): Promise<void> {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file || !selectedProjectId.value || !selectedSchemaId.value) return
+  xlsxContent.value = Array.from(new Uint8Array(await file.arrayBuffer()))
+  try {
+    xlsxPreview.value = await api<XlsxPreview>(
+      `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/xlsx/preview`,
+      { method: 'POST', body: JSON.stringify({ content: xlsxContent.value }) },
+      session.value,
+    )
+  } catch (reason) {
+    xlsxPreview.value = null
+    showError(reason)
+  }
+}
+
+async function commitXlsx(): Promise<void> {
+  if (!xlsxContent.value || !selectedProjectId.value || !selectedSchemaId.value) return
+  try {
+    const saved = await api<StoredRow[]>(
+      `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/xlsx/commit`,
+      { method: 'POST', body: JSON.stringify({ content: xlsxContent.value }) },
+      session.value,
+    )
+    await refreshRows()
+    xlsxPreview.value = null
+    xlsxContent.value = null
+    ElMessage.success(`XLSX 已原子提交 ${saved.length} 行`)
+  } catch (reason) {
+    showError(reason)
+  }
 }
 
 function resetTableBlocks(): void {
@@ -658,11 +818,19 @@ async function createBuild(): Promise<void> {
 }
 
 function downloadArtifact(artifact: BuildArtifact): void {
-  const blob = new Blob([new Uint8Array(artifact.content)], { type: artifact.media_type })
+  downloadBytes(
+    artifact.content,
+    artifact.media_type,
+    artifact.path.split('/').at(-1) ?? 'artifact',
+  )
+}
+
+function downloadBytes(content: number[], mediaType: string, fileName: string): void {
+  const blob = new Blob([new Uint8Array(content)], { type: mediaType })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url
-  anchor.download = artifact.path.split('/').at(-1) ?? 'artifact'
+  anchor.download = fileName
   anchor.click()
   URL.revokeObjectURL(url)
 }
@@ -978,6 +1146,84 @@ onMounted(initialize)
             />
             <div v-if="loadingNextBlock" class="block-loading">正在载入下一数据块…</div>
           </el-card>
+
+          <div v-if="selectedSchema" class="m4-layout">
+            <el-card shadow="never">
+              <template #header>
+                <div class="section-heading">
+                  <div>
+                    <strong>计算字段公式</strong>
+                    <small>FieldId AST · formula v{{ formulaVersion ?? 'new' }}</small>
+                  </div>
+                  <el-button plain :disabled="!canWrite" @click="addFormula">添加公式</el-button>
+                </div>
+              </template>
+              <div
+                v-for="(draft, index) in formulaDrafts"
+                :key="draft.key"
+                class="formula-row"
+              >
+                <el-select v-model="draft.fieldId" placeholder="计算目标字段">
+                  <el-option
+                    v-for="field in selectedSchema.definition.fields"
+                    :key="field.id"
+                    :label="field.name"
+                    :value="field.id"
+                  />
+                </el-select>
+                <el-input v-model="draft.source" placeholder="例如 price * quantity" />
+                <el-button text type="danger" @click="removeFormula(index)">删除</el-button>
+              </div>
+              <div class="formula-actions">
+                <el-select v-model="formulaRuntime" style="width: 130px">
+                  <el-option label="Native" value="native" />
+                  <el-option label="WebAssembly" value="wasm" />
+                </el-select>
+                <el-button type="primary" :disabled="!canWrite" @click="saveFormulaSet">
+                  保存公式
+                </el-button>
+                <el-button @click="runFormulas(false)">预览差异</el-button>
+                <el-button type="success" :disabled="!canWrite" @click="runFormulas(true)">
+                  原子应用
+                </el-button>
+              </div>
+              <p class="grid-hint">
+                预览 {{ formulaPreview.length }} 行；字段重命名后仍按稳定 FieldId 解析和执行。
+              </p>
+            </el-card>
+
+            <el-card shadow="never">
+              <template #header>
+                <div class="section-heading">
+                  <div>
+                    <strong>XLSX 往返</strong>
+                    <small>隐藏稳定 ID · 乐观版本 · 全事务提交</small>
+                  </div>
+                  <el-button @click="downloadXlsx">导出 XLSX</el-button>
+                </div>
+              </template>
+              <label class="xlsx-picker">
+                <span>选择 DataHub XLSX 并生成导入预览</span>
+                <input type="file" accept=".xlsx" @change="selectXlsx">
+              </label>
+              <el-alert
+                v-if="xlsxPreview"
+                :closable="false"
+                type="info"
+                :title="`预览：新增 ${xlsxPreview.created} 行，更新 ${xlsxPreview.updated} 行`"
+              />
+              <el-button
+                type="success"
+                :disabled="!canWrite || !xlsxPreview"
+                @click="commitXlsx"
+              >
+                原子提交导入
+              </el-button>
+              <p class="grid-hint">
+                外部 Schema、过期 revision、缺失公式缓存或任一行版本冲突都会拒绝整批提交。
+              </p>
+            </el-card>
+          </div>
 
           <div class="operations-layout">
             <el-card shadow="never">

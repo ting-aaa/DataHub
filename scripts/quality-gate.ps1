@@ -185,13 +185,112 @@ try {
         } | ConvertTo-Json -Depth 20)
     if ($row.version -ne 1) { throw 'New row did not start at version 1' }
 
+    Write-Host '==> FieldId formula Native/WebAssembly parity and atomic apply tests'
+    $formulaSet = Invoke-RestMethod -Method Put `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/formulas" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{
+            definitions = @(@{ field_id = $serverFieldId; source = 'level * 2' })
+            expected_version = $null
+        } | ConvertTo-Json -Depth 10)
+    if ($formulaSet.version -ne 1 -or $formulaSet.schema_revision_id -ne $updatedSchema.revision_id) {
+        throw 'Formula set was not stored against the current schema revision'
+    }
+    $nativeFormulaPreview = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/formulas/preview" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ runtime = 'native' } | ConvertTo-Json)
+    $wasmFormulaPreview = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/formulas/preview" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ runtime = 'wasm' } | ConvertTo-Json)
+    $nativeFormulaJson = $nativeFormulaPreview | ConvertTo-Json -Depth 20 -Compress
+    $wasmFormulaJson = $wasmFormulaPreview | ConvertTo-Json -Depth 20 -Compress
+    if ($nativeFormulaJson -ne $wasmFormulaJson -or $nativeFormulaPreview.Count -ne 1) {
+        throw 'Native and WebAssembly formula previews differ'
+    }
+    $computedValue = $nativeFormulaPreview[0].after.values.PSObject.Properties[$serverFieldId].Value.value
+    if ($computedValue -ne 100) { throw "Formula preview returned $computedValue instead of 100" }
+    $formulaApplied = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/formulas/apply" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ runtime = 'wasm' } | ConvertTo-Json)
+    if ($formulaApplied.Count -ne 1 -or $formulaApplied[0].version -ne 2) {
+        throw 'Formula apply did not atomically advance the changed row'
+    }
+
+    Write-Host '==> XLSX stable-ID preview and optimistic rollback tests'
+    $staleRowId = 'ffffffff-ffff-7fff-bfff-ffffffffffff'
+    $staleValues = @{}
+    $staleValues[$fieldId] = @{ kind = 'integer'; value = 10 }
+    $staleValues[$serverFieldId] = @{ kind = 'integer'; value = 0 }
+    $staleRow = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{
+            row = @{
+                id = $staleRowId
+                schema_id = $schemaId
+                revision_id = [guid]::NewGuid().ToString()
+                values = $staleValues
+            }
+            expected_version = $null
+        } | ConvertTo-Json -Depth 20)
+    $xlsxArtifact = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/xlsx/export" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    if ($xlsxArtifact.content.Count -lt 1000 -or $xlsxArtifact.file_name -notlike '*.xlsx') {
+        throw 'XLSX export did not return a workbook artifact'
+    }
+    $xlsxPayload = @{ content = @($xlsxArtifact.content) } | ConvertTo-Json -Depth 10 -Compress
+    $xlsxPreview = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/xlsx/preview" `
+        -Headers $adminHeaders -ContentType 'application/json' -Body $xlsxPayload
+    if ($xlsxPreview.created -ne 0 -or $xlsxPreview.updated -ne 2) {
+        throw 'XLSX preview did not preserve both stable row identities'
+    }
+    $staleValues[$serverFieldId] = @{ kind = 'integer'; value = 77 }
+    $staleRowUpdated = Invoke-RestMethod -Method Put `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows/$staleRowId" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{
+            row = @{
+                id = $staleRowId
+                schema_id = $schemaId
+                revision_id = $staleRow.row.revision_id
+                values = $staleValues
+            }
+            expected_version = 1
+        } | ConvertTo-Json -Depth 20)
+    $rowsBeforeRollback = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows" -Headers $adminHeaders
+    $firstBeforeRollback = $rowsBeforeRollback | Where-Object { $_.row.id -eq $rowId }
+    $xlsxConflictStatus = 0
+    try {
+        Invoke-RestMethod -Method Post `
+            -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/xlsx/commit" `
+            -Headers $adminHeaders -ContentType 'application/json' -Body $xlsxPayload | Out-Null
+    }
+    catch { $xlsxConflictStatus = [int]$_.Exception.Response.StatusCode }
+    if ($xlsxConflictStatus -ne 409) {
+        throw "Stale XLSX commit returned HTTP $xlsxConflictStatus instead of 409"
+    }
+    $rowsAfterRollback = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows" -Headers $adminHeaders
+    $firstAfterRollback = $rowsAfterRollback | Where-Object { $_.row.id -eq $rowId }
+    $staleAfterRollback = $rowsAfterRollback | Where-Object { $_.row.id -eq $staleRowId }
+    if ($firstAfterRollback.version -ne $firstBeforeRollback.version -or
+        $staleAfterRollback.version -ne $staleRowUpdated.version) {
+        throw 'XLSX version conflict did not roll back the full transaction'
+    }
+
     $tableView = Invoke-RestMethod -Method Post `
         -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/views" `
         -Headers $adminHeaders -ContentType 'application/json' `
         -Body (@{ block_size = 512; sort = @(); filters = @() } | ConvertTo-Json -Depth 10)
     $firstBlock = Invoke-RestMethod `
         -Uri "$apiRoot/table-views/$($tableView.view_id)/blocks/0" -Headers $adminHeaders
-    if ($tableView.total_rows -ne 1 -or $firstBlock.rows.Count -ne 1 -or
+    if ($tableView.total_rows -ne 2 -or $firstBlock.rows.Count -ne 2 -or
         -not $tableView.data_revision) {
         throw 'Block table view did not return the committed data revision and row'
     }
@@ -285,14 +384,20 @@ try {
         $sync = Invoke-RestMethod -Uri "$apiRoot/projects/$($project.id)/sync-status" `
             -Headers $adminHeaders
         if ($sync.pending -eq 0 -and $sync.projected_schemas -eq 1 -and
-            $sync.projected_rows -eq 1) {
+            $sync.projected_rows -eq 2) {
             break
         }
         Start-Sleep -Seconds 1
     }
     if ($sync.pending -ne 0 -or $sync.failed -ne 0 -or
-        $sync.projected_schemas -ne 1 -or $sync.projected_rows -ne 1) {
+        $sync.projected_schemas -ne 1 -or $sync.projected_rows -ne 2) {
         throw "Outbox projection did not converge: $($sync | ConvertTo-Json -Compress)"
+    }
+    $currentProjectedRows = docker compose -p $qualityProject exec -T postgres psql `
+        -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 -Atc `
+        'SELECT COUNT(*) FROM datahub_projection_rows p JOIN datahub_config_rows r ON r.id = p.row_id WHERE p.source_version = r.version;'
+    if ($LASTEXITCODE -ne 0 -or [int]$currentProjectedRows.Trim() -ne 2) {
+        throw "Formula/XLSX row events did not update the current projection: $currentProjectedRows"
     }
 
     Write-Host '==> Reference existence validation test'

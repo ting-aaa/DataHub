@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 18,
+    "short": 20,
     "temp": 0
   },
-  "generated_at": "2026-08-23T20:12:17Z",
-  "generation": 35,
+  "generated_at": "2026-08-23T20:43:30Z",
+  "generation": 38,
   "project_name": "DataHub",
   "records": [
     {
@@ -324,14 +324,12 @@
       "derived_from": [
         "HANDOFF-20260823-CB0534"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m3-to-m4-v1",
       "expired": false,
       "id": "HANDOFF-20260823-88CF74",
       "kind": "handoff",
-      "next_actions": [
-        "Integrate M3, create the M4 branch and implement formula/XLSX acceptance with automated tests."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-88cf74-m3-completion-to-m4-formula-and-xlsx-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -343,12 +341,12 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "a4765d11d4c5e588b6cc2530130187fabe8085ebb4357ae65bb761c69fa62ebb",
+      "sha256": "40d86b62a78c5942a5abe2d68f8a200d068dfc93cb20ff8dcbf8f30c5d262e45",
       "sources": [
         "RPT-20260823-E99D5D",
         "PLAN-20260823-9B6D1E"
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips.",
       "supersedes": [
         "HANDOFF-20260823-CB0534"
@@ -363,7 +361,7 @@
       "tier": "short",
       "title": "M3 completion to M4 formula and XLSX handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:10:58Z",
+      "updated_at": "2026-08-23T20:42:56Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -550,6 +548,57 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T20:42:52Z",
+      "derived_from": [
+        "HANDOFF-20260823-88CF74"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m4-to-m5-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-E37206",
+      "kind": "handoff",
+      "next_actions": [
+        "Integrate M4, create the M5 feature branch and complete deterministic build/export acceptance."
+      ],
+      "path": "short/handoffs/handoff-20260823-e37206-m4-completion-to-m5-deterministic-build-and-export-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "2194cabfa581158c6505a050ad1f9b54230ea958fbf17987822291715d0df070",
+      "sources": [
+        "RPT-20260823-38DC17",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "active",
+      "summary": "M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5.",
+      "supersedes": [
+        "HANDOFF-20260823-88CF74"
+      ],
+      "tags": [
+        "build",
+        "deterministic",
+        "export",
+        "handoff",
+        "m5"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M4 completion to M5 deterministic build and export handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:42:52Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:44:16Z",
       "derived_from": [],
       "effective_status": "active",
@@ -644,7 +693,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Integrate completed M3, then implement and verify M4 formula and XLSX capabilities."
+        "Integrate completed M4, then implement and verify M5 deterministic build/export capabilities."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -660,17 +709,18 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "0a4b718f442d976d75626bca20587c1440562a39b99f39abc82101850a5f4792",
+      "sha256": "904054362bb9eed33e09936177e348786676ac24f6700179817a29295f976eb3",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
         "RPT-20260823-FE85CD",
         "RPT-20260823-118D95",
         "RPT-20260823-CA61E0",
-        "RPT-20260823-E99D5D"
+        "RPT-20260823-E99D5D",
+        "RPT-20260823-38DC17"
       ],
       "status": "active",
-      "summary": "M0-M3 are complete; M4-M8 remain pending under the free automated local gate.",
+      "summary": "M0-M4 are complete; M5-M8 remain pending under the free automated local gate.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -683,7 +733,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:11:04Z",
+      "updated_at": "2026-08-23T20:42:56Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -697,7 +747,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Integrate completed M3 and begin M4 formula/XLSX implementation."
+        "Integrate completed M4 and begin M5 deterministic build/export implementation."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -706,7 +756,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "e4bb5bc7037939e76547a231591f94db57735dc6edd43d71255e5789edd33564",
+      "sha256": "cbf3bd79d0cf000de898c0994234e318a875dc46717b7494dddc9d7d1ae68062",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -717,7 +767,8 @@
         "RPT-20260823-FE85CD",
         "RPT-20260823-118D95",
         "RPT-20260823-CA61E0",
-        "RPT-20260823-E99D5D"
+        "RPT-20260823-E99D5D",
+        "RPT-20260823-38DC17"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -730,7 +781,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:11:04Z",
+      "updated_at": "2026-08-23T20:42:56Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -783,6 +834,56 @@
       "title": "M1 closure, M2 completion, and M3 progress checkpoint",
       "type_version": 1,
       "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:42:40Z",
+      "derived_from": [
+        "RPT-20260823-E99D5D"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m4-formula-xlsx-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-38DC17",
+      "kind": "report",
+      "next_actions": [
+        "Integrate M4 and begin M5 deterministic build/export acceptance."
+      ],
+      "path": "short/reports/rpt-20260823-38dc17-m4-formula-and-xlsx-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-formula",
+        "crates/datahub-persistence-pg",
+        "crates/datahub-xlsx",
+        "migrations/0005_formulas_xlsx.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "0712237f4b7eac4227d677a1f2b7270b7336002e196eff6dabd7d1ee77119a09",
+      "sources": [
+        "Main-agent completion delta for feature/m4-formula-xlsx on 2026-08-24.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 26 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M4 FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL commits are implemented and fully verified.",
+      "supersedes": [],
+      "tags": [
+        "formula",
+        "m4",
+        "postgresql",
+        "wasmtime",
+        "xlsx"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M4 formula and XLSX completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:42:40Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1067,9 +1168,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Integrate feature/m3-grid-editing into develop under the free local quality policy.",
-        "Implement the M4 FieldId formula AST, dependency graph, cycle diagnostics and Native/WASM parity.",
-        "Implement cached-value-only XLSX template/export/import preview, diff and atomic commit with automated round trips."
+        "Integrate feature/m4-formula-xlsx into develop under the free local quality policy.",
+        "Complete M5 deterministic builds pinned to immutable revisions and target inputs.",
+        "Complete and verify Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact generation."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -1078,17 +1179,18 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "9b0807eddb5790576b57fc24ae586574b376a443ac9e96462a2c2adb2118341d",
+      "sha256": "7f341b2b27fdcad7489e9f8baaa2756740d4b9d342387f5ce98d1f96b86d9c5a",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
         "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
         "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
         "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
-        "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74."
+        "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
+        "RPT-20260823-38DC17 and HANDOFF-20260823-E37206."
       ],
       "status": "active",
-      "summary": "M0-M3 are complete and fully verified; the active full-v1 task advances to pending M4 formula/XLSX work, with M5-M8 also pending.",
+      "summary": "M0-M4 are complete and fully verified; the active full-v1 task advances to M5 deterministic build/export work, with M5-M8 pending.",
       "supersedes": [],
       "tags": [
         "active",
@@ -1101,7 +1203,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:11:04Z",
+      "updated_at": "2026-08-23T20:42:56Z",
       "valid_as_of": "2026-08-24"
     },
     {
