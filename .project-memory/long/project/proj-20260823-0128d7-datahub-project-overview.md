@@ -8,7 +8,7 @@
   "id": "PROJ-20260823-0128D7",
   "kind": "project",
   "next_actions": [
-    "After the user clears the GitHub billing lock, rerun PR #1 checks and verify automatic squash merge into develop."
+    "Transition M0 to the free local gate, integrate it into develop, then execute the full v1 milestone plan."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -20,7 +20,9 @@
     "User instructions in the DataHub planning conversation on 2026-08-24.",
     "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
     "RPT-20260823-44414F",
-    "RPT-20260823-49833C"
+    "RPT-20260823-49833C",
+    "DEC-20260823-C69FFA",
+    "TASK-20260823-2A43C1"
   ],
   "status": "active",
   "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -33,7 +35,7 @@
   "tier": "long",
   "title": "DataHub project overview",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:48:21Z",
+  "updated_at": "2026-08-23T18:53:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -46,7 +48,7 @@ DataHub is a Docker-oriented Rust game configuration management and compilation 
 
 ## Current State
 
-The public repository exists at https://github.com/ting-aaa/DataHub. M0 commit 66d7b8e is pushed and PR #1 is open to develop with protected automatic squash merge enabled. Local validation passed, but GitHub did not start the required jobs because the user account is billing-locked; the merge remains pending.
+The public repository exists at https://github.com/ting-aaa/DataHub and the Docker-first M0 baseline is implemented and locally verified. The user canceled all payment-dependent workflow requirements. Active work is now full DataHub v1 implementation under TASK-20260823-2A43C1 and PLAN-20260823-9B6D1E, using free local/Docker automated gates.
 
 ## Product Boundaries
 

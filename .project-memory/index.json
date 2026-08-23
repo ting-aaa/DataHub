@@ -1,13 +1,13 @@
 {
-  "active_task_id": "TASK-20260823-9C0927",
+  "active_task_id": "TASK-20260823-2A43C1",
   "counts": {
     "archive": 0,
-    "long": 6,
-    "short": 7,
+    "long": 7,
+    "short": 10,
     "temp": 0
   },
-  "generated_at": "2026-08-23T18:48:58Z",
-  "generation": 18,
+  "generated_at": "2026-08-23T18:54:26Z",
+  "generation": 23,
   "project_name": "DataHub",
   "records": [
     {
@@ -59,14 +59,12 @@
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:09Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-bootstrap-github-gitflow-policy-v1",
       "expired": false,
       "id": "DEC-20260823-9EC766",
       "kind": "decision",
-      "next_actions": [
-        "After the user clears the GitHub billing lock, rerun required PR checks and let automatic squash merge complete."
-      ],
+      "next_actions": [],
       "path": "long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md",
       "review_after": "",
       "schema_version": 1,
@@ -75,14 +73,14 @@
         ".github"
       ],
       "sensitivity": "internal",
-      "sha256": "321a8c477b15fb74a303f8c16c6f50740f322162f2a26d5b9f4a15dcb5190b47",
+      "sha256": "e7f5bf752ba71b0ed802aef0708ca5c53247455cb2afc6c19f65a101132b7e6d",
       "sources": [
         "Explicit user-approved repository and branch policy in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command.",
         "git remote, branch, log, and ls-remote verification on 2026-08-24; RPT-20260823-44414F.",
         "Repository settings and protections verified by the main agent; PR #1 and RPT-20260823-49833C."
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "The public MIT repository ting-aaa/DataHub uses CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
       "supersedes": [],
       "tags": [
@@ -94,7 +92,7 @@
       "tier": "long",
       "title": "GitHub repository and GitFlow policy",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:21Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -134,6 +132,55 @@
       "title": "Initial DataHub platform and v1 capability choices",
       "type_version": 1,
       "updated_at": "2026-08-23T18:24:01Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:52:45Z",
+      "derived_from": [
+        "RPT-20260823-49833C"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-decision-free-local-quality-gates-v1",
+      "expired": false,
+      "id": "DEC-20260823-C69FFA",
+      "kind": "decision",
+      "next_actions": [
+        "Remove required GitHub status checks and auto-merge dependency, then encode the free local gate as repository commands."
+      ],
+      "path": "long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        ".",
+        ".github",
+        "deploy",
+        "tools"
+      ],
+      "sensitivity": "internal",
+      "sha256": "07aea5bfab260cda956989330814aecf531f65b0ec0d271ff16d9223eff3e728",
+      "sources": [
+        "Explicit user instruction on 2026-08-24 cancelling any workflow that requires payment and requiring full implementation with automated tests.",
+        "DEC-20260823-9EC766 and RPT-20260823-49833C document the superseded CI-gated GitHub Actions policy and billing lock."
+      ],
+      "status": "active",
+      "summary": "DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed.",
+      "supersedes": [
+        "DEC-20260823-9EC766"
+      ],
+      "tags": [
+        "decision",
+        "docker",
+        "gitflow",
+        "local-ci",
+        "no-paid-services"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "Free local Docker-first quality gate and GitFlow policy",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:52:45Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -181,24 +228,19 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "External GitHub billing/account lock prevents Actions jobs from starting."
-      ],
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:48:18Z",
       "derived_from": [
         "HANDOFF-20260823-D2DC12",
         "RPT-20260823-44414F"
       ],
-      "effective_status": "blocked",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m0-github-billing-block-v1",
       "expired": false,
       "id": "HANDOFF-20260823-545AD6",
       "kind": "handoff",
-      "next_actions": [
-        "User resolves the GitHub billing/account lock.",
-        "Rerun required checks, allow auto squash merge, and verify remote branches."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-545ad6-m0-github-billing-blocked-integration-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -206,11 +248,11 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "71047a541462db3b42103e78d67e488e8fd39316d5095005f150538dfdd25f09",
+      "sha256": "a351b6722de4748d0a08e158e114d1185b7a3e97dbc86b072c4d87bcfef51aff",
       "sources": [
         "RPT-20260823-49833C"
       ],
-      "status": "blocked",
+      "status": "superseded",
       "summary": "PR #1 is ready for protected automatic squash merge, but the user must clear the GitHub billing lock before required CI jobs can run.",
       "supersedes": [
         "HANDOFF-20260823-D2DC12"
@@ -225,7 +267,7 @@
       "tier": "short",
       "title": "M0 GitHub billing-blocked integration handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:18Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -274,6 +316,53 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T18:53:25Z",
+      "derived_from": [
+        "HANDOFF-20260823-545AD6",
+        "TASK-20260823-9C0927"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-full-v1-local-gates-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-D301EA",
+      "kind": "handoff",
+      "next_actions": [
+        "Remove paid GitHub gate dependencies and run the local M0 quality gate.",
+        "Integrate M0 into develop and begin M1 domain-kernel implementation."
+      ],
+      "path": "short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "6cb8922c29733bd17ac0d8302ffa5bc5d58c2617c896bb2118b1513280be288f",
+      "sources": [
+        "Explicit user scope change on 2026-08-24.",
+        "DEC-20260823-C69FFA, TASK-20260823-2A43C1, and PLAN-20260823-9B6D1E."
+      ],
+      "status": "active",
+      "summary": "The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work.",
+      "supersedes": [
+        "HANDOFF-20260823-545AD6"
+      ],
+      "tags": [
+        "docker",
+        "handoff",
+        "local-ci",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "Full DataHub v1 implementation handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:53:25Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:44:16Z",
       "derived_from": [],
       "effective_status": "active",
@@ -316,20 +405,16 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "External GitHub billing/account lock prevents required Actions jobs from starting."
-      ],
+      "blockers": [],
       "confidence": "high",
       "created_at": "2026-08-23T18:24:30Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-plan-m0-docker-foundation-v1",
       "expired": false,
       "id": "PLAN-20260823-686A1E",
       "kind": "plan",
-      "next_actions": [
-        "User clears the billing lock; rerun required checks; allow auto squash merge; verify develop and feature-branch deletion."
-      ],
+      "next_actions": [],
       "path": "short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -337,15 +422,15 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "0782a4fe36c37a2fba234eab674f164ac3d22b5c9f5f1943830cb1ad2510b532",
+      "sha256": "bdde66e37888d061eb1281a9634cda50936fb2b62956ad7a21748b6075f9f204",
       "sources": [
         "Accepted DataHub development plans and Docker deployment instruction from the user on 2026-08-24.",
         "TASK-20260823-9C0927",
         "RPT-20260823-44414F",
         "RPT-20260823-49833C"
       ],
-      "status": "active",
-      "summary": "M0 is pushed and PR #1 is configured for protected auto squash merge; completion waits on the external GitHub billing lock and CI rerun.",
+      "status": "completed",
+      "summary": "The M0 Docker-first implementation and local verification completed; the canceled paid-CI integration tail is replaced by PLAN-20260823-9B6D1E.",
       "supersedes": [],
       "tags": [
         "docker",
@@ -356,7 +441,58 @@
       "tier": "short",
       "title": "M0 Docker-first implementation plan",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:21Z",
+      "updated_at": "2026-08-23T18:53:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "high",
+      "created_at": "2026-08-23T18:53:11Z",
+      "derived_from": [
+        "PLAN-20260823-686A1E"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-plan-full-v1-local-automation-v1",
+      "expired": false,
+      "id": "PLAN-20260823-9B6D1E",
+      "kind": "plan",
+      "next_actions": [
+        "Execute M0 transition, then begin M1 domain and compilation kernel."
+      ],
+      "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "deploy",
+        "migrations",
+        "plugins",
+        "tests",
+        "tools",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "7974f33ae02ed84c8d0cd2a335016611287f06ea5dd834b0474de79522f37d11",
+      "sources": [
+        "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
+        "TASK-20260823-2A43C1 and DEC-20260823-C69FFA."
+      ],
+      "status": "active",
+      "summary": "Deliver M0 transition and M1-M8 product milestones, each gated by automated local Rust, Vue, PostgreSQL, Docker, integration and acceptance tests.",
+      "supersedes": [],
+      "tags": [
+        "automated-testing",
+        "docker",
+        "local-ci",
+        "plan",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "DataHub v1 milestone plan with free local automation",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:53:11Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -370,7 +506,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "After the user clears the GitHub billing lock, rerun PR #1 checks and verify automatic squash merge into develop."
+        "Transition M0 to the free local gate, integrate it into develop, then execute the full v1 milestone plan."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -379,12 +515,14 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "9050afb75de5be5e37e245e3f56340a23949c4f28587691e101b59b5e6fefd17",
+      "sha256": "66bee688d3322c6884dc5ee570a34c8dbee3eeb2acd9d6455b6a567d32e6e020",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
         "RPT-20260823-44414F",
-        "RPT-20260823-49833C"
+        "RPT-20260823-49833C",
+        "DEC-20260823-C69FFA",
+        "TASK-20260823-2A43C1"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -397,7 +535,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:21Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -444,22 +582,16 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub Actions runners will not start while the user account is locked due to a billing issue."
-      ],
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:48:08Z",
       "derived_from": [],
-      "effective_status": "blocked",
+      "effective_status": "superseded",
       "event_id": "datahub-report-m0-github-billing-block-v1",
       "expired": false,
       "id": "RPT-20260823-49833C",
       "kind": "report",
-      "next_actions": [
-        "User resolves the GitHub billing/account lock.",
-        "Rerun failed jobs and let CI-gated auto squash merge complete.",
-        "Verify origin/develop and deletion of origin/feature/m0-foundation."
-      ],
+      "next_actions": [],
       "path": "short/reports/rpt-20260823-49833c-m0-github-integration-blocked-by-account-billing-lock.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -468,13 +600,13 @@
         ".github"
       ],
       "sensitivity": "internal",
-      "sha256": "09dc6e9d86cfbf8f3b16de6037c0d7280050669a907e429de10579955b970178",
+      "sha256": "4d4524d090fc3519af9a8bdce27058fab5c283f2ec46dbd57fd2e2acee327d7a",
       "sources": [
         "Main-agent GitHub integration delta for TASK-20260823-9C0927 on 2026-08-24.",
         "https://github.com/ting-aaa/DataHub/pull/1: open PR from feature/m0-foundation to develop at 66d7b8e with auto-merge squash enabled.",
         "https://github.com/ting-aaa/DataHub/actions/runs/32659106075: Rust and Web annotations state jobs were not started because the account is locked due to a billing issue; Docker smoke skipped."
       ],
-      "status": "blocked",
+      "status": "superseded",
       "summary": "Commit 66d7b8e and PR #1 are ready with protected CI-gated auto squash merge, but GitHub Actions cannot start while the user account is billing-locked.",
       "supersedes": [],
       "tags": [
@@ -487,7 +619,7 @@
       "tier": "short",
       "title": "M0 GitHub integration blocked by account billing lock",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:08Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -510,11 +642,12 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "437e4cef9129b9c72e6d021549e38bdcb200161fd75eb215099a88723a1bd17d",
+      "sha256": "f3c174a294f8860e6419a70891a22a51616f3aff0da33f9266b5c64c6a3c7a21",
       "sources": [
         "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
         "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment.",
-        "compose.yaml, deploy/docker, .github/workflows/ci.yml, and RPT-20260823-44414F."
+        "compose.yaml, deploy/docker, .github/workflows/ci.yml, and RPT-20260823-44414F.",
+        "DEC-20260823-C69FFA"
       ],
       "status": "active",
       "summary": "Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification.",
@@ -528,26 +661,65 @@
       "tier": "long",
       "title": "DataHub development and deployment standards",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:44:19Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub Actions jobs cannot start while the user account is locked due to a billing issue."
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:52:55Z",
+      "derived_from": [
+        "TASK-20260823-9C0927"
       ],
+      "effective_status": "active",
+      "event_id": "datahub-task-full-v1-local-gates-v1",
+      "expired": false,
+      "id": "TASK-20260823-2A43C1",
+      "kind": "task",
+      "next_actions": [
+        "Replace paid GitHub status/auto-merge requirements and integrate the verified M0 baseline under the local gate.",
+        "Start M1 domain-kernel implementation with automated unit and property tests."
+      ],
+      "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "57c0a5e840c0df2cf35c096b759f7a895d85fa153145047f488575bd215c214a",
+      "sources": [
+        "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
+        "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA."
+      ],
+      "status": "active",
+      "summary": "Implement and verify the full DataHub v1 product through Docker-first milestone delivery and free local automated quality gates.",
+      "supersedes": [],
+      "tags": [
+        "active",
+        "automated-testing",
+        "docker",
+        "local-ci",
+        "v1"
+      ],
+      "task_id": "",
+      "tier": "short",
+      "title": "Implement complete DataHub v1 with free automated gates",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:52:55Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:19Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-task-m0-foundation-v1",
       "expired": false,
       "id": "TASK-20260823-9C0927",
       "kind": "task",
-      "next_actions": [
-        "User resolves the GitHub billing/account lock.",
-        "Rerun PR #1 Rust checks, Web checks, and Docker smoke jobs.",
-        "Let auto squash merge complete, then verify origin/develop and deletion of origin/feature/m0-foundation."
-      ],
+      "next_actions": [],
       "path": "short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -555,7 +727,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "7bec83fc76dc7cf7841171a0825ccf07ba86ab233b7e779f0e71f7a0e947b433",
+      "sha256": "5e3c0fcc704b1341cb76416d2f4234147066869755b96bf8e030179bfca5a0c8",
       "sources": [
         "Current task assigned by the user and main agent on 2026-08-24.",
         "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection.",
@@ -564,8 +736,8 @@
         "RPT-20260823-49833C",
         "HANDOFF-20260823-545AD6"
       ],
-      "status": "active",
-      "summary": "M0 commit 66d7b8e and PR #1 are ready for protected auto squash merge, but GitHub Actions is blocked by the user account billing lock.",
+      "status": "completed",
+      "summary": "The Docker-first M0 foundation and local verification are complete; the remaining paid-CI integration workflow was canceled by user direction and moved into the full-v1 transition plan.",
       "supersedes": [],
       "tags": [
         "active",
@@ -576,7 +748,7 @@
       "tier": "short",
       "title": "Bootstrap M0 Docker-first DataHub foundation",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:48:21Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     }
   ],

@@ -20,6 +20,16 @@ Stop services without deleting PostgreSQL data:
 docker compose down
 ```
 
+Run the complete local quality gate before merging a branch:
+
+```powershell
+pwsh -NoProfile -File scripts/quality-gate.ps1
+```
+
+The gate runs Rust and web checks, builds an isolated Docker stack on alternate
+loopback ports, verifies HTTP and SQL migrations, and proves PostgreSQL volume
+persistence. It does not require a paid CI service.
+
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.
 

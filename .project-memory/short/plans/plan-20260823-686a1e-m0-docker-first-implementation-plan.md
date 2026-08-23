@@ -1,17 +1,13 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "External GitHub billing/account lock prevents required Actions jobs from starting."
-  ],
+  "blockers": [],
   "confidence": "high",
   "created_at": "2026-08-23T18:24:30Z",
   "derived_from": [],
   "event_id": "datahub-plan-m0-docker-foundation-v1",
   "id": "PLAN-20260823-686A1E",
   "kind": "plan",
-  "next_actions": [
-    "User clears the billing lock; rerun required checks; allow auto squash merge; verify develop and feature-branch deletion."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -24,8 +20,8 @@
     "RPT-20260823-44414F",
     "RPT-20260823-49833C"
   ],
-  "status": "active",
-  "summary": "M0 is pushed and PR #1 is configured for protected auto squash merge; completion waits on the external GitHub billing lock and CI rerun.",
+  "status": "completed",
+  "summary": "The M0 Docker-first implementation and local verification completed; the canceled paid-CI integration tail is replaced by PLAN-20260823-9B6D1E.",
   "supersedes": [],
   "tags": [
     "docker",
@@ -36,7 +32,7 @@
   "tier": "short",
   "title": "M0 Docker-first implementation plan",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:48:21Z",
+  "updated_at": "2026-08-23T18:53:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -52,11 +48,10 @@
 - Commit 66d7b8e pushed to feature/m0-foundation; PR #1 opened to develop with auto squash merge enabled.
 - Repository merge settings and main/develop protection rules configured for strict required checks.
 
-## Active
+## Canceled Integration Tail
 
-- User resolves the GitHub billing/account lock.
-- Rerun Rust checks, Web checks, and Docker smoke for PR #1.
-- Let automatic squash merge complete; confirm origin/develop and deletion of origin/feature/m0-foundation.
+- Payment-dependent required GitHub checks and auto-merge completion were canceled by user direction.
+- M0 manual integration under the free local gate is the first step of PLAN-20260823-9B6D1E.
 
 ## Deferred Product Work
 

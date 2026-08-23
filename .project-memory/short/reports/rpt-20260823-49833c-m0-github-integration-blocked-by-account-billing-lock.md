@@ -1,19 +1,13 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "GitHub Actions runners will not start while the user account is locked due to a billing issue."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:48:08Z",
   "derived_from": [],
   "event_id": "datahub-report-m0-github-billing-block-v1",
   "id": "RPT-20260823-49833C",
   "kind": "report",
-  "next_actions": [
-    "User resolves the GitHub billing/account lock.",
-    "Rerun failed jobs and let CI-gated auto squash merge complete.",
-    "Verify origin/develop and deletion of origin/feature/m0-foundation."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -26,7 +20,7 @@
     "https://github.com/ting-aaa/DataHub/pull/1: open PR from feature/m0-foundation to develop at 66d7b8e with auto-merge squash enabled.",
     "https://github.com/ting-aaa/DataHub/actions/runs/32659106075: Rust and Web annotations state jobs were not started because the account is locked due to a billing issue; Docker smoke skipped."
   ],
-  "status": "blocked",
+  "status": "superseded",
   "summary": "Commit 66d7b8e and PR #1 are ready with protected CI-gated auto squash merge, but GitHub Actions cannot start while the user account is billing-locked.",
   "supersedes": [],
   "tags": [
@@ -39,7 +33,7 @@
   "tier": "short",
   "title": "M0 GitHub integration blocked by account billing lock",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:48:08Z",
+  "updated_at": "2026-08-23T18:53:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -63,3 +57,7 @@ The local Rust, Vue, Docker Compose, endpoint, migration, and persistence checks
 ## Recovery
 
 The user must resolve the GitHub billing/account lock. Then rerun the failed jobs. If all required checks pass, allow automatic squash merge to complete; verify origin/develop contains the squashed M0 change and origin/feature/m0-foundation is deleted.
+
+## Resolution
+
+The user canceled every payment-dependent workflow. DEC-20260823-C69FFA replaces the required remote-check path with free local/Docker automation; the billing lock is no longer an active project blocker.

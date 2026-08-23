@@ -1,19 +1,13 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "GitHub Actions jobs cannot start while the user account is locked due to a billing issue."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:24:19Z",
   "derived_from": [],
   "event_id": "datahub-task-m0-foundation-v1",
   "id": "TASK-20260823-9C0927",
   "kind": "task",
-  "next_actions": [
-    "User resolves the GitHub billing/account lock.",
-    "Rerun PR #1 Rust checks, Web checks, and Docker smoke jobs.",
-    "Let auto squash merge complete, then verify origin/develop and deletion of origin/feature/m0-foundation."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -28,8 +22,8 @@
     "RPT-20260823-49833C",
     "HANDOFF-20260823-545AD6"
   ],
-  "status": "active",
-  "summary": "M0 commit 66d7b8e and PR #1 are ready for protected auto squash merge, but GitHub Actions is blocked by the user account billing lock.",
+  "status": "completed",
+  "summary": "The Docker-first M0 foundation and local verification are complete; the remaining paid-CI integration workflow was canceled by user direction and moved into the full-v1 transition plan.",
   "supersedes": [],
   "tags": [
     "active",
@@ -40,7 +34,7 @@
   "tier": "short",
   "title": "Bootstrap M0 Docker-first DataHub foundation",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:48:21Z",
+  "updated_at": "2026-08-23T18:53:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -55,6 +49,6 @@ Deliver the verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the 
 
 The public remote, main/develop branches, Rust and Vue workspaces, PostgreSQL migration, Docker images, Compose stack, health endpoints, and GitHub Actions workflow exist. Local Rust, frontend, Compose, HTTP, migration, and persistence verification passed. Commit 66d7b8e is pushed and PR #1 is open with auto squash merge enabled.
 
-## Current Phase
+## Outcome
 
-Actions run 32659106075 did not execute Rust or Web steps because the user account is locked due to a billing issue; Docker smoke was skipped through dependencies. The task remains active until the user clears the lock, required checks pass, auto-merge completes, develop contains the squash result, and the feature branch is deleted.
+The M0 implementation and free local verification succeeded. The user canceled the remaining payment-dependent GitHub Actions and auto-merge completion path. Any M0 branch cleanup and manual integration now belongs to TASK-20260823-2A43C1 as the first v1 transition step.

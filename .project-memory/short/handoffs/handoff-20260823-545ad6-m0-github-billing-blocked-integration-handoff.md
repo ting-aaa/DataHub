@@ -1,8 +1,6 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "External GitHub billing/account lock prevents Actions jobs from starting."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:48:18Z",
   "derived_from": [
@@ -12,10 +10,7 @@
   "event_id": "datahub-handoff-m0-github-billing-block-v1",
   "id": "HANDOFF-20260823-545AD6",
   "kind": "handoff",
-  "next_actions": [
-    "User resolves the GitHub billing/account lock.",
-    "Rerun required checks, allow auto squash merge, and verify remote branches."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -25,7 +20,7 @@
   "sources": [
     "RPT-20260823-49833C"
   ],
-  "status": "blocked",
+  "status": "superseded",
   "summary": "PR #1 is ready for protected automatic squash merge, but the user must clear the GitHub billing lock before required CI jobs can run.",
   "supersedes": [
     "HANDOFF-20260823-D2DC12"
@@ -40,7 +35,7 @@
   "tier": "short",
   "title": "M0 GitHub billing-blocked integration handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:48:18Z",
+  "updated_at": "2026-08-23T18:53:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
