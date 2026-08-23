@@ -1,8 +1,6 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "GitHub CLI is unavailable in the current shell."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:44:32Z",
   "derived_from": [
@@ -12,10 +10,7 @@
   "event_id": "datahub-handoff-m0-local-to-github-v1",
   "id": "HANDOFF-20260823-D2DC12",
   "kind": "handoff",
-  "next_actions": [
-    "Commit and push feature/m0-foundation.",
-    "Open the PR, verify CI, and squash-merge into develop."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -26,7 +21,7 @@
     "RPT-20260823-44414F",
     "PIT-20260823-C6E3B6"
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "Local M0 implementation and verification are complete; commit, push, PR, CI, and squash merge into develop remain.",
   "supersedes": [
     "HANDOFF-20260823-323477"
@@ -40,7 +35,7 @@
   "tier": "short",
   "title": "M0 local foundation to GitHub integration handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:44:32Z",
+  "updated_at": "2026-08-23T18:48:21Z",
   "valid_as_of": "2026-08-24"
 }
 -->
