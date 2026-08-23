@@ -2,17 +2,17 @@
   "active_task_id": "TASK-20260823-9C0927",
   "counts": {
     "archive": 0,
-    "long": 5,
-    "short": 3,
+    "long": 6,
+    "short": 5,
     "temp": 0
   },
-  "generated_at": "2026-08-23T18:24:47Z",
-  "generation": 10,
+  "generated_at": "2026-08-23T18:45:55Z",
+  "generation": 15,
   "project_name": "DataHub",
   "records": [
     {
       "blockers": [],
-      "confidence": "high",
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:41Z",
       "derived_from": [],
       "effective_status": "active",
@@ -21,7 +21,7 @@
       "id": "ARCH-20260823-F3A201",
       "kind": "architecture",
       "next_actions": [
-        "Materialize the topology in the M0 Docker Compose and workspace foundation."
+        "Build product capabilities on the verified M0 service and deployment boundaries."
       ],
       "path": "long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md",
       "review_after": "",
@@ -33,13 +33,14 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "aa5a704348feb25ce635cf65856e87b665c34fc7c2a47601489ce9930c03048b",
+      "sha256": "c7b05f76c7a1ef899eb581c067e6ce263b42fdcd43a7f96c29ec64dfbba1d022",
       "sources": [
         "User instructions and accepted development plans in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24 found no product implementation, so this record describes the target architecture only."
+        "Repository audit on 2026-08-24 found no product implementation, so this record originally described the target architecture only.",
+        "compose.yaml, Cargo.toml, web/package.json, migrations/0001_bootstrap.sql, and RPT-20260823-44414F."
       ],
       "status": "active",
-      "summary": "DataHub targets a Docker Compose full-stack topology with Rust services, a Vue console, and PostgreSQL as the canonical store.",
+      "summary": "DataHub implements a Docker Compose full-stack boundary with Rust services, a Vue console, Nginx, and PostgreSQL as the canonical store.",
       "supersedes": [],
       "tags": [
         "architecture",
@@ -48,9 +49,9 @@
       ],
       "task_id": "",
       "tier": "long",
-      "title": "Docker-first DataHub target architecture",
+      "title": "Docker-first DataHub architecture",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:41Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -64,7 +65,7 @@
       "id": "DEC-20260823-9EC766",
       "kind": "decision",
       "next_actions": [
-        "Install and authenticate GitHub CLI, initialize Git, create the remote, and apply branch policy in M0."
+        "Complete feature/m0-foundation PR and CI-gated squash merge into develop, then apply remaining branch protections."
       ],
       "path": "long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md",
       "review_after": "",
@@ -74,13 +75,14 @@
         ".github"
       ],
       "sensitivity": "internal",
-      "sha256": "86a1964414c89dafb1a221d43da6df40bfd6868f09d267e2c4fa7d7a33ee6239",
+      "sha256": "c38a58810734205c2ad0faa4854fce8b04155bb4fa62fb51d746e18c16fdaaa7",
       "sources": [
         "Explicit user-approved repository and branch policy in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command."
+        "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command.",
+        "git remote, branch, log, and ls-remote verification on 2026-08-24; RPT-20260823-44414F."
       ],
       "status": "active",
-      "summary": "The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
+      "summary": "The public MIT repository ting-aaa/DataHub uses CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
       "supersedes": [],
       "tags": [
         "decision",
@@ -91,7 +93,7 @@
       "tier": "long",
       "title": "GitHub repository and GitFlow policy",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:09Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -134,9 +136,7 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub CLI and authenticated remote access are pending."
-      ],
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:41Z",
       "derived_from": [
@@ -146,14 +146,12 @@
         "DEC-20260823-A72203",
         "DEC-20260823-9EC766"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-bootstrap-to-m0-v1",
       "expired": false,
       "id": "HANDOFF-20260823-323477",
       "kind": "handoff",
-      "next_actions": [
-        "Begin M0 implementation with a task-specific context pack."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -161,13 +159,13 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "bfe1b79e081f2e6907bf6163559552d4173a7ca41312a1ffdb8e8015d34fcbb8",
+      "sha256": "fa5e6f6bca9d0d71d891429fb06e6694e7103aff7c39d7584fc66a66bd83bc9d",
       "sources": [
         "Repository and environment audit on 2026-08-24.",
         "TASK-20260823-9C0927",
         "PLAN-20260823-686A1E"
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending.",
       "supersedes": [],
       "tags": [
@@ -178,12 +176,104 @@
       "tier": "short",
       "title": "DataHub bootstrap handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:41Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
       "blockers": [
-        "Remote repository work requires GitHub CLI installation and authentication."
+        "GitHub CLI is unavailable in the current shell."
+      ],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:32Z",
+      "derived_from": [
+        "HANDOFF-20260823-323477",
+        "PLAN-20260823-686A1E"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m0-local-to-github-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-D2DC12",
+      "kind": "handoff",
+      "next_actions": [
+        "Commit and push feature/m0-foundation.",
+        "Open the PR, verify CI, and squash-merge into develop."
+      ],
+      "path": "short/handoffs/handoff-20260823-d2dc12-m0-local-foundation-to-github-integration-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "50f417d1e0f3df4bdf457a8797e6b6926300b6784f24a884c43ca220ddf0c27b",
+      "sources": [
+        "RPT-20260823-44414F",
+        "PIT-20260823-C6E3B6"
+      ],
+      "status": "active",
+      "summary": "Local M0 implementation and verification are complete; commit, push, PR, CI, and squash merge into develop remain.",
+      "supersedes": [
+        "HANDOFF-20260823-323477"
+      ],
+      "tags": [
+        "github",
+        "handoff",
+        "m0"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 local foundation to GitHub integration handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:44:32Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:16Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-pitfall-m0-docker-pnpm-v1",
+      "expired": false,
+      "id": "PIT-20260823-C6E3B6",
+      "kind": "pitfall",
+      "next_actions": [
+        "Preserve these constraints in Compose, CI smoke tests, and deployment documentation."
+      ],
+      "path": "long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "compose.yaml",
+        "deploy/docker",
+        "pnpm-workspace.yaml"
+      ],
+      "sensitivity": "internal",
+      "sha256": "f65c1efe3cf060414cf883b70c6c68041218d3cb8ba6f4c8cd2d73e7dc688837",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
+        "compose.yaml lines 5, 16, 66-68, 87-89, 113-115, and 136-141; pnpm-workspace.yaml lines 4-5."
+      ],
+      "status": "active",
+      "summary": "PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "nginx",
+        "pnpm",
+        "postgresql",
+        "powershell"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "long",
+      "title": "M0 Docker and pnpm bootstrap pitfalls",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:44:16Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "GitHub CLI is unavailable in the current shell; use an authenticated GitHub path for PR and merge operations."
       ],
       "confidence": "high",
       "created_at": "2026-08-23T18:24:30Z",
@@ -194,7 +284,7 @@
       "id": "PLAN-20260823-686A1E",
       "kind": "plan",
       "next_actions": [
-        "Implement steps in order on feature/m0-foundation and capture exact verification evidence."
+        "Commit and push feature/m0-foundation, open its PR to develop, verify CI, and squash-merge."
       ],
       "path": "short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md",
       "review_after": "2026-09-06",
@@ -203,13 +293,14 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "f646c5770473ee63e54ce75acc07f66bbf0ff4a0df96135e93665b8fe27b6302",
+      "sha256": "0a5cb3de62f1f1a5e96ad3a01af8fc1d3fc8ddb32573139765caaa820b26a0b8",
       "sources": [
         "Accepted DataHub development plans and Docker deployment instruction from the user on 2026-08-24.",
-        "TASK-20260823-9C0927"
+        "TASK-20260823-9C0927",
+        "RPT-20260823-44414F"
       ],
       "status": "active",
-      "summary": "Build and verify the complete M0 repository, Docker Compose application topology, PostgreSQL baseline, CI gates, and GitFlow integration.",
+      "summary": "M0 implementation and local verification are complete; only GitHub feature integration remains active.",
       "supersedes": [],
       "tags": [
         "docker",
@@ -220,7 +311,7 @@
       "tier": "short",
       "title": "M0 Docker-first implementation plan",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:30Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -234,7 +325,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Bootstrap the Docker-first M0 repository foundation."
+        "Complete the feature/m0-foundation pull request, CI, and squash merge into develop."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -243,10 +334,11 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "a7d8f5b1003338a6028057d7f1c6d65675c423194bc984b2a3ae4c118f305330",
+      "sha256": "3ebfa3952942f0dfc16c626fc504cd159d4cfd07e2efcb9c987a491cde9e7e8e",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository."
+        "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
+        "RPT-20260823-44414F"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -259,7 +351,50 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:32Z",
+      "updated_at": "2026-08-23T18:44:19Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "GitHub CLI is not installed in the current shell; PR and repository-policy automation may require installation or another authenticated GitHub path."
+      ],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:06Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-report-m0-local-foundation-verified-v1",
+      "expired": false,
+      "id": "RPT-20260823-44414F",
+      "kind": "report",
+      "next_actions": [
+        "Commit and push feature/m0-foundation.",
+        "Open the PR to develop, verify CI, and complete the approved squash merge."
+      ],
+      "path": "short/reports/rpt-20260823-44414f-m0-docker-foundation-implementation-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "db068a98a65ff107eb9e1200c1b4733abcb968856fc7c89da0d75299a5ff932d",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
+        "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query."
+      ],
+      "status": "active",
+      "summary": "The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "m0",
+        "verification"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 Docker foundation implementation checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:44:06Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -273,7 +408,7 @@
       "id": "STD-20260823-048D0D",
       "kind": "standard",
       "next_actions": [
-        "Encode these standards in repository documentation and CI during M0."
+        "Enforce these standards in future milestones and extend CI as product capabilities are added."
       ],
       "path": "long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md",
       "review_after": "",
@@ -282,10 +417,11 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "348e94a2051fe894c50a5c05d67ee36fea01e39949aaf27b105ae2113a19e88c",
+      "sha256": "437e4cef9129b9c72e6d021549e38bdcb200161fd75eb215099a88723a1bd17d",
       "sources": [
         "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
-        "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment."
+        "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment.",
+        "compose.yaml, deploy/docker, .github/workflows/ci.yml, and RPT-20260823-44414F."
       ],
       "status": "active",
       "summary": "Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification.",
@@ -299,12 +435,12 @@
       "tier": "long",
       "title": "DataHub development and deployment standards",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:51Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
       "blockers": [
-        "GitHub CLI is not installed; GitHub authentication and remote creation are pending."
+        "GitHub CLI is not installed in the current shell; PR and repository-policy automation require installation or another authenticated GitHub path."
       ],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:19Z",
@@ -315,8 +451,9 @@
       "id": "TASK-20260823-9C0927",
       "kind": "task",
       "next_actions": [
-        "Create the baseline repository files and Docker Compose topology.",
-        "Install/authenticate GitHub CLI, create ting-aaa/DataHub, and configure GitFlow branches and CI gates."
+        "Review, commit, and push the M0 files on feature/m0-foundation.",
+        "Open the pull request to develop and verify GitHub Actions.",
+        "Squash-merge after CI passes and verify origin/develop."
       ],
       "path": "short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md",
       "review_after": "2026-09-06",
@@ -325,13 +462,15 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "4912fc9dc84f6fd53d650910b806c12c9c1e5b1fc93637e0289ddd984d8cf0d7",
+      "sha256": "cbd5cdf7fb1211569446a4bb2e52ae5e74223a124738dfa50c2351f7f03746ec",
       "sources": [
         "Current task assigned by the user and main agent on 2026-08-24.",
-        "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection."
+        "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection.",
+        "RPT-20260823-44414F",
+        "HANDOFF-20260823-D2DC12"
       ],
       "status": "active",
-      "summary": "Initialize the repository and deliver a verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the approved GitFlow process.",
+      "summary": "The Docker-first M0 foundation is implemented and locally verified; GitHub PR, CI, and squash merge into develop remain.",
       "supersedes": [],
       "tags": [
         "active",
@@ -342,7 +481,7 @@
       "tier": "short",
       "title": "Bootstrap M0 Docker-first DataHub foundation",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:19Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     }
   ],

@@ -1,8 +1,6 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "GitHub CLI and authenticated remote access are pending."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:24:41Z",
   "derived_from": [
@@ -15,9 +13,7 @@
   "event_id": "datahub-handoff-bootstrap-to-m0-v1",
   "id": "HANDOFF-20260823-323477",
   "kind": "handoff",
-  "next_actions": [
-    "Begin M0 implementation with a task-specific context pack."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -29,7 +25,7 @@
     "TASK-20260823-9C0927",
     "PLAN-20260823-686A1E"
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending.",
   "supersedes": [],
   "tags": [
@@ -40,7 +36,7 @@
   "tier": "short",
   "title": "DataHub bootstrap handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:24:41Z",
+  "updated_at": "2026-08-23T18:44:19Z",
   "valid_as_of": "2026-08-24"
 }
 -->
