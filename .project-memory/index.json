@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 20,
+    "short": 22,
     "temp": 0
   },
-  "generated_at": "2026-08-23T20:43:30Z",
-  "generation": 38,
+  "generated_at": "2026-08-23T21:04:28Z",
+  "generation": 41,
   "project_name": "DataHub",
   "records": [
     {
@@ -552,14 +552,12 @@
       "derived_from": [
         "HANDOFF-20260823-88CF74"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m4-to-m5-v1",
       "expired": false,
       "id": "HANDOFF-20260823-E37206",
       "kind": "handoff",
-      "next_actions": [
-        "Integrate M4, create the M5 feature branch and complete deterministic build/export acceptance."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-e37206-m4-completion-to-m5-deterministic-build-and-export-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -572,12 +570,12 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "2194cabfa581158c6505a050ad1f9b54230ea958fbf17987822291715d0df070",
+      "sha256": "4682c1aa00c3405401f8ff5916c60598c9d69251203f4d1492a11b1c9db74ef8",
       "sources": [
         "RPT-20260823-38DC17",
         "PLAN-20260823-9B6D1E"
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5.",
       "supersedes": [
         "HANDOFF-20260823-88CF74"
@@ -593,7 +591,60 @@
       "tier": "short",
       "title": "M4 completion to M5 deterministic build and export handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:42:52Z",
+      "updated_at": "2026-08-23T21:03:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:03:24Z",
+      "derived_from": [
+        "HANDOFF-20260823-E37206"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m5-to-m6-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-F2BBAB",
+      "kind": "handoff",
+      "next_actions": [
+        "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
+      ],
+      "path": "short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-plugin-host",
+        "crates",
+        "deploy",
+        "plugins",
+        "scripts",
+        "tests"
+      ],
+      "sensitivity": "internal",
+      "sha256": "d025e5dbba7d43276307f89a4cf247683adc9f44a11540caef0648347d205b9b",
+      "sources": [
+        "RPT-20260823-EE0875",
+        "PLAN-20260823-9B6D1E",
+        "Git evidence: clean feature/m6-plugin-sandbox at 2aaf6c8."
+      ],
+      "status": "active",
+      "summary": "M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch.",
+      "supersedes": [
+        "HANDOFF-20260823-E37206"
+      ],
+      "tags": [
+        "handoff",
+        "m6",
+        "plugin",
+        "sandbox",
+        "wasmtime",
+        "wit"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M5 completion to M6 Wasmtime plugin platform handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:03:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -693,7 +744,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Integrate completed M4, then implement and verify M5 deterministic build/export capabilities."
+        "Implement and verify the M6 Wasmtime Component/WIT plugin platform and deny-by-default sandbox."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -709,7 +760,7 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "904054362bb9eed33e09936177e348786676ac24f6700179817a29295f976eb3",
+      "sha256": "dd32641453e6ea9ef1ba429eeebe0ef85cb0858bf874283e910aef1a857e4c4a",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
@@ -717,10 +768,11 @@
         "RPT-20260823-118D95",
         "RPT-20260823-CA61E0",
         "RPT-20260823-E99D5D",
-        "RPT-20260823-38DC17"
+        "RPT-20260823-38DC17",
+        "RPT-20260823-EE0875"
       ],
       "status": "active",
-      "summary": "M0-M4 are complete; M5-M8 remain pending under the free automated local gate.",
+      "summary": "M0-M5 are complete; M6-M8 remain pending under the free automated local gate.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -733,7 +785,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:42:56Z",
+      "updated_at": "2026-08-23T21:03:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -747,7 +799,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Integrate completed M4 and begin M5 deterministic build/export implementation."
+        "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -756,7 +808,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "cbf3bd79d0cf000de898c0994234e318a875dc46717b7494dddc9d7d1ae68062",
+      "sha256": "598afdbff1db8c19e3d21941beafca5bfdb56b1d0d469f325c9fa42d0ffdf5ba",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -768,7 +820,8 @@
         "RPT-20260823-118D95",
         "RPT-20260823-CA61E0",
         "RPT-20260823-E99D5D",
-        "RPT-20260823-38DC17"
+        "RPT-20260823-38DC17",
+        "RPT-20260823-EE0875"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -781,7 +834,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:42:56Z",
+      "updated_at": "2026-08-23T21:03:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1072,6 +1125,57 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T21:03:10Z",
+      "derived_from": [
+        "RPT-20260823-38DC17"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m5-deterministic-export-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-EE0875",
+      "kind": "report",
+      "next_actions": [
+        "Continue M6 Wasmtime Component/WIT plugin platform implementation on feature/m6-plugin-sandbox."
+      ],
+      "path": "short/reports/rpt-20260823-ee0875-m5-deterministic-build-and-export-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "README.md",
+        "apps/datahub-api",
+        "crates/datahub-export",
+        "crates/datahub-persistence-pg",
+        "docs/product/v1-plan.md",
+        "migrations/0006_deterministic_builds.sql",
+        "scripts/quality-gate.ps1"
+      ],
+      "sensitivity": "internal",
+      "sha256": "5ed68e2d18bd021ccf57891d45b0a8e87fd5941e8ce5017516f2eb5bdb0a82fb",
+      "sources": [
+        "Main-agent M5 completion delta and full local quality-gate result on 2026-08-24.",
+        "Git evidence: PR #5, feature commit 49a7f3e and squash commit 2aaf6c8; develop equals origin/develop.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 29 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M5 completes deterministic revision-pinned manifests and the Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact matrix, fully verified and merged to develop.",
+      "supersedes": [],
+      "tags": [
+        "build",
+        "deterministic",
+        "export",
+        "m5",
+        "protobuf"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M5 deterministic build and export completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:03:10Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T19:01:37Z",
       "derived_from": [],
       "effective_status": "superseded",
@@ -1168,9 +1272,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Integrate feature/m4-formula-xlsx into develop under the free local quality policy.",
-        "Complete M5 deterministic builds pinned to immutable revisions and target inputs.",
-        "Complete and verify Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact generation."
+        "Implement the M6 versioned WIT and Wasmtime Component plugin contract on feature/m6-plugin-sandbox.",
+        "Enforce deny-by-default plugin inputs, outputs, credentials, network and resource quotas.",
+        "Automate compiling example, version pinning, traversal, timeout, memory, fuel, quota and malformed-package acceptance."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -1179,7 +1283,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "7f341b2b27fdcad7489e9f8baaa2756740d4b9d342387f5ce98d1f96b86d9c5a",
+      "sha256": "a99b541f9be6efeb581cd84d50b3d3865ff774f66e04aeb8973c2da46386d21b",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
@@ -1187,10 +1291,11 @@
         "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
         "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
         "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
-        "RPT-20260823-38DC17 and HANDOFF-20260823-E37206."
+        "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
+        "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB."
       ],
       "status": "active",
-      "summary": "M0-M4 are complete and fully verified; the active full-v1 task advances to M5 deterministic build/export work, with M5-M8 pending.",
+      "summary": "M0-M5 are complete and fully verified; the active full-v1 task advances to the M6 Wasmtime Component/WIT plugin platform, with M6-M8 pending.",
       "supersedes": [],
       "tags": [
         "active",
@@ -1203,7 +1308,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T20:42:56Z",
+      "updated_at": "2026-08-23T21:03:29Z",
       "valid_as_of": "2026-08-24"
     },
     {

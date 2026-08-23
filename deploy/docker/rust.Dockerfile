@@ -6,6 +6,7 @@ COPY Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml ./
 COPY apps ./apps
 COPY crates ./crates
 COPY migrations ./migrations
+COPY wit ./wit
 
 RUN cargo build --locked --release --workspace --bins
 

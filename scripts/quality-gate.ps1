@@ -4,6 +4,7 @@ param()
 $ErrorActionPreference = 'Stop'
 $qualityProject = 'datahub-quality'
 $qualityRoot = Split-Path -Parent $PSScriptRoot
+$pluginTestRoot = $null
 
 function Invoke-Checked {
     param(
@@ -27,6 +28,62 @@ try {
     Invoke-Checked 'Rust tests' {
         cargo test --workspace --all-features -- --test-threads=2
     }
+
+    Write-Host '==> Wasmtime Component/WIT plugin sandbox tests'
+    Invoke-Checked 'Install Rust WebAssembly target' {
+        rustup target add wasm32-unknown-unknown --toolchain 1.96.0
+    }
+    Invoke-Checked 'Compile example WIT plugin' {
+        cargo build --manifest-path examples/datahub-echo-plugin/Cargo.toml `
+            --target wasm32-unknown-unknown --release
+    }
+    $pluginTestRoot = [IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetTempPath()) "datahub-plugin-$([guid]::NewGuid())"))
+    $pluginTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+    if (-not $pluginTestRoot.StartsWith($pluginTempRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Plugin test directory escaped the system temp root: $pluginTestRoot"
+    }
+    New-Item -ItemType Directory -Path $pluginTestRoot | Out-Null
+    $corePlugin = Join-Path $qualityRoot 'examples/datahub-echo-plugin/target/wasm32-unknown-unknown/release/datahub_echo_plugin.wasm'
+    $componentPlugin = Join-Path $pluginTestRoot 'plugin.wasm'
+    Invoke-Checked 'Encode example as a WebAssembly Component' {
+        cargo run --quiet -p datahub-plugin-host --example componentize -- $corePlugin $componentPlugin
+    }
+    $pluginHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $componentPlugin).Hash.ToLowerInvariant()
+    $pluginManifest = @"
+id = "echo-plugin"
+version = "1.0.0"
+api_version = "1.0.0"
+component = "plugin.wasm"
+sha256 = "$pluginHash"
+output_file = "echo.json"
+
+[capabilities]
+read_inputs = ["input/data.bin"]
+write_output_directory = "generated/echo"
+
+[limits]
+fuel = 10000000
+memory_bytes = 67108864
+timeout_ms = 500
+max_input_bytes = 1048576
+max_output_bytes = 1048576
+"@
+    Set-Content -LiteralPath (Join-Path $pluginTestRoot 'plugin.toml') -Value $pluginManifest -Encoding utf8
+    $pluginSmoke = cargo run --quiet -p datahub-plugin-host -- run-package $pluginTestRoot hello
+    if ($LASTEXITCODE -ne 0 -or $pluginSmoke -notmatch '^generated/echo/echo\.json ') {
+        throw "Example Component plugin failed: $pluginSmoke"
+    }
+    cargo run --quiet -p datahub-plugin-host -- run-package $pluginTestRoot oversize 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) { throw 'Plugin output quota did not stop oversized output' }
+    cargo run --quiet -p datahub-plugin-host -- run-package $pluginTestRoot memory 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) { throw 'Plugin memory quota did not stop excessive allocation' }
+    cargo run --quiet -p datahub-plugin-host -- run-package $pluginTestRoot spin 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) { throw 'Plugin fuel quota did not stop an infinite guest' }
+    $timeoutManifest = $pluginManifest -replace 'fuel = 10000000', 'fuel = 9000000000000000000'
+    $timeoutManifest = $timeoutManifest -replace 'timeout_ms = 500', 'timeout_ms = 10'
+    Set-Content -LiteralPath (Join-Path $pluginTestRoot 'plugin.toml') -Value $timeoutManifest -Encoding utf8
+    cargo run --quiet -p datahub-plugin-host -- run-package $pluginTestRoot spin 2>&1 | Out-Host
+    if ($LASTEXITCODE -eq 0) { throw 'Plugin wall-clock timeout did not stop an infinite guest' }
 
     Invoke-Checked 'Install web dependencies' { pnpm install --frozen-lockfile }
     Invoke-Checked 'Web linting' { pnpm web:lint }
@@ -565,6 +622,17 @@ finally {
         }
         else {
             Write-Warning "Refused to remove unexpected generated-code directory: $resolvedCompileRoot"
+        }
+    }
+    if ($null -ne $pluginTestRoot -and (Test-Path -LiteralPath $pluginTestRoot)) {
+        $resolvedPluginRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $pluginTestRoot).Path)
+        $resolvedTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+        if ($resolvedPluginRoot.StartsWith($resolvedTempRoot, [StringComparison]::OrdinalIgnoreCase) -and
+            (Split-Path -Leaf $resolvedPluginRoot).StartsWith('datahub-plugin-', [StringComparison]::Ordinal)) {
+            Remove-Item -LiteralPath $resolvedPluginRoot -Recurse -Force
+        }
+        else {
+            Write-Warning "Refused to remove unexpected plugin test directory: $resolvedPluginRoot"
         }
     }
     Pop-Location

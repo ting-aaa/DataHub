@@ -9,9 +9,7 @@
   "event_id": "datahub-handoff-m4-to-m5-v1",
   "id": "HANDOFF-20260823-E37206",
   "kind": "handoff",
-  "next_actions": [
-    "Integrate M4, create the M5 feature branch and complete deterministic build/export acceptance."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -27,7 +25,7 @@
     "RPT-20260823-38DC17",
     "PLAN-20260823-9B6D1E"
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5.",
   "supersedes": [
     "HANDOFF-20260823-88CF74"
@@ -43,7 +41,7 @@
   "tier": "short",
   "title": "M4 completion to M5 deterministic build and export handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T20:42:52Z",
+  "updated_at": "2026-08-23T21:03:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->

@@ -10,7 +10,9 @@ server-filtered VTable blocks with inline optimistic editing, deterministic
 Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifacts, revision-pinned
 build manifests with stable Protobuf wire IDs, stable FieldId formulas with
 Native/Wasmtime execution, stable-ID XLSX preview/atomic import, and
-transactional-outbox projection to PostgreSQL. Formula, XLSX, build, and sync
+transactional-outbox projection to PostgreSQL. A WIT Component plugin host adds
+hash-pinned exact-version installation with no ambient WASI/network access and
+bounded fuel, time, memory, input, and output. Formula, XLSX, build, and sync
 state is available through the web console and API.
 
 ## Run the stack
@@ -45,6 +47,7 @@ compiles generated Rust, C#, and TypeScript. It does not require a paid CI servi
 
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.
+Plugin authors can start with the [plugin development guide](docs/development/plugins.md).
 
 ## License
 

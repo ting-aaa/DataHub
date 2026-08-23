@@ -10,9 +10,9 @@
   "id": "TASK-20260823-2A43C1",
   "kind": "task",
   "next_actions": [
-    "Integrate feature/m4-formula-xlsx into develop under the free local quality policy.",
-    "Complete M5 deterministic builds pinned to immutable revisions and target inputs.",
-    "Complete and verify Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact generation."
+    "Implement the M6 versioned WIT and Wasmtime Component plugin contract on feature/m6-plugin-sandbox.",
+    "Enforce deny-by-default plugin inputs, outputs, credentials, network and resource quotas.",
+    "Automate compiling example, version pinning, traversal, timeout, memory, fuel, quota and malformed-package acceptance."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -27,10 +27,11 @@
     "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
     "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
     "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
-    "RPT-20260823-38DC17 and HANDOFF-20260823-E37206."
+    "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
+    "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB."
   ],
   "status": "active",
-  "summary": "M0-M4 are complete and fully verified; the active full-v1 task advances to M5 deterministic build/export work, with M5-M8 pending.",
+  "summary": "M0-M5 are complete and fully verified; the active full-v1 task advances to the M6 Wasmtime Component/WIT plugin platform, with M6-M8 pending.",
   "supersedes": [],
   "tags": [
     "active",
@@ -43,7 +44,7 @@
   "tier": "short",
   "title": "Implement complete DataHub v1 with free automated gates",
   "type_version": 1,
-  "updated_at": "2026-08-23T20:42:56Z",
+  "updated_at": "2026-08-23T21:03:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -64,7 +65,7 @@ Transition the existing M0 branch away from required GitHub checks and billing-d
 
 ## Progress
 
-M0-M4 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5-M8 remain pending.
+M0-M5 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5 completes deterministic revision-pinned manifests, the Rust/C#/TypeScript and JSON/CSV/XML/BSON/Protobuf/Lua matrix, stable Protobuf tags and generated-code compilation. M6-M8 remain pending.
 
 ## Completion Criteria
 
