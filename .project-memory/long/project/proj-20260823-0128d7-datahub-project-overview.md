@@ -8,7 +8,7 @@
   "id": "PROJ-20260823-0128D7",
   "kind": "project",
   "next_actions": [
-    "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
+    "Integrate verified M7 and complete M8 hardening, backup/recovery and full clean-environment acceptance."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -28,7 +28,9 @@
     "RPT-20260823-CA61E0",
     "RPT-20260823-E99D5D",
     "RPT-20260823-38DC17",
-    "RPT-20260823-EE0875"
+    "RPT-20260823-EE0875",
+    "RPT-20260823-1A4BFC",
+    "RPT-20260823-9F7FDD"
   ],
   "status": "active",
   "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -41,7 +43,7 @@
   "tier": "long",
   "title": "DataHub project overview",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:03:29Z",
+  "updated_at": "2026-08-23T21:42:36Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -54,7 +56,7 @@ DataHub is a Docker-oriented Rust game configuration management and compilation 
 
 ## Current State
 
-The public repository exists at https://github.com/ting-aaa/DataHub. M0-M5 are complete on develop at 2aaf6c8. The free local/Docker gate passes 29 Rust tests, 10 Web tests, six migrations, five application images and end-to-end persistence. M5 adds deterministic revision-pinned manifests, the complete built-in artifact matrix and actual generated-code compilation. M6-M8 remain pending.
+The public repository exists at https://github.com/ting-aaa/DataHub. M0-M7 are functionally complete; M7 is verified in the uncommitted feature/m7-release-sync working tree based on develop 636a131. The free local/Docker gate passes 35 Rust tests, 10 Web tests, seven migrations, five images, plugin adversarial checks, projection recovery, immutable release rollback and restart persistence. M8 hardening and final acceptance remain pending.
 
 ## Product Boundaries
 

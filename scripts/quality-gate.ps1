@@ -530,7 +530,7 @@ serde_json = "1"
         }
         Start-Sleep -Seconds 1
     }
-    if ($sync.pending -ne 0 -or $sync.failed -ne 0 -or
+    if ($sync.pending -ne 0 -or $sync.retrying -ne 0 -or $sync.dead_lettered -ne 0 -or
         $sync.projected_schemas -ne 1 -or $sync.projected_rows -ne 2) {
         throw "Outbox projection did not converge: $($sync | ConvertTo-Json -Compress)"
     }
@@ -539,6 +539,129 @@ serde_json = "1"
         'SELECT COUNT(*) FROM datahub_projection_rows p JOIN datahub_config_rows r ON r.id = p.row_id WHERE p.source_version = r.version;'
     if ($LASTEXITCODE -ne 0 -or [int]$currentProjectedRows.Trim() -ne 2) {
         throw "Formula/XLSX row events did not update the current projection: $currentProjectedRows"
+    }
+
+    Write-Host '==> Projection DDL approval, retry/dead-letter, checkpoint, resync, release, and rollback tests'
+    $initialPlan = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/projection-plans" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ schema_id = $schemaId } | ConvertTo-Json)
+    if ($initialPlan.destructive -or $initialPlan.operations.Count -ne 1) {
+        throw 'Initial PostgreSQL DDL plan was not a compatible CREATE TABLE operation'
+    }
+    $appliedInitialPlan = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/projection-plans/$($initialPlan.id)/apply" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    if ($appliedInitialPlan.status -ne 'applied') { throw 'Compatible DDL plan was not applied' }
+
+    $schemaDefinition.fields = @($schemaDefinition.fields | Where-Object { $_.id -ne $serverFieldId })
+    $destructiveSchema = Invoke-RestMethod -Method Put `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ definition = $schemaDefinition; expected_version = 2 } | ConvertTo-Json -Depth 20)
+    $destructivePlan = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/projection-plans" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ schema_id = $schemaId } | ConvertTo-Json)
+    if (-not $destructivePlan.destructive) { throw 'Removed field did not produce destructive DDL' }
+    $unapprovedPlanStatus = 0
+    try {
+        Invoke-RestMethod -Method Post `
+            -Uri "$apiRoot/projects/$($project.id)/projection-plans/$($destructivePlan.id)/apply" `
+            -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    }
+    catch { $unapprovedPlanStatus = [int]$_.Exception.Response.StatusCode }
+    if ($unapprovedPlanStatus -ne 409) {
+        throw "Unapproved destructive DDL returned HTTP $unapprovedPlanStatus instead of 409"
+    }
+    Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/projection-plans/$($destructivePlan.id)/approve" `
+        -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    $appliedDestructivePlan = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/projection-plans/$($destructivePlan.id)/apply" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    if ($appliedDestructivePlan.status -ne 'applied') { throw 'Approved destructive DDL was not applied' }
+
+    $poisonId = [guid]::NewGuid().ToString()
+    $missingAggregateId = [guid]::NewGuid().ToString()
+    $poisonKey = "quality-poison-$poisonId"
+    Invoke-Checked 'Insert retryable poison outbox event' {
+        docker compose -p $qualityProject exec -T postgres psql `
+            -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 `
+            -c "INSERT INTO datahub_outbox_events (id, project_id, event_type, aggregate_type, aggregate_id, payload, idempotency_key) VALUES ('$poisonId', '$($project.id)', 'schema.saved', 'schema', '$missingAggregateId', '{}'::jsonb, '$poisonKey');"
+    }
+    for ($retry = 0; $retry -lt 6; $retry++) {
+        docker compose -p $qualityProject exec -T postgres psql `
+            -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 -c `
+            "UPDATE datahub_outbox_events SET available_at = NOW() WHERE idempotency_key = '$poisonKey' AND dead_lettered_at IS NULL;" | Out-Null
+        if ($LASTEXITCODE -ne 0) { throw 'Failed to accelerate poison event retry' }
+        Start-Sleep -Seconds 2
+    }
+    $poisonState = docker compose -p $qualityProject exec -T postgres psql `
+        -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 -Atc `
+        "SELECT attempts || ':' || (dead_lettered_at IS NOT NULL)::text FROM datahub_outbox_events WHERE idempotency_key = '$poisonKey';"
+    if ($LASTEXITCODE -ne 0 -or $poisonState.Trim() -ne '5:true') {
+        throw "Poison event did not dead-letter after five isolated attempts: $poisonState"
+    }
+
+    Invoke-Checked 'Remove projection row before recovery test' {
+        docker compose -p $qualityProject exec -T postgres psql `
+            -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 `
+            -c "DELETE FROM datahub_projection_rows WHERE project_id = '$($project.id)';"
+    }
+    $resynced = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/sync/resync" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    if ($resynced.projected_rows -ne 2 -or $resynced.checkpoint.status -ne 'ready' -or
+        $resynced.dead_lettered -ne 1) {
+        throw "Full resync did not restore projections/checkpoint while retaining dead letter: $($resynced | ConvertTo-Json -Compress)"
+    }
+
+    $environment = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/environments" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ name = 'production'; requires_approval = $true } | ConvertTo-Json)
+    $releaseOne = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/releases" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ environment_id = $environment.id; build_id = $firstRustBuild.id; version = '1.0.0' } | ConvertTo-Json)
+    $unapprovedReleaseStatus = 0
+    try {
+        Invoke-RestMethod -Method Post `
+            -Uri "$apiRoot/projects/$($project.id)/releases/$($releaseOne.id)/publish" `
+            -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    }
+    catch { $unapprovedReleaseStatus = [int]$_.Exception.Response.StatusCode }
+    if ($unapprovedReleaseStatus -ne 409) {
+        throw "Unapproved production release returned HTTP $unapprovedReleaseStatus instead of 409"
+    }
+    Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/releases/$($releaseOne.id)/approve" `
+        -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    $publishedOne = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/releases/$($releaseOne.id)/publish" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    if ($publishedOne.status -ne 'published' -or $publishedOne.input_hash -ne $firstRustBuild.input_hash) {
+        throw 'Approved release did not preserve and publish its deterministic build snapshot'
+    }
+    $releaseTwo = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/releases" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ environment_id = $environment.id; build_id = $secondRustBuild.id; version = '1.1.0' } | ConvertTo-Json)
+    Invoke-RestMethod -Method Post -Uri "$apiRoot/projects/$($project.id)/releases/$($releaseTwo.id)/approve" -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    Invoke-RestMethod -Method Post -Uri "$apiRoot/projects/$($project.id)/releases/$($releaseTwo.id)/publish" -Headers $adminHeaders -ContentType 'application/json' | Out-Null
+    $rollback = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/environments/$($environment.id)/rollback" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ target_release_id = $releaseOne.id; version = 'rollback-1.0.0' } | ConvertTo-Json)
+    $environments = Invoke-RestMethod -Uri "$apiRoot/projects/$($project.id)/environments" -Headers $adminHeaders
+    $production = $environments | Where-Object { $_.id -eq $environment.id }
+    $releaseHistory = Invoke-RestMethod -Uri "$apiRoot/projects/$($project.id)/releases" -Headers $adminHeaders
+    $historicalOne = $releaseHistory | Where-Object { $_.id -eq $releaseOne.id }
+    if ($rollback.status -ne 'published' -or $rollback.rollback_of -ne $releaseOne.id -or
+        $rollback.input_hash -ne $releaseOne.input_hash -or $production.current_release_id -ne $rollback.id -or
+        $historicalOne.input_hash -ne $firstRustBuild.input_hash) {
+        throw 'Rollback did not republish the exact historical snapshot or preserve release history'
     }
 
     Write-Host '==> Reference existence validation test'
@@ -588,7 +711,7 @@ serde_json = "1"
     Invoke-Checked 'Verify SQLx migration' {
         docker compose -p $qualityProject exec -T postgres psql `
             -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 `
-            -c 'SELECT version, description, success FROM _sqlx_migrations ORDER BY version; SELECT COUNT(*) AS schema_revisions FROM datahub_schema_revisions; SELECT COUNT(*) AS row_revisions FROM datahub_row_revisions; SELECT COUNT(*) AS data_revisions FROM datahub_data_revisions; SELECT COUNT(*) AS builds FROM datahub_jobs WHERE kind = ''build''; SELECT COUNT(*) AS artifacts FROM datahub_build_artifacts; SELECT COUNT(*) AS projected_schemas FROM datahub_projection_schemas; SELECT COUNT(*) AS projected_rows FROM datahub_projection_rows; SELECT COUNT(*) AS audit_events FROM datahub_audit_events; SELECT COUNT(*) AS outbox_events FROM datahub_outbox_events;'
+            -c 'SELECT version, description, success FROM _sqlx_migrations ORDER BY version; SELECT COUNT(*) AS schema_revisions FROM datahub_schema_revisions; SELECT COUNT(*) AS row_revisions FROM datahub_row_revisions; SELECT COUNT(*) AS data_revisions FROM datahub_data_revisions; SELECT COUNT(*) AS builds FROM datahub_jobs WHERE kind = ''build''; SELECT COUNT(*) AS artifacts FROM datahub_build_artifacts; SELECT COUNT(*) AS projected_schemas FROM datahub_projection_schemas; SELECT COUNT(*) AS projected_rows FROM datahub_projection_rows; SELECT COUNT(*) AS projection_plans FROM datahub_projection_plans; SELECT COUNT(*) AS releases FROM datahub_releases; SELECT COUNT(*) AS audit_events FROM datahub_audit_events; SELECT COUNT(*) AS outbox_events FROM datahub_outbox_events;'
     }
 
     Invoke-Checked 'Insert persistence marker' {

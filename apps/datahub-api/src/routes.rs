@@ -17,17 +17,20 @@ use datahub_formula::{
     EvaluationRuntime, FormulaDefinition, FormulaSet, evaluate_formulas, parse_formula,
 };
 use datahub_kernel::{
-    Audience, BuildId, CompilationTarget, ConfigRow, ConfigValue, FieldId, ProjectAction,
-    ProjectId, ProjectRole, RevisionId, RowId, SchemaDefinition, SchemaId, SessionId, TableViewId,
-    UserId, validate_row, validate_schema,
+    Audience, BuildId, CompilationTarget, ConfigRow, ConfigValue, EnvironmentId, FieldId,
+    ProjectAction, ProjectId, ProjectRole, ProjectionPlanId, ReleaseId, RevisionId, RowId,
+    SchemaDefinition, SchemaId, SessionId, TableViewId, UserId, validate_row, validate_schema,
 };
 use datahub_persistence_pg::{
-    BuildArtifact, BuildRecord, BuildSchemaSnapshot, ProjectRecord, RowWrite, SessionPrincipal,
-    StoredFormulaSet, StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member,
-    create_initial_user, create_project, create_session, create_user, list_builds, list_projects,
-    list_rows, list_schemas, load_build_snapshot, load_formula_set, project_role, record_build,
-    row_exists, save_formula_set, save_row, save_rows_atomic, save_schema, session_principal,
-    sync_status, user_by_username, user_count,
+    BuildArtifact, BuildRecord, BuildSchemaSnapshot, EnvironmentRecord, ProjectRecord,
+    ProjectionPlan, ReleaseRecord, RowWrite, SessionPrincipal, StoredFormulaSet, StoredRow,
+    StoredSchema, SyncStatus, UserAccount, add_project_member, apply_projection_plan,
+    approve_projection_plan, approve_release, create_environment, create_initial_user,
+    create_project, create_projection_plan, create_release, create_session, create_user,
+    full_resync, list_builds, list_environments, list_projection_plans, list_projects,
+    list_releases, list_rows, list_schemas, load_build_snapshot, load_formula_set, project_role,
+    publish_release, record_build, rollback_release, row_exists, save_formula_set, save_row,
+    save_rows_atomic, save_schema, session_principal, sync_status, user_by_username, user_count,
 };
 use datahub_xlsx::{VersionedRow, XlsxError, export_workbook, import_workbook};
 use serde::{Deserialize, Serialize};
@@ -106,6 +109,47 @@ pub(crate) fn router() -> Router<AppState> {
         .route(
             "/projects/{project_id}/sync-status",
             get(sync_status_handler),
+        )
+        .merge(operations_router())
+}
+
+fn operations_router() -> Router<AppState> {
+    Router::new()
+        .route(
+            "/projects/{project_id}/sync/resync",
+            post(full_resync_handler),
+        )
+        .route(
+            "/projects/{project_id}/projection-plans",
+            get(projection_plans).post(create_projection_plan_handler),
+        )
+        .route(
+            "/projects/{project_id}/projection-plans/{plan_id}/approve",
+            post(approve_projection_plan_handler),
+        )
+        .route(
+            "/projects/{project_id}/projection-plans/{plan_id}/apply",
+            post(apply_projection_plan_handler),
+        )
+        .route(
+            "/projects/{project_id}/environments",
+            get(environments).post(create_environment_handler),
+        )
+        .route(
+            "/projects/{project_id}/releases",
+            get(releases).post(create_release_handler),
+        )
+        .route(
+            "/projects/{project_id}/releases/{release_id}/approve",
+            post(approve_release_handler),
+        )
+        .route(
+            "/projects/{project_id}/releases/{release_id}/publish",
+            post(publish_release_handler),
+        )
+        .route(
+            "/projects/{project_id}/environments/{environment_id}/rollback",
+            post(rollback_release_handler),
         )
 }
 
@@ -1164,6 +1208,253 @@ async fn sync_status_handler(
     let principal = authenticate(&state, &headers, false).await?;
     authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
     Ok(Json(sync_status(&state.pool, project_id).await?))
+}
+
+async fn full_resync_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+) -> Result<Json<SyncStatus>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    Ok(Json(full_resync(&state.pool, project_id).await?))
+}
+
+#[derive(Deserialize)]
+struct CreateProjectionPlanRequest {
+    schema_id: SchemaId,
+}
+
+async fn projection_plans(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+) -> Result<Json<Vec<ProjectionPlan>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    Ok(Json(list_projection_plans(&state.pool, project_id).await?))
+}
+
+async fn create_projection_plan_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+    Json(request): Json<CreateProjectionPlanRequest>,
+) -> Result<Json<ProjectionPlan>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    Ok(Json(
+        create_projection_plan(
+            &state.pool,
+            ProjectionPlanId::new(),
+            project_id,
+            request.schema_id,
+            principal.user_id,
+        )
+        .await?,
+    ))
+}
+
+async fn approve_projection_plan_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, plan_id)): Path<(ProjectId, ProjectionPlanId)>,
+) -> Result<Json<ProjectionPlan>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(
+        &state,
+        project_id,
+        principal.user_id,
+        ProjectAction::Approve,
+    )
+    .await?;
+    Ok(Json(
+        approve_projection_plan(&state.pool, project_id, plan_id, principal.user_id).await?,
+    ))
+}
+
+async fn apply_projection_plan_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, plan_id)): Path<(ProjectId, ProjectionPlanId)>,
+) -> Result<Json<ProjectionPlan>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    Ok(Json(
+        apply_projection_plan(&state.pool, project_id, plan_id, principal.user_id).await?,
+    ))
+}
+
+#[derive(Deserialize)]
+struct CreateEnvironmentRequest {
+    name: String,
+    #[serde(default = "default_true")]
+    requires_approval: bool,
+}
+
+const fn default_true() -> bool {
+    true
+}
+
+async fn environments(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+) -> Result<Json<Vec<EnvironmentRecord>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    Ok(Json(list_environments(&state.pool, project_id).await?))
+}
+
+async fn create_environment_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+    Json(request): Json<CreateEnvironmentRequest>,
+) -> Result<Json<EnvironmentRecord>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(
+        &state,
+        project_id,
+        principal.user_id,
+        ProjectAction::Approve,
+    )
+    .await?;
+    if request.name.trim().is_empty() || request.name.len() > 64 {
+        return Err(ApiError::bad_request(
+            "environment name must be 1-64 characters",
+        ));
+    }
+    Ok(Json(
+        create_environment(
+            &state.pool,
+            EnvironmentId::new(),
+            project_id,
+            &request.name,
+            request.requires_approval,
+        )
+        .await?,
+    ))
+}
+
+#[derive(Deserialize)]
+struct CreateReleaseRequest {
+    environment_id: EnvironmentId,
+    build_id: BuildId,
+    version: String,
+}
+
+async fn releases(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+) -> Result<Json<Vec<ReleaseRecord>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    Ok(Json(list_releases(&state.pool, project_id).await?))
+}
+
+async fn create_release_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+    Json(request): Json<CreateReleaseRequest>,
+) -> Result<Json<ReleaseRecord>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    validate_release_version(&request.version)?;
+    Ok(Json(
+        create_release(
+            &state.pool,
+            ReleaseId::new(),
+            project_id,
+            request.environment_id,
+            request.build_id,
+            &request.version,
+            principal.user_id,
+        )
+        .await?,
+    ))
+}
+
+async fn approve_release_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, release_id)): Path<(ProjectId, ReleaseId)>,
+) -> Result<Json<ReleaseRecord>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(
+        &state,
+        project_id,
+        principal.user_id,
+        ProjectAction::Approve,
+    )
+    .await?;
+    Ok(Json(
+        approve_release(&state.pool, project_id, release_id, principal.user_id).await?,
+    ))
+}
+
+async fn publish_release_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, release_id)): Path<(ProjectId, ReleaseId)>,
+) -> Result<Json<ReleaseRecord>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    Ok(Json(
+        publish_release(&state.pool, project_id, release_id, principal.user_id).await?,
+    ))
+}
+
+#[derive(Deserialize)]
+struct RollbackReleaseRequest {
+    target_release_id: ReleaseId,
+    version: String,
+}
+
+async fn rollback_release_handler(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, environment_id)): Path<(ProjectId, EnvironmentId)>,
+    Json(request): Json<RollbackReleaseRequest>,
+) -> Result<Json<ReleaseRecord>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(
+        &state,
+        project_id,
+        principal.user_id,
+        ProjectAction::Approve,
+    )
+    .await?;
+    validate_release_version(&request.version)?;
+    Ok(Json(
+        rollback_release(
+            &state.pool,
+            project_id,
+            environment_id,
+            request.target_release_id,
+            ReleaseId::new(),
+            &request.version,
+            principal.user_id,
+        )
+        .await?,
+    ))
+}
+
+fn validate_release_version(version: &str) -> Result<(), ApiError> {
+    let trimmed = version.trim();
+    if trimmed.is_empty()
+        || trimmed.len() > 64
+        || !trimmed
+            .chars()
+            .all(|character| character.is_ascii_alphanumeric() || ".-_+".contains(character))
+    {
+        return Err(ApiError::bad_request(
+            "release version must be 1-64 safe version characters",
+        ));
+    }
+    Ok(())
 }
 
 fn export_error(error: ExportError) -> ApiError {

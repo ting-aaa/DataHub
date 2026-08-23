@@ -6,8 +6,9 @@ mod validation;
 
 pub use access::{ProjectAction, ProjectRole};
 pub use id::{
-    AuditEventId, BuildId, CustomTypeId, FieldId, OutboxEventId, ProjectId, RevisionId, RowId,
-    SchemaId, SessionId, TableViewId, UserId, VariantId,
+    AuditEventId, BuildId, CustomTypeId, EnvironmentId, FieldId, OutboxEventId, ProjectId,
+    ProjectionPlanId, ReleaseId, RevisionId, RowId, SchemaId, SessionId, TableViewId, UserId,
+    VariantId,
 };
 pub use ir::{
     CompilationTarget, TargetField, TargetIr, TargetType, build_target_ir,

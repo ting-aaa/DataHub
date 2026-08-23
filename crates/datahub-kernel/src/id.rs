@@ -63,6 +63,9 @@ typed_id!(AuditEventId);
 typed_id!(OutboxEventId);
 typed_id!(BuildId);
 typed_id!(TableViewId);
+typed_id!(EnvironmentId);
+typed_id!(ReleaseId);
+typed_id!(ProjectionPlanId);
 
 #[cfg(test)]
 mod tests {

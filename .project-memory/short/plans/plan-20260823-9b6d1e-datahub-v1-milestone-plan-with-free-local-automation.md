@@ -10,7 +10,7 @@
   "id": "PLAN-20260823-9B6D1E",
   "kind": "plan",
   "next_actions": [
-    "Implement and verify the M6 Wasmtime Component/WIT plugin platform and deny-by-default sandbox."
+    "Integrate verified M7, then implement and pass every M8 hardening and final-acceptance exit criterion."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -33,10 +33,12 @@
     "RPT-20260823-CA61E0",
     "RPT-20260823-E99D5D",
     "RPT-20260823-38DC17",
-    "RPT-20260823-EE0875"
+    "RPT-20260823-EE0875",
+    "RPT-20260823-1A4BFC",
+    "RPT-20260823-9F7FDD"
   ],
   "status": "active",
-  "summary": "M0-M5 are complete; M6-M8 remain pending under the free automated local gate.",
+  "summary": "M0-M7 are functionally complete, with M7 pending integration; M8 hardening and final acceptance remain pending under the free local gate.",
   "supersedes": [],
   "tags": [
     "automated-testing",
@@ -49,7 +51,7 @@
   "tier": "short",
   "title": "DataHub v1 milestone plan with free local automation",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:03:29Z",
+  "updated_at": "2026-08-23T21:42:36Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -64,7 +66,9 @@
 - M3 schema/configuration UX: completed with multi-field design, typed rows, inline VTable editing, block prefetch/cache, optimistic saves, filter/sort and browser acceptance.
 - M4 formula/XLSX: completed with stable FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic persistence.
 - M5 deterministic build/export: completed and merged to develop at 2aaf6c8 with the full built-in artifact matrix and generated-code compilation.
-- M6-M8: pending; the plugin-host and projection foundations do not complete M6 or M7.
+- M6 plugin platform: completed and merged to develop at 636a131 with WIT Components, immutable exact-version installation and deny-by-default Wasmtime limits.
+- M7 synchronization/release/rollback: functionally completed and fully verified on feature/m7-release-sync; commit and squash integration remain.
+- M8 hardening/final acceptance: pending.
 
 ## M0 Transition - Completed
 
@@ -100,15 +104,17 @@ Implement build orchestration pinned to schema/data revisions, targets and plugi
 
 Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifacts, stable FieldId-derived Protobuf tags, timestamp-free revision/plugin/artifact manifests, repeatable-read build snapshots and immutable PostgreSQL persistence are implemented. The gate parses all codecs, checks exact manifests and artifact hashes, compares identical rebuilds and compiles generated Rust/C#/TypeScript. The final gate passed 29 Rust tests, 10 Web tests, migrations 0001-0006 and five builds with 45 artifacts.
 
-## M6 Plugin Platform - Pending
+## M6 Plugin Platform - Completed
 
 Define plugin manifest, WIT/component interfaces, installation/version pinning and Wasmtime host limits. Restrict third-party plugins to declared read-only inputs and output directories with no credentials or network by default. Test path traversal, time, memory, fuel, output quotas, malformed packages and a compiling example plugin.
 
-## M7 PostgreSQL Sync, Release and Rollback - Pending
+The WIT datahub-plugin world, strict hash-verified manifest/registry, safe path/capability validation and Wasmtime Component host are implemented. Guests receive only declared virtual inputs and one contained output, with no WASI ambient authority. Fuel, epoch timeout, memory, input and output bounds are verified using the compiling/componentized example. The final gate passed 33 Rust tests, 10 Web tests and all Docker/PostgreSQL regression checks.
+
+## M7 PostgreSQL Sync, Release and Rollback - Completed, Pending Integration
 
 Implement PostgreSQL projection planning, compatible DDL, approval for destructive changes, outbox consumption, retry/dead-letter/checkpoints and full resync. Add immutable artifacts/releases, environment policy, approval, publish and rollback. Test retry idempotency, checkpoint recovery, failed migration plans and historical release reproducibility.
 
-The local idempotent schema/row projection worker is an implemented foundation; migration planning, retry/dead-letter/checkpoints, approvals, publishing, releases and rollback remain.
+Migration 0007, persistence/API/worker/UI changes and the local gate complete deterministic compatible/destructive projection plans, approval, bounded retry/dead-letter/checkpoints, full resync, environment policy and immutable release creation/approval/publish/rollback. The gate proved destructive 409/approval, poison-event isolation at five attempts, two-row resync while retaining dead letters, production approval, three immutable historical releases and restart persistence. The implementation remains uncommitted on feature/m7-release-sync and must be integrated before M8.
 
 ## M8 Hardening and Acceptance - Pending
 

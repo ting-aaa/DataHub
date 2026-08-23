@@ -10,9 +10,9 @@
   "id": "TASK-20260823-2A43C1",
   "kind": "task",
   "next_actions": [
-    "Implement the M6 versioned WIT and Wasmtime Component plugin contract on feature/m6-plugin-sandbox.",
-    "Enforce deny-by-default plugin inputs, outputs, credentials, network and resource quotas.",
-    "Automate compiling example, version pinning, traversal, timeout, memory, fuel, quota and malformed-package acceptance."
+    "Commit and squash-integrate the verified feature/m7-release-sync work into develop.",
+    "Implement M8 audit search, rate limiting, secret redaction, observability, backup/restore and operator runbooks.",
+    "Pass the complete v1 demo and clean-checkout/fresh-volume performance, concurrency, security and recovery acceptance."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -28,10 +28,12 @@
     "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
     "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
     "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
-    "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB."
+    "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB.",
+    "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
+    "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2."
   ],
   "status": "active",
-  "summary": "M0-M5 are complete and fully verified; the active full-v1 task advances to the M6 Wasmtime Component/WIT plugin platform, with M6-M8 pending.",
+  "summary": "M0-M7 are functionally complete and verified, with M7 pending integration; the active full-v1 task advances to the remaining M8 hardening and final acceptance work.",
   "supersedes": [],
   "tags": [
     "active",
@@ -44,7 +46,7 @@
   "tier": "short",
   "title": "Implement complete DataHub v1 with free automated gates",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:03:29Z",
+  "updated_at": "2026-08-23T21:42:36Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -65,7 +67,7 @@ Transition the existing M0 branch away from required GitHub checks and billing-d
 
 ## Progress
 
-M0-M5 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5 completes deterministic revision-pinned manifests, the Rust/C#/TypeScript and JSON/CSV/XML/BSON/Protobuf/Lua matrix, stable Protobuf tags and generated-code compilation. M6-M8 remain pending.
+M0-M7 are functionally complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5 completes deterministic revision-pinned manifests, the Rust/C#/TypeScript and JSON/CSV/XML/BSON/Protobuf/Lua matrix, stable Protobuf tags and generated-code compilation. M6 completes versioned WIT Components, immutable plugin installation and deny-by-default Wasmtime isolation. M7 completes projection plans, retry/dead-letter/checkpoint/full-resync recovery and immutable release approval/publish/rollback. M7 still requires Git integration; M8 remains pending.
 
 ## Completion Criteria
 

@@ -99,10 +99,50 @@ export interface BuildRecord {
 
 export interface SyncStatus {
   pending: number
+  retrying: number
+  dead_lettered: number
   processed: number
-  failed: number
   projected_schemas: number
   projected_rows: number
+  checkpoint: {
+    last_event_id: string | null
+    last_processed_at: string | null
+    status: 'ready' | 'rebuilding' | 'failed'
+    last_error: string | null
+    version: number
+  } | null
+}
+
+export interface ProjectionPlan {
+  id: string
+  project_id: string
+  schema_id: string
+  status: 'draft' | 'approved' | 'applied' | 'rejected'
+  destructive: boolean
+  operations: Array<{ sql: string; destructive: boolean }>
+  approved_by: string | null
+}
+
+export interface EnvironmentRecord {
+  id: string
+  project_id: string
+  name: string
+  requires_approval: boolean
+  current_release_id: string | null
+  version: number
+}
+
+export interface ReleaseRecord {
+  id: string
+  project_id: string
+  environment_id: string
+  build_id: string
+  version: string
+  status: 'draft' | 'approved' | 'published' | 'superseded'
+  input_hash: string
+  manifest: Record<string, unknown>
+  approved_by: string | null
+  rollback_of: string | null
 }
 
 export interface TableView {

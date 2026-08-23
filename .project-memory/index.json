@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 22,
+    "short": 26,
     "temp": 0
   },
-  "generated_at": "2026-08-23T21:04:28Z",
-  "generation": 41,
+  "generated_at": "2026-08-23T21:43:10Z",
+  "generation": 47,
   "project_name": "DataHub",
   "records": [
     {
@@ -367,6 +367,114 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T21:23:17Z",
+      "derived_from": [
+        "HANDOFF-20260823-F2BBAB"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m6-to-m7-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-93F5C0",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-93f5c0-m6-completion-to-m7-synchronization-release-and-rollback-han.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-worker",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "d913664be62abbd6856632c5d3f762458e4843af5c26337a84958a5e957bdb9e",
+      "sources": [
+        "RPT-20260823-1A4BFC",
+        "PLAN-20260823-9B6D1E",
+        "Git evidence: clean feature/m7-release-sync at 636a131."
+      ],
+      "status": "superseded",
+      "summary": "M6 is merged and fully verified; complete deterministic PostgreSQL projection planning, reliable outbox recovery and immutable release approval/publish/rollback on the clean M7 branch.",
+      "supersedes": [
+        "HANDOFF-20260823-F2BBAB"
+      ],
+      "tags": [
+        "handoff",
+        "m7",
+        "postgresql",
+        "release",
+        "rollback",
+        "sync"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M6 completion to M7 synchronization release and rollback handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:42:36Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:42:31Z",
+      "derived_from": [
+        "HANDOFF-20260823-93F5C0"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m7-to-m8-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-CAFFC2",
+      "kind": "handoff",
+      "next_actions": [
+        "Integrate M7, create the M8 branch and satisfy every hardening/final-acceptance exit criterion."
+      ],
+      "path": "short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "deploy",
+        "docs",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "cfb2573842e0fd548005d02df6b110e6a93ca5fb6840056fec5dc6592f572273",
+      "sources": [
+        "RPT-20260823-9F7FDD",
+        "PLAN-20260823-9B6D1E",
+        "Curator Git audit: M7 complete in uncommitted feature/m7-release-sync working tree based on 636a131."
+      ],
+      "status": "active",
+      "summary": "M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes.",
+      "supersedes": [
+        "HANDOFF-20260823-93F5C0"
+      ],
+      "tags": [
+        "acceptance",
+        "backup",
+        "handoff",
+        "hardening",
+        "m8",
+        "observability",
+        "security"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M7 completion to M8 hardening and final acceptance handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:42:31Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T19:51:08Z",
       "derived_from": [
         "HANDOFF-20260823-5A07F4"
@@ -601,14 +709,12 @@
       "derived_from": [
         "HANDOFF-20260823-E37206"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m5-to-m6-v1",
       "expired": false,
       "id": "HANDOFF-20260823-F2BBAB",
       "kind": "handoff",
-      "next_actions": [
-        "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -621,13 +727,13 @@
         "tests"
       ],
       "sensitivity": "internal",
-      "sha256": "d025e5dbba7d43276307f89a4cf247683adc9f44a11540caef0648347d205b9b",
+      "sha256": "e0a3f7a286bdf2f7987fbbdcca65d28fe8ee0b464ee2c916b6cc20bc23b486c2",
       "sources": [
         "RPT-20260823-EE0875",
         "PLAN-20260823-9B6D1E",
         "Git evidence: clean feature/m6-plugin-sandbox at 2aaf6c8."
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch.",
       "supersedes": [
         "HANDOFF-20260823-E37206"
@@ -644,7 +750,7 @@
       "tier": "short",
       "title": "M5 completion to M6 Wasmtime plugin platform handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:03:24Z",
+      "updated_at": "2026-08-23T21:23:21Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -744,7 +850,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Implement and verify the M6 Wasmtime Component/WIT plugin platform and deny-by-default sandbox."
+        "Integrate verified M7, then implement and pass every M8 hardening and final-acceptance exit criterion."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -760,7 +866,7 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "dd32641453e6ea9ef1ba429eeebe0ef85cb0858bf874283e910aef1a857e4c4a",
+      "sha256": "053940f23609fcebe95c5564bc3b0a596b17c52ac889b63540650340ec5df31a",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
@@ -769,10 +875,12 @@
         "RPT-20260823-CA61E0",
         "RPT-20260823-E99D5D",
         "RPT-20260823-38DC17",
-        "RPT-20260823-EE0875"
+        "RPT-20260823-EE0875",
+        "RPT-20260823-1A4BFC",
+        "RPT-20260823-9F7FDD"
       ],
       "status": "active",
-      "summary": "M0-M5 are complete; M6-M8 remain pending under the free automated local gate.",
+      "summary": "M0-M7 are functionally complete, with M7 pending integration; M8 hardening and final acceptance remain pending under the free local gate.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -785,7 +893,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:03:29Z",
+      "updated_at": "2026-08-23T21:42:36Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -799,7 +907,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Implement and verify the M6 Wasmtime Component/WIT plugin platform on feature/m6-plugin-sandbox."
+        "Integrate verified M7 and complete M8 hardening, backup/recovery and full clean-environment acceptance."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -808,7 +916,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "598afdbff1db8c19e3d21941beafca5bfdb56b1d0d469f325c9fa42d0ffdf5ba",
+      "sha256": "548495b2e10ba32dff13c8f91e55efd33a04bb8575ec502186b464607e2d0d7f",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -821,7 +929,9 @@
         "RPT-20260823-CA61E0",
         "RPT-20260823-E99D5D",
         "RPT-20260823-38DC17",
-        "RPT-20260823-EE0875"
+        "RPT-20260823-EE0875",
+        "RPT-20260823-1A4BFC",
+        "RPT-20260823-9F7FDD"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -834,7 +944,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:03:29Z",
+      "updated_at": "2026-08-23T21:42:36Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -887,6 +997,56 @@
       "title": "M1 closure, M2 completion, and M3 progress checkpoint",
       "type_version": 1,
       "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:22:59Z",
+      "derived_from": [
+        "RPT-20260823-EE0875"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m6-plugin-sandbox-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-1A4BFC",
+      "kind": "report",
+      "next_actions": [
+        "Continue M7 projection, release, approval and rollback implementation on feature/m7-release-sync."
+      ],
+      "path": "short/reports/rpt-20260823-1a4bfc-m6-wasmtime-plugin-platform-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-plugin-host",
+        "deploy/docker",
+        "docs/development/plugins.md",
+        "examples/datahub-echo-plugin",
+        "scripts/quality-gate.ps1",
+        "wit/datahub-plugin.wit"
+      ],
+      "sensitivity": "internal",
+      "sha256": "049d2bcbf0fc44b7ef451b70065fc36b19c446af4615f1493e71f934a86fc93d",
+      "sources": [
+        "Main-agent M6 completion delta and full local quality-gate result on 2026-08-24.",
+        "Git evidence: PR #6, feature commit 3a303a5 and squash commit 636a131; develop equals origin/develop.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 33 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M6 completes the versioned WIT Component contract, immutable package registry and deny-by-default Wasmtime sandbox, fully verified and merged to develop.",
+      "supersedes": [],
+      "tags": [
+        "m6",
+        "plugin",
+        "sandbox",
+        "wasmtime",
+        "wit"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M6 Wasmtime plugin platform completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:22:59Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1021,6 +1181,56 @@
       "title": "M0 GitHub integration blocked by account billing lock",
       "type_version": 1,
       "updated_at": "2026-08-23T18:53:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:42:01Z",
+      "derived_from": [
+        "RPT-20260823-1A4BFC"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m7-release-sync-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-9F7FDD",
+      "kind": "report",
+      "next_actions": [
+        "Commit and integrate M7, then execute M8 hardening and final acceptance."
+      ],
+      "path": "short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-worker",
+        "crates/datahub-persistence-pg",
+        "migrations/0007_release_sync.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "fa25f2cc0494a32faf06e8812eb1e7f520d81312290ef2690c4d0208c48cb0ca",
+      "sources": [
+        "Main-agent M7 completion delta and full local quality-gate result on 2026-08-24.",
+        "Curator repository audit: feature/m7-release-sync working tree based on 636a131; migration/API/repository/UI/gate evidence inspected.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are implemented and fully verified on the feature branch, pending integration.",
+      "supersedes": [],
+      "tags": [
+        "m7",
+        "postgresql",
+        "release",
+        "rollback",
+        "sync"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M7 synchronization release and rollback completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:42:01Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1272,9 +1482,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Implement the M6 versioned WIT and Wasmtime Component plugin contract on feature/m6-plugin-sandbox.",
-        "Enforce deny-by-default plugin inputs, outputs, credentials, network and resource quotas.",
-        "Automate compiling example, version pinning, traversal, timeout, memory, fuel, quota and malformed-package acceptance."
+        "Commit and squash-integrate the verified feature/m7-release-sync work into develop.",
+        "Implement M8 audit search, rate limiting, secret redaction, observability, backup/restore and operator runbooks.",
+        "Pass the complete v1 demo and clean-checkout/fresh-volume performance, concurrency, security and recovery acceptance."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -1283,7 +1493,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "a99b541f9be6efeb581cd84d50b3d3865ff774f66e04aeb8973c2da46386d21b",
+      "sha256": "e1cedec80efd241c6506100b0cf182239fb87acc9b2910e89398a6f9b0c65f1a",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
@@ -1292,10 +1502,12 @@
         "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
         "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
         "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
-        "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB."
+        "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB.",
+        "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
+        "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2."
       ],
       "status": "active",
-      "summary": "M0-M5 are complete and fully verified; the active full-v1 task advances to the M6 Wasmtime Component/WIT plugin platform, with M6-M8 pending.",
+      "summary": "M0-M7 are functionally complete and verified, with M7 pending integration; the active full-v1 task advances to the remaining M8 hardening and final acceptance work.",
       "supersedes": [],
       "tags": [
         "active",
@@ -1308,7 +1520,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:03:29Z",
+      "updated_at": "2026-08-23T21:42:36Z",
       "valid_as_of": "2026-08-24"
     },
     {
