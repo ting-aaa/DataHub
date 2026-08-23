@@ -5,33 +5,32 @@
 ## Project Snapshot
 
 - **Project:** DataHub
-- **Generation:** 10
-- **Generated:** 2026-08-23T18:24:47Z
-- **Active task:** [TASK-20260823-9C0927](short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md)
+- **Generation:** 23
+- **Generated:** 2026-08-23T18:54:26Z
+- **Active task:** [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md)
 - **Overview:** DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.
 
 ### Next Actions
 
-1. Create the baseline repository files and Docker Compose topology.
-2. Install/authenticate GitHub CLI, create ting-aaa/DataHub, and configure GitFlow branches and CI gates.
-3. Implement steps in order on feature/m0-foundation and capture exact verification evidence.
+1. Replace paid GitHub status/auto-merge requirements and integrate the verified M0 baseline under the local gate.
+2. Start M1 domain-kernel implementation with automated unit and property tests.
+3. Execute M0 transition, then begin M1 domain and compilation kernel.
 
 ### Blockers
 
-- GitHub CLI is not installed; GitHub authentication and remote creation are pending.
-- Remote repository work requires GitHub CLI installation and authentication.
+_None recorded._
 
 ## Active Tasks
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [TASK-20260823-9C0927](short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md) | task | active | Initialize the repository and deliver a verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the approved GitFlow process. | 2026-08-23T18:24:19Z |
+| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | Implement and verify the full DataHub v1 product through Docker-first milestone delivery and free local automated quality gates. | 2026-08-23T18:52:55Z |
 
 ## Active Plans
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [PLAN-20260823-686A1E](short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md) | plan | active | Build and verify the complete M0 repository, Docker Compose application topology, PostgreSQL baseline, CI gates, and GitFlow integration. | 2026-08-23T18:24:30Z |
+| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | Deliver M0 transition and M1-M8 product milestones, each gated by automated local Rust, Vue, PostgreSQL, Docker, integration and acceptance tests. | 2026-08-23T18:53:11Z |
 
 ## Current Analyses
 
@@ -45,7 +44,7 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | active | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:24:41Z |
+| [HANDOFF-20260823-D301EA](short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md) | handoff | active | The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work. | 2026-08-23T18:53:25Z |
 
 ## Current Project-specific Memory
 
@@ -55,11 +54,12 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [ARCH-20260823-F3A201](long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md) | architecture | active | DataHub targets a Docker Compose full-stack topology with Rust services, a Vue console, and PostgreSQL as the canonical store. | 2026-08-23T18:23:41Z |
-| [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | active | The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:24:09Z |
+| [ARCH-20260823-F3A201](long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md) | architecture | active | DataHub implements a Docker Compose full-stack boundary with Rust services, a Vue console, Nginx, and PostgreSQL as the canonical store. | 2026-08-23T18:44:19Z |
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
-| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T18:23:32Z |
-| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-23T18:23:51Z |
+| [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
+| [PIT-20260823-C6E3B6](long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md) | pitfall | active | PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling. | 2026-08-23T18:44:16Z |
+| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T18:53:29Z |
+| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-23T18:53:29Z |
 
 ## Review Queue
 
@@ -69,14 +69,20 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | active | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:24:41Z |
-| [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | active | The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:24:09Z |
+| [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | superseded | The public MIT repository ting-aaa/DataHub uses CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:53:29Z |
+| [HANDOFF-20260823-545AD6](short/handoffs/handoff-20260823-545ad6-m0-github-billing-blocked-integration-handoff.md) | handoff | superseded | PR #1 is ready for protected automatic squash merge, but the user must clear the GitHub billing lock before required CI jobs can run. | 2026-08-23T18:53:29Z |
+| [RPT-20260823-49833C](short/reports/rpt-20260823-49833c-m0-github-integration-blocked-by-account-billing-lock.md) | report | superseded | Commit 66d7b8e and PR #1 are ready with protected CI-gated auto squash merge, but GitHub Actions cannot start while the user account is billing-locked. | 2026-08-23T18:53:29Z |
+| [HANDOFF-20260823-D301EA](short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md) | handoff | active | The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work. | 2026-08-23T18:53:25Z |
+| [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
+| [HANDOFF-20260823-D2DC12](short/handoffs/handoff-20260823-d2dc12-m0-local-foundation-to-github-integration-handoff.md) | handoff | superseded | Local M0 implementation and verification are complete; commit, push, PR, CI, and squash merge into develop remain. | 2026-08-23T18:48:21Z |
+| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | superseded | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:44:19Z |
+| [RPT-20260823-44414F](short/reports/rpt-20260823-44414f-m0-docker-foundation-implementation-checkpoint.md) | report | active | The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain. | 2026-08-23T18:44:06Z |
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
 
 ## Memory Map
 
-- Long-term records: 5
-- Short-term records: 3
+- Long-term records: 7
+- Short-term records: 10
 - Temporary records: 0
 - Archived records: 0
 - Complete machine-readable inventory: [`index.json`](index.json)

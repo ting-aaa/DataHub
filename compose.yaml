@@ -1,0 +1,145 @@
+name: datahub
+
+services:
+  postgres:
+    image: postgres:18.6-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  migrate:
+    image: datahub-cli:${DATAHUB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: deploy/docker/rust.Dockerfile
+      args:
+        APP: datahub-cli
+    command: ["migrate"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      RUST_LOG: datahub_cli=info
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    image: datahub-api:${DATAHUB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: deploy/docker/rust.Dockerfile
+      args:
+        APP: datahub-api
+    init: true
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      DATAHUB_API_BIND: 0.0.0.0:8080
+      RUST_LOG: datahub_api=info,tower_http=info
+    ports:
+      - "127.0.0.1:${DATAHUB_API_PORT:-8080}:8080"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  worker:
+    image: datahub-worker:${DATAHUB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: deploy/docker/rust.Dockerfile
+      args:
+        APP: datahub-worker
+    init: true
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      RUST_LOG: datahub_worker=info
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  plugin-host:
+    image: datahub-plugin-host:${DATAHUB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: deploy/docker/rust.Dockerfile
+      args:
+        APP: datahub-plugin-host
+    init: true
+    restart: unless-stopped
+    environment:
+      DATAHUB_PLUGIN_HOST_BIND: 0.0.0.0:8081
+      RUST_LOG: datahub_plugin_host=info
+    expose:
+      - "8081"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8081/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    image: datahub-web:${DATAHUB_IMAGE_TAG:-dev}
+    build:
+      context: .
+      dockerfile: deploy/docker/web.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${DATAHUB_WEB_PORT:-3000}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 5s
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+      - /var/cache/nginx:mode=1777
+      - /var/run:mode=1777
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres-data:

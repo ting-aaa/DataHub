@@ -1,0 +1,37 @@
+[workspace]
+members = [
+  "apps/datahub-api",
+  "apps/datahub-cli",
+  "apps/datahub-plugin-host",
+  "apps/datahub-worker",
+  "crates/datahub-kernel",
+  "crates/datahub-persistence-pg",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+repository = "https://github.com/ting-aaa/DataHub"
+
+[workspace.dependencies]
+anyhow = "1"
+axum = "0.8"
+datahub-kernel = { path = "crates/datahub-kernel" }
+datahub-persistence-pg = { path = "crates/datahub-persistence-pg" }
+serde = { version = "1", features = ["derive"] }
+sqlx = { version = "0.8", default-features = false, features = ["macros", "migrate", "postgres", "runtime-tokio-rustls"] }
+tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal", "time"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6", features = ["trace"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"

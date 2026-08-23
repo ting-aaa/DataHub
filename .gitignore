@@ -6,6 +6,7 @@
 node_modules/
 dist/
 .vite/
+*.tsbuildinfo
 
 # Local configuration and data
 .env
