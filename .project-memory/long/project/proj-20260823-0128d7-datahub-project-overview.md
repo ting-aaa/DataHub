@@ -8,7 +8,7 @@
   "id": "PROJ-20260823-0128D7",
   "kind": "project",
   "next_actions": [
-    "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema/type design before starting M4."
+    "Integrate completed M3 and begin M4 formula/XLSX implementation."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -25,7 +25,8 @@
     "TASK-20260823-2A43C1",
     "RPT-20260823-FE85CD",
     "RPT-20260823-118D95",
-    "RPT-20260823-CA61E0"
+    "RPT-20260823-CA61E0",
+    "RPT-20260823-E99D5D"
   ],
   "status": "active",
   "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -38,7 +39,7 @@
   "tier": "long",
   "title": "DataHub project overview",
   "type_version": 1,
-  "updated_at": "2026-08-23T19:51:14Z",
+  "updated_at": "2026-08-23T20:11:04Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -51,7 +52,7 @@ DataHub is a Docker-oriented Rust game configuration management and compilation 
 
 ## Current State
 
-The public repository exists at https://github.com/ting-aaa/DataHub. M0-M2 are complete and the free local/Docker quality gate includes Rust, ESLint, Vue, four migrations and end-to-end persistence checks. M3 TableView read blocks and optimistic API updates are verified; inline editing, lazy prefetch/cache and richer schema/type design remain active. M4-M8 remain pending.
+The public repository exists at https://github.com/ting-aaa/DataHub. M0-M3 are complete and the free local/Docker quality gate includes Rust, ESLint, Vue, four migrations and end-to-end persistence checks. M3 multi-field design, typed rows, inline VTable editing, block prefetch/cache, optimistic saves and server filtering/sorting passed browser acceptance. M4-M8 remain pending.
 
 ## Product Boundaries
 

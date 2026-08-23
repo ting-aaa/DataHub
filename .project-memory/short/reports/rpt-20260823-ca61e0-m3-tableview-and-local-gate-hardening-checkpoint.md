@@ -9,10 +9,7 @@
   "event_id": "datahub-report-m3-tableview-quality-gate-v1",
   "id": "RPT-20260823-CA61E0",
   "kind": "report",
-  "next_actions": [
-    "Implement inline VTable cell editing and optimistic conflict UI.",
-    "Add lazy block prefetch/cache behavior and richer multi-field schema design."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -28,8 +25,8 @@
     "Main-agent M3 implementation and final quality-gate delta for TASK-20260823-2A43C1.",
     "Curator audit on 2026-08-24: migration/API/UI/tooling source inspection, cargo fmt/clippy/test, web lint/typecheck/Vitest/build, git status and docker compose ps."
   ],
-  "status": "active",
-  "summary": "M3 now has persisted 256-1024-row TableViews, safe server filtering/sorting, audience-aware schema UI, hard-reference checks and a lint-enabled free gate; inline editing, lazy prefetch and richer design remain.",
+  "status": "superseded",
+  "summary": "Historical M3 checkpoint superseded by RPT-20260823-E99D5D after inline editing, prefetch/cache and multi-field design were completed.",
   "supersedes": [
     "RPT-20260823-118D95"
   ],
@@ -44,7 +41,7 @@
   "tier": "short",
   "title": "M3 TableView and local gate hardening checkpoint",
   "type_version": 1,
-  "updated_at": "2026-08-23T19:50:56Z",
+  "updated_at": "2026-08-23T20:11:04Z",
   "valid_as_of": "2026-08-24"
 }
 -->

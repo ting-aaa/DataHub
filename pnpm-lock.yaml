@@ -13,6 +13,9 @@ importers:
       '@visactor/vtable':
         specifier: ^1.0.0
         version: 1.26.7
+      '@visactor/vtable-editors':
+        specifier: 1.26.7
+        version: 1.26.7
       '@visactor/vue-vtable':
         specifier: ^1.0.0
         version: 1.26.7

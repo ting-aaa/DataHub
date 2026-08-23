@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 16,
+    "short": 18,
     "temp": 0
   },
-  "generated_at": "2026-08-23T19:52:00Z",
-  "generation": 32,
+  "generated_at": "2026-08-23T20:12:17Z",
+  "generation": 35,
   "project_name": "DataHub",
   "records": [
     {
@@ -320,18 +320,65 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T20:10:58Z",
+      "derived_from": [
+        "HANDOFF-20260823-CB0534"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m3-to-m4-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-88CF74",
+      "kind": "handoff",
+      "next_actions": [
+        "Integrate M3, create the M4 branch and implement formula/XLSX acceptance with automated tests."
+      ],
+      "path": "short/handoffs/handoff-20260823-88cf74-m3-completion-to-m4-formula-and-xlsx-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "migrations",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "a4765d11d4c5e588b6cc2530130187fabe8085ebb4357ae65bb761c69fa62ebb",
+      "sources": [
+        "RPT-20260823-E99D5D",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "active",
+      "summary": "M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips.",
+      "supersedes": [
+        "HANDOFF-20260823-CB0534"
+      ],
+      "tags": [
+        "formula",
+        "handoff",
+        "m4",
+        "xlsx"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 completion to M4 formula and XLSX handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:10:58Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T19:51:08Z",
       "derived_from": [
         "HANDOFF-20260823-5A07F4"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m3-tableview-to-editing-v1",
       "expired": false,
       "id": "HANDOFF-20260823-CB0534",
       "kind": "handoff",
-      "next_actions": [
-        "Complete inline editing, conflicts, lazy prefetch/cache and richer schema design with automated acceptance."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -342,12 +389,12 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "d3c2ec0a1b0f58f11b589acaad958ced2a7a6c094fe24a93df51b4a0f944b11b",
+      "sha256": "fc8ebbd8a3a8ddfb1db048d63ce8bb18c6b05550c516b0db85fd95df5cb45c71",
       "sources": [
         "RPT-20260823-CA61E0",
         "PLAN-20260823-9B6D1E"
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4.",
       "supersedes": [
         "HANDOFF-20260823-5A07F4"
@@ -363,7 +410,7 @@
       "tier": "short",
       "title": "M3 TableView read path to inline editing handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T19:51:08Z",
+      "updated_at": "2026-08-23T20:11:04Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -597,7 +644,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema design, then run full M3 acceptance before M4."
+        "Integrate completed M3, then implement and verify M4 formula and XLSX capabilities."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -613,16 +660,17 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "899be83654abd145ec6ecf316609c6d345a5572d7715781e0fb0400be1e89742",
+      "sha256": "0a4b718f442d976d75626bca20587c1440562a39b99f39abc82101850a5f4792",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
         "RPT-20260823-FE85CD",
         "RPT-20260823-118D95",
-        "RPT-20260823-CA61E0"
+        "RPT-20260823-CA61E0",
+        "RPT-20260823-E99D5D"
       ],
       "status": "active",
-      "summary": "M0-M2 and M3 TableView reads are complete; M3 editing/cache/designer work remains active and M4-M8 remain pending under the free local gate.",
+      "summary": "M0-M3 are complete; M4-M8 remain pending under the free automated local gate.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -635,7 +683,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T19:51:14Z",
+      "updated_at": "2026-08-23T20:11:04Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -649,7 +697,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema/type design before starting M4."
+        "Integrate completed M3 and begin M4 formula/XLSX implementation."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -658,7 +706,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "06ea9754255f40ef614b4d4e12be857c6596d1eb1899772da530d52b0aabcc4f",
+      "sha256": "e4bb5bc7037939e76547a231591f94db57735dc6edd43d71255e5789edd33564",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -668,7 +716,8 @@
         "TASK-20260823-2A43C1",
         "RPT-20260823-FE85CD",
         "RPT-20260823-118D95",
-        "RPT-20260823-CA61E0"
+        "RPT-20260823-CA61E0",
+        "RPT-20260823-E99D5D"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -681,7 +730,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T19:51:14Z",
+      "updated_at": "2026-08-23T20:11:04Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -827,15 +876,12 @@
       "derived_from": [
         "RPT-20260823-118D95"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-report-m3-tableview-quality-gate-v1",
       "expired": false,
       "id": "RPT-20260823-CA61E0",
       "kind": "report",
-      "next_actions": [
-        "Implement inline VTable cell editing and optimistic conflict UI.",
-        "Add lazy block prefetch/cache behavior and richer multi-field schema design."
-      ],
+      "next_actions": [],
       "path": "short/reports/rpt-20260823-ca61e0-m3-tableview-and-local-gate-hardening-checkpoint.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -848,13 +894,13 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "54e0f3e03bb56aaac43f0a9fc156c800454553e43665ba3d5a37301db650060d",
+      "sha256": "a20e0ddb72bb62cd587f767bb0a8aa80b7096b32f9c0c7a0147140f774998c0f",
       "sources": [
         "Main-agent M3 implementation and final quality-gate delta for TASK-20260823-2A43C1.",
         "Curator audit on 2026-08-24: migration/API/UI/tooling source inspection, cargo fmt/clippy/test, web lint/typecheck/Vitest/build, git status and docker compose ps."
       ],
-      "status": "active",
-      "summary": "M3 now has persisted 256-1024-row TableViews, safe server filtering/sorting, audience-aware schema UI, hard-reference checks and a lint-enabled free gate; inline editing, lazy prefetch and richer design remain.",
+      "status": "superseded",
+      "summary": "Historical M3 checkpoint superseded by RPT-20260823-E99D5D after inline editing, prefetch/cache and multi-field design were completed.",
       "supersedes": [
         "RPT-20260823-118D95"
       ],
@@ -869,7 +915,57 @@
       "tier": "short",
       "title": "M3 TableView and local gate hardening checkpoint",
       "type_version": 1,
-      "updated_at": "2026-08-23T19:50:56Z",
+      "updated_at": "2026-08-23T20:11:04Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:10:47Z",
+      "derived_from": [
+        "RPT-20260823-CA61E0"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m3-grid-editing-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-E99D5D",
+      "kind": "report",
+      "next_actions": [
+        "Begin M4 FieldId formula engine, dependency/cycle handling, Native/WASM evaluation and XLSX round trips."
+      ],
+      "path": "short/reports/rpt-20260823-e99d5d-m3-grid-editing-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations/0004_table_views.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "94f8a4901ebda675e88531691362001bfb0db65cef8b7a48c65bd3942c13d01c",
+      "sources": [
+        "Main-agent M3 completion and browser acceptance delta for TASK-20260823-2A43C1.",
+        "Curator audit on 2026-08-24: feature/m3-grid-editing source inspection, cargo fmt/clippy/test and Web lint/typecheck/10 tests/build."
+      ],
+      "status": "completed",
+      "summary": "M3 multi-field schema design, typed row creation, inline VTable editing, block prefetch/cache, optimistic saves and server filter/sort are implemented and fully verified.",
+      "supersedes": [
+        "RPT-20260823-CA61E0"
+      ],
+      "tags": [
+        "completed",
+        "editing",
+        "m3",
+        "verification",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 grid editing completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:10:47Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -971,9 +1067,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Implement inline VTable cell editing with optimistic conflict presentation.",
-        "Add lazy block prefetch, bounded sparse caching, data-revision invalidation and expired-view recovery.",
-        "Expand the multi-field schema/type designer and finish M3 automated/browser acceptance."
+        "Integrate feature/m3-grid-editing into develop under the free local quality policy.",
+        "Implement the M4 FieldId formula AST, dependency graph, cycle diagnostics and Native/WASM parity.",
+        "Implement cached-value-only XLSX template/export/import preview, diff and atomic commit with automated round trips."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -982,16 +1078,17 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "78af3bf0db120e7181c83138dcba6711d3e448741a9c75454fe66c342324449d",
+      "sha256": "9b0807eddb5790576b57fc24ae586574b376a443ac9e96462a2c2adb2118341d",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
         "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
         "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
-        "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534."
+        "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
+        "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74."
       ],
       "status": "active",
-      "summary": "M0-M2 are complete and M3 TableView reads are verified; inline editing, lazy prefetch/cache and richer schema design remain active, with M4-M8 pending.",
+      "summary": "M0-M3 are complete and fully verified; the active full-v1 task advances to pending M4 formula/XLSX work, with M5-M8 also pending.",
       "supersedes": [],
       "tags": [
         "active",
@@ -1004,7 +1101,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T19:51:14Z",
+      "updated_at": "2026-08-23T20:11:04Z",
       "valid_as_of": "2026-08-24"
     },
     {

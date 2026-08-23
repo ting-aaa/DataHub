@@ -28,6 +28,7 @@ export interface TypeAst {
   min_length?: number | null
   max_length?: number | null
   item?: TypeAst
+  length?: number
   min_items?: number | null
   max_items?: number | null
   schema_id?: string

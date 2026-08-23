@@ -60,8 +60,19 @@ button, input, textarea, select { font: inherit; }
 .schema-layout { display: grid; grid-template-columns: minmax(240px, .85fr) minmax(300px, 1.15fr); gap: 18px; }
 .schema-list, .editor-card, .grid-card { border-color: #d9e3ef; border-radius: 14px; }
 .schema-list .nav-item + .nav-item { margin-top: 4px; }
+.field-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 8px 0 12px; }
+.field-editor-heading > div { display: flex; gap: 2px; }
+.schema-field-draft { margin-bottom: 12px; padding: 14px; border: 1px solid #dce6f2; border-radius: 10px; background: #f8fafd; }
+.schema-field-draft .el-form-item { margin-bottom: 12px; }
+.field-editor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 12px; }
 .grid-card { margin-top: 18px; overflow: hidden; }
 .row-create { display: flex; align-items: center; gap: 10px; }
+.view-toolbar { display: grid; grid-template-columns: minmax(130px, .8fr) minmax(160px, 1.2fr) minmax(130px, .8fr) 110px auto auto; gap: 8px; align-items: center; margin-bottom: 12px; }
+.row-draft-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; align-items: end; margin-bottom: 12px; padding: 14px; border: 1px solid #dce6f2; border-radius: 10px; background: #f8fafd; }
+.row-draft-grid label { display: grid; gap: 6px; min-width: 0; color: #586a82; font-size: .78rem; font-weight: 650; }
+.row-draft-grid .el-input-number { width: 100%; }
+.grid-hint { margin: 0 0 10px; color: #74859b; font-size: .78rem; }
+.block-loading { padding: 8px; color: #63748a; font-size: .78rem; text-align: center; }
 .grid-card .vtable { border-radius: 8px; }
 .operations-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 18px; margin-top: 18px; }
 .artifact { display: flex; justify-content: space-between; gap: 12px; width: 100%; padding: 10px; border: 0; border-radius: 8px; color: #29405f; background: #f2f6fb; cursor: pointer; text-align: left; }
@@ -75,6 +86,8 @@ button, input, textarea, select { font: inherit; }
   .workspace { grid-template-columns: 1fr; }
   .rail { border-right: 0; border-bottom: 1px solid #dbe4ef; }
   .schema-layout { grid-template-columns: 1fr; }
+  .field-editor-grid { grid-template-columns: 1fr; }
+  .view-toolbar { grid-template-columns: 1fr 1fr; }
   .operations-layout { grid-template-columns: 1fr; }
 }
 

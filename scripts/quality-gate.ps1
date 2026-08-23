@@ -195,6 +195,37 @@ try {
         -not $tableView.data_revision) {
         throw 'Block table view did not return the committed data revision and row'
     }
+    $secondBlock = Invoke-RestMethod `
+        -Uri "$apiRoot/table-views/$($tableView.view_id)/blocks/1" -Headers $adminHeaders
+    if ($secondBlock.rows.Count -ne 0) {
+        throw 'Table view returned rows beyond its final block'
+    }
+
+    $filteredView = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/views" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{
+            block_size = 256
+            filters = @(@{ field_id = $fieldId; value = @{ kind = 'integer'; value = 50 } })
+            sort = @(@{ field_id = $fieldId; direction = 'desc' })
+        } | ConvertTo-Json -Depth 10)
+    $filteredBlock = Invoke-RestMethod `
+        -Uri "$apiRoot/table-views/$($filteredView.view_id)/blocks/0" -Headers $adminHeaders
+    if ($filteredView.total_rows -ne 1 -or $filteredBlock.rows.Count -ne 1) {
+        throw 'Server-side table view filtering or sorting did not return the matching row'
+    }
+
+    $missingView = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/views" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{
+            block_size = 256
+            filters = @(@{ field_id = $fieldId; value = @{ kind = 'integer'; value = 51 } })
+            sort = @()
+        } | ConvertTo-Json -Depth 10)
+    if ($missingView.total_rows -ne 0) {
+        throw 'Server-side table view filtering returned a non-matching row'
+    }
 
     $invalidValues = @{}
     $invalidValues[$fieldId] = @{ kind = 'integer'; value = 101 }

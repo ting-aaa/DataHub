@@ -5,7 +5,8 @@ It uses Rust services, a Vue 3 console, and PostgreSQL as its canonical data sto
 
 The current implementation includes local Argon2id accounts, bearer/CSRF
 sessions, project RBAC, immutable Schema/Data revisions, typed configuration
-validation, C/S/E target filtering, VTable block views, deterministic
+validation, per-field C/S/E target filtering, multi-field Schema design,
+server-filtered VTable blocks with inline optimistic editing, deterministic
 Rust/C#/TypeScript plus JSON/CSV artifacts, and transactional-outbox projection
 to PostgreSQL. The build and sync state is visible in the web console.
 

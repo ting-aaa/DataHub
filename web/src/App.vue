@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ListTable } from '@visactor/vue-vtable'
+import { register } from '@visactor/vtable'
+import { InputEditor } from '@visactor/vtable-editors'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
 
@@ -10,6 +12,7 @@ import {
   type BuildArtifact,
   type BuildRecord,
   type ConfigValue,
+  type FieldDefinition,
   type Project,
   type SchemaDefinition,
   type Session,
@@ -18,9 +21,63 @@ import {
   type SyncStatus,
   type TableView,
   type TableViewBlock,
+  type TypeAst,
 } from './services/api'
+import { formatConfigValue, initialDraftValue, parseConfigValue } from './services/config-values'
 import { fetchApiHealth, type HealthPayload } from './services/health'
 import { uuidv7 } from './services/uuidv7'
+
+type Audience = 'client' | 'server' | 'editor'
+type FieldKind = 'integer' | 'float' | 'string' | 'bool' | 'bytes' | 'date' | 'date_time' | 'enum' | 'list' | 'reference'
+type ListItemKind = 'integer' | 'float' | 'string' | 'bool'
+
+interface SchemaFieldDraft {
+  key: string
+  name: string
+  description: string
+  fieldType: FieldKind
+  referenceSchemaId: string
+  enumVariants: string
+  listItemType: ListItemKind
+  audiences: Audience[]
+}
+
+interface CellChangeEvent {
+  col: number
+  field?: string | number
+  recordIndex?: number | number[]
+  changedValue: string | number
+}
+
+interface CellClickEvent {
+  col: number
+  row: number
+  field?: string | number
+}
+
+interface VTableInstance {
+  startEditCell: (col: number, row: number) => void
+}
+
+interface VTableComponent {
+  vTableInstance: VTableInstance | { value: VTableInstance | null } | null
+}
+
+function newSchemaFieldDraft(index = 0): SchemaFieldDraft {
+  return {
+    key: uuidv7(),
+    name: index === 0 ? 'id' : `field_${index + 1}`,
+    description: '',
+    fieldType: 'integer',
+    referenceSchemaId: '',
+    enumVariants: 'default, enabled',
+    listItemType: 'integer',
+    audiences: ['client', 'server'],
+  }
+}
+
+const inputEditor = new InputEditor()
+register.editor('datahub-input', inputEditor)
 
 const health = ref<HealthPayload | null>(null)
 const session = ref<Session | null>(loadSession())
@@ -33,6 +90,10 @@ const schemas = ref<StoredSchema[]>([])
 const selectedSchemaId = ref('')
 const rows = ref<StoredRow[]>([])
 const tableView = ref<TableView | null>(null)
+const tableComponent = ref<VTableComponent | null>(null)
+const nextVisibleBlock = ref(1)
+const loadingNextBlock = ref(false)
+const gridActivity = ref('')
 const builds = ref<BuildRecord[]>([])
 const sync = ref<SyncStatus | null>(null)
 const buildTarget = ref<'rust' | 'c_sharp' | 'type_script'>('rust')
@@ -43,12 +104,18 @@ const projectDraft = reactive({ name: '', description: '' })
 const schemaDraft = reactive({
   name: '',
   description: '',
-  fieldName: 'id',
-  fieldType: 'integer',
-  referenceSchemaId: '',
-  audiences: ['client', 'server'] as Array<'client' | 'server' | 'editor'>,
+  audiences: ['client', 'server', 'editor'] as Audience[],
+  fields: [newSchemaFieldDraft()] as SchemaFieldDraft[],
 })
-const rowDraft = reactive({ value: 0, text: '', checked: false })
+const rowDraft = reactive<Record<string, string | number | boolean>>({})
+const viewQuery = reactive({
+  filterFieldId: '',
+  filterValue: '',
+  sortFieldId: '',
+  sortDirection: 'asc' as 'asc' | 'desc',
+})
+const tableBlockCache = new Map<number, StoredRow[]>()
+const tableBlockRequests = new Map<number, Promise<StoredRow[]>>()
 
 const selectedProject = computed(
   () => projects.value.find((project) => project.id === selectedProjectId.value) ?? null,
@@ -60,26 +127,31 @@ const canWrite = computed(() =>
   ['editor', 'approver', 'admin'].includes(selectedProject.value?.role ?? ''),
 )
 const statusType = computed(() => (health.value?.status === 'ok' ? 'success' : 'danger'))
-const firstField = computed(() => selectedSchema.value?.definition.fields[0] ?? null)
 const tableOptions = computed(() => ({
   columns: [
     { field: 'id', title: 'Row ID', width: 285 },
     { field: 'version', title: '版本', width: 90 },
-    { field: 'value', title: firstField.value?.name ?? '值', width: 'auto' },
+    ...(selectedSchema.value?.definition.fields ?? []).map((field) => ({
+      field: field.id,
+      title: field.name,
+      width: 180,
+      editor: canWrite.value ? 'datahub-input' : undefined,
+    })),
   ],
   records: rows.value.map((stored) => ({
     id: stored.row.id,
     version: stored.version,
-    value: displayValue(firstField.value ? stored.row.values[firstField.value.id] : undefined),
+    ...Object.fromEntries(
+      (selectedSchema.value?.definition.fields ?? []).map((field) => [
+        field.id,
+        formatConfigValue(stored.row.values[field.id], field.ty),
+      ]),
+    ),
   })),
   widthMode: 'standard',
+  editCellTrigger: 'api',
+  keyboardOptions: { editCellOnEnter: true },
 }))
-
-function displayValue(value: ConfigValue | undefined): string {
-  if (!value) return '—'
-  if (value.value === undefined) return value.kind
-  return typeof value.value === 'object' ? JSON.stringify(value.value) : String(value.value)
-}
 
 function showError(reason: unknown): void {
   error.value = reason instanceof Error ? reason.message : '发生未知错误'
@@ -199,33 +271,29 @@ async function refreshSchemas(): Promise<void> {
 }
 
 async function createSchema(): Promise<void> {
-  if (!selectedProject.value || !schemaDraft.name.trim() || !schemaDraft.fieldName.trim()) return
+  if (!selectedProject.value || !schemaDraft.name.trim() || schemaDraft.fields.length === 0) return
   busy.value = true
   try {
-    const fieldType = createFieldType()
-    if (!fieldType) {
-      ElMessage.warning('引用类型需要先选择目标 Schema')
-      return
-    }
+    const names = schemaDraft.fields.map((field) => field.name.trim())
+    if (names.some((name) => !name)) throw new Error('每个字段都必须有名称')
+    if (new Set(names).size !== names.length) throw new Error('字段名称不能重复')
     const definition: SchemaDefinition = {
       id: uuidv7(),
       project_id: selectedProject.value.id,
       name: schemaDraft.name,
       description: schemaDraft.description,
-      fields: [
-        {
+      fields: schemaDraft.fields.map((field) => ({
           id: uuidv7(),
-          name: schemaDraft.fieldName,
-          description: '',
-          ty: fieldType,
+          name: field.name.trim(),
+          description: field.description,
+          ty: createFieldType(field),
           default: null,
           target: {
             include: ['rust', 'c_sharp', 'type_script'],
-            audiences: [...schemaDraft.audiences],
+            audiences: [...field.audiences],
             rename: {},
           },
-        },
-      ],
+        })),
       target: {
         include: ['rust', 'c_sharp', 'type_script'],
         audiences: [...schemaDraft.audiences],
@@ -239,6 +307,7 @@ async function createSchema(): Promise<void> {
     )
     schemaDraft.name = ''
     schemaDraft.description = ''
+    schemaDraft.fields.splice(0, schemaDraft.fields.length, newSchemaFieldDraft())
     await refreshSchemas()
     selectedSchemaId.value = stored.definition.id
     await refreshRows()
@@ -250,8 +319,8 @@ async function createSchema(): Promise<void> {
   }
 }
 
-function createFieldType() {
-  switch (schemaDraft.fieldType) {
+function createFieldType(field: SchemaFieldDraft): TypeAst {
+  switch (field.fieldType) {
     case 'integer':
       return { kind: 'integer', min: null, max: null }
     case 'float':
@@ -260,58 +329,189 @@ function createFieldType() {
       return { kind: 'string', min_length: null, max_length: null }
     case 'bool':
       return { kind: 'bool' }
+    case 'bytes':
+      return { kind: 'bytes' }
+    case 'date':
+      return { kind: 'date' }
+    case 'date_time':
+      return { kind: 'date_time' }
     case 'enum':
-      return {
-        kind: 'enum',
-        variants: [
-          { id: uuidv7(), name: 'default', value: 0 },
-          { id: uuidv7(), name: 'enabled', value: 1 },
-        ],
-      }
+      return createEnumType(field.enumVariants)
     case 'list':
       return {
         kind: 'list',
-        item: { kind: 'integer', min: null, max: null },
+        item: createListItemType(field.listItemType),
         min_items: null,
         max_items: null,
       }
     case 'reference':
-      return schemaDraft.referenceSchemaId
-        ? { kind: 'reference', schema_id: schemaDraft.referenceSchemaId, mode: 'hard' as const }
-        : null
+      if (!field.referenceSchemaId) throw new Error(`${field.name || '引用字段'}需要选择目标 Schema`)
+      return { kind: 'reference', schema_id: field.referenceSchemaId, mode: 'hard' }
     default:
-      return null
+      throw new Error(`不支持的字段类型：${field.fieldType}`)
   }
+}
+
+function createEnumType(rawVariants: string): TypeAst {
+  const names = rawVariants
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean)
+  if (names.length === 0) throw new Error('枚举至少需要一个成员')
+  if (new Set(names).size !== names.length) throw new Error('枚举成员名称不能重复')
+  return {
+    kind: 'enum',
+    variants: names.map((name, value) => ({ id: uuidv7(), name, value })),
+  }
+}
+
+function createListItemType(kind: ListItemKind): TypeAst {
+  switch (kind) {
+    case 'integer':
+      return { kind: 'integer', min: null, max: null }
+    case 'float':
+      return { kind: 'float', min: null, max: null }
+    case 'bool':
+      return { kind: 'bool' }
+    case 'string':
+      return { kind: 'string', min_length: null, max_length: null }
+  }
+}
+
+function addSchemaField(): void {
+  schemaDraft.fields.push(newSchemaFieldDraft(schemaDraft.fields.length))
+}
+
+function removeSchemaField(index: number): void {
+  if (schemaDraft.fields.length > 1) schemaDraft.fields.splice(index, 1)
+}
+
+function moveSchemaField(index: number, direction: -1 | 1): void {
+  const target = index + direction
+  if (target < 0 || target >= schemaDraft.fields.length) return
+  const [field] = schemaDraft.fields.splice(index, 1)
+  if (field) schemaDraft.fields.splice(target, 0, field)
 }
 
 async function selectSchema(schemaId: string): Promise<void> {
   selectedSchemaId.value = schemaId
+  viewQuery.filterFieldId = ''
+  viewQuery.filterValue = ''
+  viewQuery.sortFieldId = ''
+  gridActivity.value = ''
   await refreshRows()
+}
+
+function resetTableBlocks(): void {
+  tableBlockCache.clear()
+  tableBlockRequests.clear()
+  nextVisibleBlock.value = 1
+  loadingNextBlock.value = false
+}
+
+async function fetchTableBlock(blockIndex: number): Promise<StoredRow[]> {
+  const cached = tableBlockCache.get(blockIndex)
+  if (cached) return cached
+  const pending = tableBlockRequests.get(blockIndex)
+  if (pending) return pending
+  const viewId = tableView.value?.view_id
+  if (!viewId) return []
+  const request = api<TableViewBlock>(
+    `/table-views/${viewId}/blocks/${blockIndex}`,
+    {},
+    session.value,
+  ).then((block) => {
+    if (tableView.value?.view_id !== viewId) return []
+    tableBlockCache.set(blockIndex, block.rows)
+    return block.rows
+  })
+  tableBlockRequests.set(blockIndex, request)
+  try {
+    return await request
+  } finally {
+    tableBlockRequests.delete(blockIndex)
+  }
+}
+
+function hasTableBlock(blockIndex: number): boolean {
+  const view = tableView.value
+  return Boolean(view && blockIndex * view.block_size < view.total_rows)
+}
+
+function prefetchTableBlock(blockIndex: number): void {
+  if (hasTableBlock(blockIndex)) void fetchTableBlock(blockIndex).catch(() => undefined)
+}
+
+async function appendNextTableBlock(): Promise<void> {
+  const blockIndex = nextVisibleBlock.value
+  if (loadingNextBlock.value || !hasTableBlock(blockIndex)) return
+  loadingNextBlock.value = true
+  try {
+    const blockRows = await fetchTableBlock(blockIndex)
+    const existing = new Set(rows.value.map((stored) => stored.row.id))
+    rows.value.push(...blockRows.filter((stored) => !existing.has(stored.row.id)))
+    nextVisibleBlock.value += 1
+    prefetchTableBlock(nextVisibleBlock.value)
+  } catch (reason) {
+    showError(reason)
+  } finally {
+    loadingNextBlock.value = false
+  }
 }
 
 async function refreshRows(): Promise<void> {
   if (!selectedProjectId.value || !selectedSchemaId.value || !session.value) {
     rows.value = []
     tableView.value = null
+    resetTableBlocks()
     return
   }
+  resetTableBlocks()
+  const fields = selectedSchema.value?.definition.fields ?? []
+  const filterField = fields.find((field) => field.id === viewQuery.filterFieldId)
+  const filters = filterField && viewQuery.filterValue.trim()
+    ? [{ field_id: filterField.id, value: parseConfigValue(filterField.ty, viewQuery.filterValue) }]
+    : []
+  const sort = fields.some((field) => field.id === viewQuery.sortFieldId)
+    ? [{ field_id: viewQuery.sortFieldId, direction: viewQuery.sortDirection }]
+    : []
   tableView.value = await api<TableView>(
     `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/views`,
-    { method: 'POST', body: JSON.stringify({ block_size: 512 }) },
+    { method: 'POST', body: JSON.stringify({ block_size: 256, filters, sort }) },
     session.value,
   )
-  const block = await api<TableViewBlock>(
-    `/table-views/${tableView.value.view_id}/blocks/0`,
-    {},
-    session.value,
-  )
-  rows.value = block.rows
+  rows.value = await fetchTableBlock(0)
+  resetRowDraft()
+  prefetchTableBlock(1)
+}
+
+async function applyViewQuery(): Promise<void> {
+  try {
+    await refreshRows()
+    gridActivity.value = `视图已应用：${tableView.value?.total_rows ?? 0} 行`
+  } catch (reason) {
+    showError(reason)
+  }
+}
+
+async function resetViewQuery(): Promise<void> {
+  viewQuery.filterFieldId = ''
+  viewQuery.filterValue = ''
+  viewQuery.sortFieldId = ''
+  viewQuery.sortDirection = 'asc'
+  await applyViewQuery()
 }
 
 async function createRow(): Promise<void> {
-  if (!selectedSchema.value || !firstField.value) return
+  if (!selectedSchema.value) return
   busy.value = true
   try {
+    const values = Object.fromEntries(
+      selectedSchema.value.definition.fields.map((field) => [
+        field.id,
+        parseConfigValue(field.ty, rowDraft[field.id]),
+      ]),
+    ) as Record<string, ConfigValue>
     await api<StoredRow>(
       `/projects/${selectedProjectId.value}/schemas/${selectedSchemaId.value}/rows`,
       {
@@ -321,7 +521,7 @@ async function createRow(): Promise<void> {
             id: uuidv7(),
             schema_id: selectedSchemaId.value,
             revision_id: selectedSchema.value.revision_id,
-            values: { [firstField.value.id]: createConfigValue(firstField.value.ty) },
+            values,
           },
         }),
       },
@@ -336,9 +536,22 @@ async function createRow(): Promise<void> {
   }
 }
 
-async function updateFirstRow(): Promise<void> {
-  const stored = rows.value[0]
-  if (!stored || !firstField.value) return
+async function updateGridCell(event: CellChangeEvent): Promise<void> {
+  const recordIndex = Array.isArray(event.recordIndex) ? event.recordIndex[0] : event.recordIndex
+  const stored = typeof recordIndex === 'number' ? rows.value[recordIndex] : undefined
+  const schemaFields = selectedSchema.value?.definition.fields ?? []
+  const field = schemaFields.find((candidate) => candidate.id === String(event.field ?? ''))
+    ?? schemaFields[event.col - 2]
+  if (!canWrite.value || !stored || !field) return
+  let value: ConfigValue
+  try {
+    value = parseConfigValue(field.ty, event.changedValue)
+  } catch (reason) {
+    showError(reason)
+    await refreshRows()
+    return
+  }
+  if (JSON.stringify(value) === JSON.stringify(stored.row.values[field.id])) return
   busy.value = true
   try {
     await api<StoredRow>(
@@ -350,7 +563,7 @@ async function updateFirstRow(): Promise<void> {
             ...stored.row,
             values: {
               ...stored.row.values,
-              [firstField.value.id]: createConfigValue(firstField.value.ty),
+              [field.id]: value,
             },
           },
           expected_version: stored.version,
@@ -359,42 +572,55 @@ async function updateFirstRow(): Promise<void> {
       session.value,
     )
     await refreshRows()
-    ElMessage.success('首行已乐观锁更新')
+    gridActivity.value = `${field.name} 已保存（version ${stored.version + 1}）`
+    ElMessage.success(`${field.name} 已保存（version ${stored.version + 1}）`)
   } catch (reason) {
+    await refreshRows().catch(() => undefined)
     showError(reason)
   } finally {
     busy.value = false
   }
 }
 
-function createConfigValue(type: SchemaDefinition['fields'][number]['ty']): ConfigValue {
-  switch (type.kind) {
-    case 'integer':
-      return { kind: 'integer', value: rowDraft.value }
-    case 'float':
-      return { kind: 'float', value: rowDraft.value }
-    case 'string':
-      return { kind: 'string', value: rowDraft.text }
-    case 'bool':
-      return { kind: 'bool', value: rowDraft.checked }
-    case 'enum':
-      return { kind: 'enum', value: type.variants?.[0]?.id }
+function startGridCellEdit(event: CellClickEvent): void {
+  gridActivity.value = `已选择第 ${event.row} 行、第 ${event.col} 列`
+  const editable = event.col >= 2 && event.col < (selectedSchema.value?.definition.fields.length ?? 0) + 2
+  if (!canWrite.value || !editable) return
+  const exposed = tableComponent.value?.vTableInstance
+  const instance = exposed && 'value' in exposed ? exposed.value : exposed
+  gridActivity.value = `正在编辑第 ${event.row} 行、第 ${event.col - 1} 个字段`
+  instance?.startEditCell(event.col, event.row)
+}
+
+function startFirstRowEdit(): void {
+  const exposed = tableComponent.value?.vTableInstance
+  const instance = exposed && 'value' in exposed ? exposed.value : exposed
+  if (!canWrite.value || rows.value.length === 0 || !instance) return
+  gridActivity.value = '正在编辑首行的第一个字段'
+  instance.startEditCell(2, 1)
+}
+
+function resetRowDraft(): void {
+  for (const key of Object.keys(rowDraft)) delete rowDraft[key]
+  for (const field of selectedSchema.value?.definition.fields ?? []) {
+    rowDraft[field.id] = initialDraftValue(field.ty)
+  }
+}
+
+function rowInputPlaceholder(field: FieldDefinition): string {
+  switch (field.ty.kind) {
     case 'list':
-      return {
-        kind: 'list',
-        value: rowDraft.text
-          .split(',')
-          .map((value) => value.trim())
-          .filter(Boolean)
-          .map((value) => ({ kind: 'integer', value: Number(value) })),
-      }
+      return '逗号分隔，例如 1, 2, 3'
     case 'reference':
-      return {
-        kind: 'reference',
-        value: { schema_id: type.schema_id, row_id: rowDraft.text.trim() },
-      }
+      return '目标 Row ID'
+    case 'bytes':
+      return 'UTF-8 文本'
+    case 'date':
+      return 'YYYY-MM-DD'
+    case 'date_time':
+      return 'ISO 8601 日期时间'
     default:
-      return { kind: 'null' }
+      return field.name
   }
 }
 
@@ -555,31 +781,7 @@ onMounted(initialize)
                 <el-form-item label="Schema 名称">
                   <el-input v-model="schemaDraft.name" :disabled="!canWrite" />
                 </el-form-item>
-                <el-form-item label="首个整数字段">
-                  <el-input v-model="schemaDraft.fieldName" :disabled="!canWrite" />
-                </el-form-item>
-                <el-form-item label="字段类型">
-                  <el-select v-model="schemaDraft.fieldType" :disabled="!canWrite">
-                    <el-option label="Integer" value="integer" />
-                    <el-option label="Float" value="float" />
-                    <el-option label="String" value="string" />
-                    <el-option label="Bool" value="bool" />
-                    <el-option label="Enum" value="enum" />
-                    <el-option label="Array&lt;Integer&gt;" value="list" />
-                    <el-option label="Hard Ref" value="reference" />
-                  </el-select>
-                </el-form-item>
-                <el-form-item v-if="schemaDraft.fieldType === 'reference'" label="引用 Schema">
-                  <el-select v-model="schemaDraft.referenceSchemaId" :disabled="!canWrite">
-                    <el-option
-                      v-for="schema in schemas"
-                      :key="schema.definition.id"
-                      :label="schema.definition.name"
-                      :value="schema.definition.id"
-                    />
-                  </el-select>
-                </el-form-item>
-                <el-form-item label="导出目标（C/S/E）">
+                <el-form-item label="Schema 导出目标（C/S/E）">
                   <el-checkbox-group v-model="schemaDraft.audiences" :disabled="!canWrite">
                     <el-checkbox value="client">C</el-checkbox>
                     <el-checkbox value="server">S</el-checkbox>
@@ -589,7 +791,96 @@ onMounted(initialize)
                 <el-form-item label="说明">
                   <el-input v-model="schemaDraft.description" :disabled="!canWrite" />
                 </el-form-item>
-                <el-button type="primary" :disabled="!canWrite || !schemaDraft.name" @click="createSchema">
+
+                <div class="field-editor-heading">
+                  <strong>字段（{{ schemaDraft.fields.length }}）</strong>
+                  <el-button plain :disabled="!canWrite" @click="addSchemaField">添加字段</el-button>
+                </div>
+                <div
+                  v-for="(field, index) in schemaDraft.fields"
+                  :key="field.key"
+                  class="schema-field-draft"
+                >
+                  <div class="field-editor-heading">
+                    <span>字段 {{ index + 1 }}</span>
+                    <div>
+                      <el-button text :disabled="index === 0" @click="moveSchemaField(index, -1)">
+                        ↑
+                      </el-button>
+                      <el-button
+                        text
+                        :disabled="index === schemaDraft.fields.length - 1"
+                        @click="moveSchemaField(index, 1)"
+                      >
+                        ↓
+                      </el-button>
+                      <el-button
+                        text
+                        type="danger"
+                        :disabled="schemaDraft.fields.length === 1"
+                        @click="removeSchemaField(index)"
+                      >
+                        删除
+                      </el-button>
+                    </div>
+                  </div>
+                  <div class="field-editor-grid">
+                    <el-form-item label="名称">
+                      <el-input v-model="field.name" :disabled="!canWrite" />
+                    </el-form-item>
+                    <el-form-item label="类型">
+                      <el-select v-model="field.fieldType" :disabled="!canWrite">
+                        <el-option label="Integer" value="integer" />
+                        <el-option label="Float" value="float" />
+                        <el-option label="String" value="string" />
+                        <el-option label="Bool" value="bool" />
+                        <el-option label="Bytes" value="bytes" />
+                        <el-option label="Date" value="date" />
+                        <el-option label="DateTime" value="date_time" />
+                        <el-option label="Enum" value="enum" />
+                        <el-option label="Array" value="list" />
+                        <el-option label="Hard Ref" value="reference" />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item v-if="field.fieldType === 'list'" label="数组元素类型">
+                      <el-select v-model="field.listItemType" :disabled="!canWrite">
+                        <el-option label="Integer" value="integer" />
+                        <el-option label="Float" value="float" />
+                        <el-option label="String" value="string" />
+                        <el-option label="Bool" value="bool" />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item v-if="field.fieldType === 'enum'" label="枚举成员（逗号分隔）">
+                      <el-input v-model="field.enumVariants" :disabled="!canWrite" />
+                    </el-form-item>
+                    <el-form-item v-if="field.fieldType === 'reference'" label="引用 Schema">
+                      <el-select v-model="field.referenceSchemaId" :disabled="!canWrite">
+                        <el-option
+                          v-for="schema in schemas"
+                          :key="schema.definition.id"
+                          :label="schema.definition.name"
+                          :value="schema.definition.id"
+                        />
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="字段导出目标（C/S/E）">
+                      <el-checkbox-group v-model="field.audiences" :disabled="!canWrite">
+                        <el-checkbox value="client">C</el-checkbox>
+                        <el-checkbox value="server">S</el-checkbox>
+                        <el-checkbox value="editor">E</el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
+                    <el-form-item label="字段说明">
+                      <el-input v-model="field.description" :disabled="!canWrite" />
+                    </el-form-item>
+                  </div>
+                </div>
+
+                <el-button
+                  type="primary"
+                  :disabled="!canWrite || !schemaDraft.name.trim() || schemaDraft.fields.length === 0"
+                  @click="createSchema"
+                >
                   创建 Schema
                 </el-button>
               </el-form>
@@ -602,35 +893,90 @@ onMounted(initialize)
                 <div>
                   <strong>{{ selectedSchema.definition.name }}</strong>
                   <small>
-                    {{ selectedSchema.revision_id }} · {{ tableView?.total_rows ?? rows.length }} rows
+                    {{ selectedSchema.revision_id }} · 已加载 {{ rows.length }} / {{ tableView?.total_rows ?? rows.length }} rows
                   </small>
-                </div>
-                <div class="row-create">
-                  <el-switch
-                    v-if="firstField?.ty.kind === 'bool'"
-                    v-model="rowDraft.checked"
-                    :disabled="!canWrite"
-                  />
-                  <el-input
-                    v-else-if="['string', 'list', 'reference'].includes(firstField?.ty.kind ?? '')"
-                    v-model="rowDraft.text"
-                    :placeholder="firstField?.ty.kind === 'list' ? '1,2,3' : '值'"
-                    :disabled="!canWrite"
-                  />
-                  <el-input-number
-                    v-else-if="firstField?.ty.kind !== 'enum'"
-                    v-model="rowDraft.value"
-                    :disabled="!canWrite"
-                  />
-                  <el-tag v-else>default</el-tag>
-                  <el-button type="primary" :disabled="!canWrite" @click="createRow">新增数据行</el-button>
-                  <el-button :disabled="!canWrite || rows.length === 0" @click="updateFirstRow">
-                    更新首行
-                  </el-button>
                 </div>
               </div>
             </template>
-            <ListTable :options="tableOptions" :height="Math.max(260, rows.length * 42 + 48)" />
+            <div class="view-toolbar">
+              <el-select v-model="viewQuery.filterFieldId" clearable placeholder="筛选字段">
+                <el-option
+                  v-for="field in selectedSchema.definition.fields"
+                  :key="field.id"
+                  :label="field.name"
+                  :value="field.id"
+                />
+              </el-select>
+              <el-input
+                v-model="viewQuery.filterValue"
+                clearable
+                placeholder="精确匹配值"
+                :disabled="!viewQuery.filterFieldId"
+                @keyup.enter="applyViewQuery"
+              />
+              <el-select v-model="viewQuery.sortFieldId" clearable placeholder="排序字段">
+                <el-option
+                  v-for="field in selectedSchema.definition.fields"
+                  :key="field.id"
+                  :label="field.name"
+                  :value="field.id"
+                />
+              </el-select>
+              <el-select v-model="viewQuery.sortDirection" :disabled="!viewQuery.sortFieldId">
+                <el-option label="升序" value="asc" />
+                <el-option label="降序" value="desc" />
+              </el-select>
+              <el-button type="primary" plain @click="applyViewQuery">应用视图</el-button>
+              <el-button @click="resetViewQuery">重置</el-button>
+            </div>
+            <div class="row-draft-grid">
+              <label v-for="field in selectedSchema.definition.fields" :key="field.id">
+                <span>{{ field.name }}</span>
+                <el-switch
+                  v-if="field.ty.kind === 'bool'"
+                  v-model="rowDraft[field.id]"
+                  :disabled="!canWrite"
+                />
+                <el-select
+                  v-else-if="field.ty.kind === 'enum'"
+                  v-model="rowDraft[field.id]"
+                  :disabled="!canWrite"
+                >
+                  <el-option
+                    v-for="variant in field.ty.variants"
+                    :key="variant.id"
+                    :label="variant.name"
+                    :value="variant.name"
+                  />
+                </el-select>
+                <el-input-number
+                  v-else-if="['integer', 'float'].includes(field.ty.kind)"
+                  v-model="rowDraft[field.id]"
+                  :disabled="!canWrite"
+                />
+                <el-input
+                  v-else
+                  v-model="rowDraft[field.id]"
+                  :placeholder="rowInputPlaceholder(field)"
+                  :disabled="!canWrite"
+                />
+              </label>
+              <el-button type="primary" :disabled="!canWrite" @click="createRow">新增数据行</el-button>
+              <el-button :disabled="!canWrite || rows.length === 0" @click="startFirstRowEdit">
+                编辑首行
+              </el-button>
+            </div>
+            <p class="grid-hint">单击单元格或选中后按 Enter 编辑；保存使用当前 Row version 做乐观并发检查。</p>
+            <p v-if="gridActivity" class="grid-hint">{{ gridActivity }}</p>
+            <ListTable
+              ref="tableComponent"
+              :options="tableOptions"
+              :height="460"
+              @on-click-cell="startGridCellEdit"
+              @on-change-cell-value="updateGridCell"
+              @on-scroll-vertical-end="appendNextTableBlock"
+            />
+            <div v-if="loadingNextBlock" class="block-loading">正在载入下一数据块…</div>
           </el-card>
 
           <div class="operations-layout">

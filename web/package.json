@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@visactor/vtable": "^1.0.0",
+    "@visactor/vtable-editors": "1.26.7",
     "@visactor/vue-vtable": "^1.0.0",
     "element-plus": "^2.0.0",
     "vue": "^3.5.0",
