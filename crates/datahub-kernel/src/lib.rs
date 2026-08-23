@@ -1,7 +1,28 @@
-use serde::Serialize;
+mod access;
+mod id;
+mod ir;
+mod schema;
+mod validation;
+
+pub use access::{ProjectAction, ProjectRole};
+pub use id::{
+    AuditEventId, BuildId, CustomTypeId, FieldId, OutboxEventId, ProjectId, RevisionId, RowId,
+    SchemaId, SessionId, TableViewId, UserId, VariantId,
+};
+pub use ir::{
+    CompilationTarget, TargetField, TargetIr, TargetType, build_target_ir,
+    build_target_ir_for_audience, build_target_ir_set, build_target_ir_set_for_audience,
+};
+pub use schema::{
+    Audience, ConfigRow, ConfigValue, CustomTypeDefinition, EnumVariant, FieldDefinition,
+    ReferenceMode, SchemaDefinition, TableDefinition, TargetRule, TypeAst,
+};
+pub use validation::{ValidationCode, ValidationIssue, validate_row, validate_schema};
+
+use serde::{Deserialize, Serialize};
 use tracing_subscriber::EnvFilter;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HealthPayload {
     pub service: &'static str,
     pub status: &'static str,

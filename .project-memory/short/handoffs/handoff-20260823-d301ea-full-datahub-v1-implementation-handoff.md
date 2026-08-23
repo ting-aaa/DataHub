@@ -10,10 +10,7 @@
   "event_id": "datahub-handoff-full-v1-local-gates-v1",
   "id": "HANDOFF-20260823-D301EA",
   "kind": "handoff",
-  "next_actions": [
-    "Remove paid GitHub gate dependencies and run the local M0 quality gate.",
-    "Integrate M0 into develop and begin M1 domain-kernel implementation."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -24,7 +21,7 @@
     "Explicit user scope change on 2026-08-24.",
     "DEC-20260823-C69FFA, TASK-20260823-2A43C1, and PLAN-20260823-9B6D1E."
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work.",
   "supersedes": [
     "HANDOFF-20260823-545AD6"
@@ -39,7 +36,7 @@
   "tier": "short",
   "title": "Full DataHub v1 implementation handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:53:25Z",
+  "updated_at": "2026-08-23T19:02:01Z",
   "valid_as_of": "2026-08-24"
 }
 -->

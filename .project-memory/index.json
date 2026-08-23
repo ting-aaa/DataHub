@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 10,
+    "short": 16,
     "temp": 0
   },
-  "generated_at": "2026-08-23T18:54:26Z",
-  "generation": 23,
+  "generated_at": "2026-08-23T19:52:00Z",
+  "generation": 32,
   "project_name": "DataHub",
   "records": [
     {
@@ -273,6 +273,102 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T19:43:00Z",
+      "derived_from": [
+        "HANDOFF-20260823-DE8966"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m2-to-m3-editing-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-5A07F4",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-5a07f4-m2-completion-to-m3-editing-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "de127c4cb664a72fc6dbf042ef9a34447e75f991c231d9a7f38e45fa9b704d2f",
+      "sources": [
+        "RPT-20260823-118D95",
+        "git status and verification reruns on 2026-08-24."
+      ],
+      "status": "superseded",
+      "summary": "M0-M2 are complete; M3 API/console flows work, but VTable block editing and richer schema design remain the active scope before M4.",
+      "supersedes": [
+        "HANDOFF-20260823-DE8966"
+      ],
+      "tags": [
+        "api",
+        "handoff",
+        "m3",
+        "vtable",
+        "web"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M2 completion to M3 editing handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:51:08Z",
+      "derived_from": [
+        "HANDOFF-20260823-5A07F4"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m3-tableview-to-editing-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-CB0534",
+      "kind": "handoff",
+      "next_actions": [
+        "Complete inline editing, conflicts, lazy prefetch/cache and richer schema design with automated acceptance."
+      ],
+      "path": "short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations/0004_table_views.sql",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "d3c2ec0a1b0f58f11b589acaad958ced2a7a6c094fe24a93df51b4a0f944b11b",
+      "sources": [
+        "RPT-20260823-CA61E0",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "active",
+      "summary": "M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4.",
+      "supersedes": [
+        "HANDOFF-20260823-5A07F4"
+      ],
+      "tags": [
+        "editing",
+        "handoff",
+        "m3",
+        "tableview",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 TableView read path to inline editing handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:51:08Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:44:32Z",
       "derived_from": [
         "HANDOFF-20260823-323477",
@@ -321,15 +417,12 @@
         "HANDOFF-20260823-545AD6",
         "TASK-20260823-9C0927"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-full-v1-local-gates-v1",
       "expired": false,
       "id": "HANDOFF-20260823-D301EA",
       "kind": "handoff",
-      "next_actions": [
-        "Remove paid GitHub gate dependencies and run the local M0 quality gate.",
-        "Integrate M0 into develop and begin M1 domain-kernel implementation."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -337,12 +430,12 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "6cb8922c29733bd17ac0d8302ffa5bc5d58c2617c896bb2118b1513280be288f",
+      "sha256": "e297bdb696a1f464eed2e9d0e8501fe0b86613185ffdda05516722cde8badfec",
       "sources": [
         "Explicit user scope change on 2026-08-24.",
         "DEC-20260823-C69FFA, TASK-20260823-2A43C1, and PLAN-20260823-9B6D1E."
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work.",
       "supersedes": [
         "HANDOFF-20260823-545AD6"
@@ -357,7 +450,54 @@
       "tier": "short",
       "title": "Full DataHub v1 implementation handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:53:25Z",
+      "updated_at": "2026-08-23T19:02:01Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:01:52Z",
+      "derived_from": [
+        "HANDOFF-20260823-D301EA"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m1-to-m2-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-DE8966",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-de8966-m1-kernel-to-m2-persistence-and-auth-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "migrations"
+      ],
+      "sensitivity": "internal",
+      "sha256": "f6637126949dafae6b1709572bbe3d3e0038720fb2cbe7b65702e7d919cfedcb",
+      "sources": [
+        "RPT-20260823-FE85CD",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "superseded",
+      "summary": "M0 transition is complete and the verified M1 kernel slice is ready for local integration; M2 persistence/auth is next with explicit M1 contract gaps retained.",
+      "supersedes": [
+        "HANDOFF-20260823-D301EA"
+      ],
+      "tags": [
+        "auth",
+        "handoff",
+        "m1",
+        "m2",
+        "persistence"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M1 kernel to M2 persistence and auth handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:43:06Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -457,7 +597,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Execute M0 transition, then begin M1 domain and compilation kernel."
+        "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema design, then run full M3 acceptance before M4."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -473,13 +613,16 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "7974f33ae02ed84c8d0cd2a335016611287f06ea5dd834b0474de79522f37d11",
+      "sha256": "899be83654abd145ec6ecf316609c6d345a5572d7715781e0fb0400be1e89742",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
-        "TASK-20260823-2A43C1 and DEC-20260823-C69FFA."
+        "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
+        "RPT-20260823-FE85CD",
+        "RPT-20260823-118D95",
+        "RPT-20260823-CA61E0"
       ],
       "status": "active",
-      "summary": "Deliver M0 transition and M1-M8 product milestones, each gated by automated local Rust, Vue, PostgreSQL, Docker, integration and acceptance tests.",
+      "summary": "M0-M2 and M3 TableView reads are complete; M3 editing/cache/designer work remains active and M4-M8 remain pending under the free local gate.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -492,7 +635,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:53:11Z",
+      "updated_at": "2026-08-23T19:51:14Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -506,7 +649,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Transition M0 to the free local gate, integrate it into develop, then execute the full v1 milestone plan."
+        "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema/type design before starting M4."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -515,14 +658,17 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "66bee688d3322c6884dc5ee570a34c8dbee3eeb2acd9d6455b6a567d32e6e020",
+      "sha256": "06ea9754255f40ef614b4d4e12be857c6596d1eb1899772da530d52b0aabcc4f",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
         "RPT-20260823-44414F",
         "RPT-20260823-49833C",
         "DEC-20260823-C69FFA",
-        "TASK-20260823-2A43C1"
+        "TASK-20260823-2A43C1",
+        "RPT-20260823-FE85CD",
+        "RPT-20260823-118D95",
+        "RPT-20260823-CA61E0"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -535,7 +681,59 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:53:29Z",
+      "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:42:47Z",
+      "derived_from": [
+        "RPT-20260823-FE85CD"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m1-m2-m3-checkpoint-v1",
+      "expired": false,
+      "id": "RPT-20260823-118D95",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-118d95-m1-closure-m2-completion-and-m3-progress-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates/datahub-auth",
+        "crates/datahub-export",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "a3a5a142a0d2bdbd5cd5f8c4dfe7d4d5be63f48c904493a11d049bd92f8442b8",
+      "sources": [
+        "Main-agent implementation and verification delta for TASK-20260823-2A43C1 at index generation 26.",
+        "Curator audit on 2026-08-24: source and migration search, cargo fmt/clippy/test, Vue typecheck/Vitest/build, git status/log, and scripts/quality-gate.ps1 inspection."
+      ],
+      "status": "superseded",
+      "summary": "Historical M1/M2/M3 checkpoint superseded by RPT-20260823-CA61E0 after TableView read APIs and gate hardening were completed.",
+      "supersedes": [
+        "RPT-20260823-FE85CD"
+      ],
+      "tags": [
+        "auth",
+        "m1",
+        "m2",
+        "m3",
+        "persistence",
+        "verification",
+        "web"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M1 closure, M2 completion, and M3 progress checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:51:14Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -625,6 +823,102 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-23T19:50:56Z",
+      "derived_from": [
+        "RPT-20260823-118D95"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-report-m3-tableview-quality-gate-v1",
+      "expired": false,
+      "id": "RPT-20260823-CA61E0",
+      "kind": "report",
+      "next_actions": [
+        "Implement inline VTable cell editing and optimistic conflict UI.",
+        "Add lazy block prefetch/cache behavior and richer multi-field schema design."
+      ],
+      "path": "short/reports/rpt-20260823-ca61e0-m3-tableview-and-local-gate-hardening-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "deploy/docker/rust.Dockerfile",
+        "migrations/0004_table_views.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "54e0f3e03bb56aaac43f0a9fc156c800454553e43665ba3d5a37301db650060d",
+      "sources": [
+        "Main-agent M3 implementation and final quality-gate delta for TASK-20260823-2A43C1.",
+        "Curator audit on 2026-08-24: migration/API/UI/tooling source inspection, cargo fmt/clippy/test, web lint/typecheck/Vitest/build, git status and docker compose ps."
+      ],
+      "status": "active",
+      "summary": "M3 now has persisted 256-1024-row TableViews, safe server filtering/sorting, audience-aware schema UI, hard-reference checks and a lint-enabled free gate; inline editing, lazy prefetch and richer design remain.",
+      "supersedes": [
+        "RPT-20260823-118D95"
+      ],
+      "tags": [
+        "eslint",
+        "local-ci",
+        "m3",
+        "tableview",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 TableView and local gate hardening checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:50:56Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:01:37Z",
+      "derived_from": [],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m0-transition-m1-kernel-v1",
+      "expired": false,
+      "id": "RPT-20260823-FE85CD",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-fe85cd-m0-transition-and-m1-kernel-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "crates/datahub-kernel",
+        "scripts"
+      ],
+      "sensitivity": "internal",
+      "sha256": "28919c41f246b81519a3df58453c3c81a7d6450c9b82ac824a79b109c064a4dc",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-2A43C1 at index generation 23.",
+        "Curator audit on 2026-08-24: git branch/log/ls-remote, scripts/quality-gate.ps1, kernel sources, Cargo manifests, cargo fmt, cargo clippy, and cargo test.",
+        "RPT-20260823-118D95 resolves the previously recorded M1 gaps."
+      ],
+      "status": "superseded",
+      "summary": "Historical M0/M1 checkpoint; its M1 gap assessment was subsequently resolved and is superseded by RPT-20260823-118D95.",
+      "supersedes": [],
+      "tags": [
+        "domain-kernel",
+        "local-ci",
+        "m0",
+        "m1",
+        "verification"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M0 transition and M1 kernel checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:43:06Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:51Z",
       "derived_from": [],
       "effective_status": "active",
@@ -677,8 +971,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Replace paid GitHub status/auto-merge requirements and integrate the verified M0 baseline under the local gate.",
-        "Start M1 domain-kernel implementation with automated unit and property tests."
+        "Implement inline VTable cell editing with optimistic conflict presentation.",
+        "Add lazy block prefetch, bounded sparse caching, data-revision invalidation and expired-view recovery.",
+        "Expand the multi-field schema/type designer and finish M3 automated/browser acceptance."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -687,13 +982,16 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "57c0a5e840c0df2cf35c096b759f7a895d85fa153145047f488575bd215c214a",
+      "sha256": "78af3bf0db120e7181c83138dcba6711d3e448741a9c75454fe66c342324449d",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
-        "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA."
+        "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
+        "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
+        "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
+        "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534."
       ],
       "status": "active",
-      "summary": "Implement and verify the full DataHub v1 product through Docker-first milestone delivery and free local automated quality gates.",
+      "summary": "M0-M2 are complete and M3 TableView reads are verified; inline editing, lazy prefetch/cache and richer schema design remain active, with M4-M8 pending.",
       "supersedes": [],
       "tags": [
         "active",
@@ -706,7 +1004,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:52:55Z",
+      "updated_at": "2026-08-23T19:51:14Z",
       "valid_as_of": "2026-08-24"
     },
     {

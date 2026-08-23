@@ -2,6 +2,16 @@ use std::time::Duration;
 
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
+mod repository;
+
+pub use repository::{
+    BuildArtifact, BuildRecord, ProjectRecord, RepositoryError, SessionPrincipal, StoredRow,
+    StoredSchema, SyncStatus, UserAccount, add_project_member, create_initial_user, create_project,
+    create_session, create_user, list_builds, list_projects, list_rows, list_schemas,
+    process_outbox_batch, project_role, record_build, row_exists, save_row, save_schema,
+    session_principal, sync_status, user_by_username, user_count,
+};
+
 /// Opens the `PostgreSQL` pool used by a `DataHub` process.
 ///
 /// # Errors

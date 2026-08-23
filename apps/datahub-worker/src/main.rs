@@ -12,6 +12,7 @@ async fn main() -> Result<()> {
         .await
         .context("failed to connect to PostgreSQL")?;
     let mut heartbeat = time::interval(Duration::from_secs(30));
+    let mut outbox = time::interval(Duration::from_secs(1));
 
     info!("DataHub worker started");
     loop {
@@ -23,6 +24,13 @@ async fn main() -> Result<()> {
             _ = heartbeat.tick() => {
                 if let Err(error) = datahub_persistence_pg::check(&pool).await {
                     error!(%error, "PostgreSQL heartbeat failed");
+                }
+            }
+            _ = outbox.tick() => {
+                match datahub_persistence_pg::process_outbox_batch(&pool, 100).await {
+                    Ok(processed) if processed > 0 => info!(processed, "outbox events projected"),
+                    Ok(_) => {}
+                    Err(error) => error!(%error, "outbox projection failed"),
                 }
             }
         }

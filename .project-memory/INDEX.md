@@ -5,16 +5,17 @@
 ## Project Snapshot
 
 - **Project:** DataHub
-- **Generation:** 23
-- **Generated:** 2026-08-23T18:54:26Z
+- **Generation:** 32
+- **Generated:** 2026-08-23T19:52:00Z
 - **Active task:** [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md)
 - **Overview:** DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.
 
 ### Next Actions
 
-1. Replace paid GitHub status/auto-merge requirements and integrate the verified M0 baseline under the local gate.
-2. Start M1 domain-kernel implementation with automated unit and property tests.
-3. Execute M0 transition, then begin M1 domain and compilation kernel.
+1. Implement inline VTable cell editing with optimistic conflict presentation.
+2. Add lazy block prefetch, bounded sparse caching, data-revision invalidation and expired-view recovery.
+3. Expand the multi-field schema/type designer and finish M3 automated/browser acceptance.
+4. Complete M3 inline VTable editing, lazy prefetch/cache and richer schema design, then run full M3 acceptance before M4.
 
 ### Blockers
 
@@ -24,13 +25,13 @@ _None recorded._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | Implement and verify the full DataHub v1 product through Docker-first milestone delivery and free local automated quality gates. | 2026-08-23T18:52:55Z |
+| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | M0-M2 are complete and M3 TableView reads are verified; inline editing, lazy prefetch/cache and richer schema design remain active, with M4-M8 pending. | 2026-08-23T19:51:14Z |
 
 ## Active Plans
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | Deliver M0 transition and M1-M8 product milestones, each gated by automated local Rust, Vue, PostgreSQL, Docker, integration and acceptance tests. | 2026-08-23T18:53:11Z |
+| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | M0-M2 and M3 TableView reads are complete; M3 editing/cache/designer work remains active and M4-M8 remain pending under the free local gate. | 2026-08-23T19:51:14Z |
 
 ## Current Analyses
 
@@ -44,7 +45,7 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-D301EA](short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md) | handoff | active | The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work. | 2026-08-23T18:53:25Z |
+| [HANDOFF-20260823-CB0534](short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md) | handoff | active | M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4. | 2026-08-23T19:51:08Z |
 
 ## Current Project-specific Memory
 
@@ -58,7 +59,7 @@ _None._
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
 | [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
 | [PIT-20260823-C6E3B6](long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md) | pitfall | active | PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling. | 2026-08-23T18:44:16Z |
-| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T18:53:29Z |
+| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T19:51:14Z |
 | [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-23T18:53:29Z |
 
 ## Review Queue
@@ -69,20 +70,25 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
+| [HANDOFF-20260823-5A07F4](short/handoffs/handoff-20260823-5a07f4-m2-completion-to-m3-editing-handoff.md) | handoff | superseded | M0-M2 are complete; M3 API/console flows work, but VTable block editing and richer schema design remain the active scope before M4. | 2026-08-23T19:51:14Z |
+| [RPT-20260823-118D95](short/reports/rpt-20260823-118d95-m1-closure-m2-completion-and-m3-progress-checkpoint.md) | report | superseded | Historical M1/M2/M3 checkpoint superseded by RPT-20260823-CA61E0 after TableView read APIs and gate hardening were completed. | 2026-08-23T19:51:14Z |
+| [HANDOFF-20260823-CB0534](short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md) | handoff | active | M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4. | 2026-08-23T19:51:08Z |
+| [RPT-20260823-CA61E0](short/reports/rpt-20260823-ca61e0-m3-tableview-and-local-gate-hardening-checkpoint.md) | report | active | M3 now has persisted 256-1024-row TableViews, safe server filtering/sorting, audience-aware schema UI, hard-reference checks and a lint-enabled free gate; inline editing, lazy prefetch and richer design remain. | 2026-08-23T19:50:56Z |
+| [HANDOFF-20260823-DE8966](short/handoffs/handoff-20260823-de8966-m1-kernel-to-m2-persistence-and-auth-handoff.md) | handoff | superseded | M0 transition is complete and the verified M1 kernel slice is ready for local integration; M2 persistence/auth is next with explicit M1 contract gaps retained. | 2026-08-23T19:43:06Z |
+| [RPT-20260823-FE85CD](short/reports/rpt-20260823-fe85cd-m0-transition-and-m1-kernel-checkpoint.md) | report | superseded | Historical M0/M1 checkpoint; its M1 gap assessment was subsequently resolved and is superseded by RPT-20260823-118D95. | 2026-08-23T19:43:06Z |
+| [HANDOFF-20260823-D301EA](short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md) | handoff | superseded | The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work. | 2026-08-23T19:02:01Z |
 | [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | superseded | The public MIT repository ting-aaa/DataHub uses CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:53:29Z |
 | [HANDOFF-20260823-545AD6](short/handoffs/handoff-20260823-545ad6-m0-github-billing-blocked-integration-handoff.md) | handoff | superseded | PR #1 is ready for protected automatic squash merge, but the user must clear the GitHub billing lock before required CI jobs can run. | 2026-08-23T18:53:29Z |
 | [RPT-20260823-49833C](short/reports/rpt-20260823-49833c-m0-github-integration-blocked-by-account-billing-lock.md) | report | superseded | Commit 66d7b8e and PR #1 are ready with protected CI-gated auto squash merge, but GitHub Actions cannot start while the user account is billing-locked. | 2026-08-23T18:53:29Z |
-| [HANDOFF-20260823-D301EA](short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md) | handoff | active | The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work. | 2026-08-23T18:53:25Z |
 | [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
 | [HANDOFF-20260823-D2DC12](short/handoffs/handoff-20260823-d2dc12-m0-local-foundation-to-github-integration-handoff.md) | handoff | superseded | Local M0 implementation and verification are complete; commit, push, PR, CI, and squash merge into develop remain. | 2026-08-23T18:48:21Z |
-| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | superseded | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:44:19Z |
-| [RPT-20260823-44414F](short/reports/rpt-20260823-44414f-m0-docker-foundation-implementation-checkpoint.md) | report | active | The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain. | 2026-08-23T18:44:06Z |
-| [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
+
+_3 more record(s) are in `index.json`._
 
 ## Memory Map
 
 - Long-term records: 7
-- Short-term records: 10
+- Short-term records: 16
 - Temporary records: 0
 - Archived records: 0
 - Complete machine-readable inventory: [`index.json`](index.json)

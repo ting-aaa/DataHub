@@ -42,6 +42,8 @@ DataHub/
 │   └── datahub-plugin-host/ # Isolated plugin process boundary
 ├── crates/                  # Reusable Rust domain and adapter crates
 │   ├── datahub-kernel/      # Domain primitives without infrastructure coupling
+│   ├── datahub-auth/        # Argon2id credentials and opaque session tokens
+│   ├── datahub-export/      # Deterministic code and data artifacts
 │   └── datahub-persistence-pg/ # PostgreSQL pool and migrations
 ├── web/                     # Vue 3 administration console
 ├── migrations/              # Ordered SQLx migrations
