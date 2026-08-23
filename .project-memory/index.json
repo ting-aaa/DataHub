@@ -1,0 +1,612 @@
+{
+  "active_task_id": "TASK-20260823-9C0927",
+  "counts": {
+    "archive": 0,
+    "long": 5,
+    "short": 3,
+    "temp": 0
+  },
+  "generated_at": "2026-08-23T18:24:47Z",
+  "generation": 10,
+  "project_name": "DataHub",
+  "records": [
+    {
+      "blockers": [],
+      "confidence": "high",
+      "created_at": "2026-08-23T18:23:41Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-bootstrap-target-architecture-v1",
+      "expired": false,
+      "id": "ARCH-20260823-F3A201",
+      "kind": "architecture",
+      "next_actions": [
+        "Materialize the topology in the M0 Docker Compose and workspace foundation."
+      ],
+      "path": "long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "deploy",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "aa5a704348feb25ce635cf65856e87b665c34fc7c2a47601489ce9930c03048b",
+      "sources": [
+        "User instructions and accepted development plans in the DataHub planning conversation on 2026-08-24.",
+        "Repository audit on 2026-08-24 found no product implementation, so this record describes the target architecture only."
+      ],
+      "status": "active",
+      "summary": "DataHub targets a Docker Compose full-stack topology with Rust services, a Vue console, and PostgreSQL as the canonical store.",
+      "supersedes": [],
+      "tags": [
+        "architecture",
+        "docker",
+        "postgresql"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "Docker-first DataHub target architecture",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:23:41Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:24:09Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-bootstrap-github-gitflow-policy-v1",
+      "expired": false,
+      "id": "DEC-20260823-9EC766",
+      "kind": "decision",
+      "next_actions": [
+        "Install and authenticate GitHub CLI, initialize Git, create the remote, and apply branch policy in M0."
+      ],
+      "path": "long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        ".",
+        ".github"
+      ],
+      "sensitivity": "internal",
+      "sha256": "86a1964414c89dafb1a221d43da6df40bfd6868f09d267e2c4fa7d7a33ee6239",
+      "sources": [
+        "Explicit user-approved repository and branch policy in the DataHub planning conversation on 2026-08-24.",
+        "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command."
+      ],
+      "status": "active",
+      "summary": "The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
+      "supersedes": [],
+      "tags": [
+        "decision",
+        "gitflow",
+        "github"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "GitHub repository and GitFlow policy",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:24:09Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:24:01Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-bootstrap-platform-decisions-v1",
+      "expired": false,
+      "id": "DEC-20260823-A72203",
+      "kind": "decision",
+      "next_actions": [
+        "Implement these decisions through the milestone plan without expanding v1 scope."
+      ],
+      "path": "long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "ccf1c83cc869f97943475afd20a893f0968324c951cafd822de4665a6f1eb38f",
+      "sources": [
+        "Explicit user decisions summarized in the DataHub planning conversation on 2026-08-24."
+      ],
+      "status": "active",
+      "summary": "DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports.",
+      "supersedes": [],
+      "tags": [
+        "decision",
+        "platform",
+        "v1"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "Initial DataHub platform and v1 capability choices",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:24:01Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "GitHub CLI and authenticated remote access are pending."
+      ],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:24:41Z",
+      "derived_from": [
+        "PROJ-20260823-0128D7",
+        "ARCH-20260823-F3A201",
+        "STD-20260823-048D0D",
+        "DEC-20260823-A72203",
+        "DEC-20260823-9EC766"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-bootstrap-to-m0-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-323477",
+      "kind": "handoff",
+      "next_actions": [
+        "Begin M0 implementation with a task-specific context pack."
+      ],
+      "path": "short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "bfe1b79e081f2e6907bf6163559552d4173a7ca41312a1ffdb8e8015d34fcbb8",
+      "sources": [
+        "Repository and environment audit on 2026-08-24.",
+        "TASK-20260823-9C0927",
+        "PLAN-20260823-686A1E"
+      ],
+      "status": "active",
+      "summary": "Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending.",
+      "supersedes": [],
+      "tags": [
+        "handoff",
+        "m0"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "DataHub bootstrap handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:24:41Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "Remote repository work requires GitHub CLI installation and authentication."
+      ],
+      "confidence": "high",
+      "created_at": "2026-08-23T18:24:30Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-plan-m0-docker-foundation-v1",
+      "expired": false,
+      "id": "PLAN-20260823-686A1E",
+      "kind": "plan",
+      "next_actions": [
+        "Implement steps in order on feature/m0-foundation and capture exact verification evidence."
+      ],
+      "path": "short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "f646c5770473ee63e54ce75acc07f66bbf0ff4a0df96135e93665b8fe27b6302",
+      "sources": [
+        "Accepted DataHub development plans and Docker deployment instruction from the user on 2026-08-24.",
+        "TASK-20260823-9C0927"
+      ],
+      "status": "active",
+      "summary": "Build and verify the complete M0 repository, Docker Compose application topology, PostgreSQL baseline, CI gates, and GitFlow integration.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "m0",
+        "plan"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 Docker-first implementation plan",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:24:30Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:23:32Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-bootstrap-project-overview-v1",
+      "expired": false,
+      "id": "PROJ-20260823-0128D7",
+      "kind": "project",
+      "next_actions": [
+        "Bootstrap the Docker-first M0 repository foundation."
+      ],
+      "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "a7d8f5b1003338a6028057d7f1c6d65675c423194bc984b2a3ae4c118f305330",
+      "sources": [
+        "User instructions in the DataHub planning conversation on 2026-08-24.",
+        "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository."
+      ],
+      "status": "active",
+      "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
+      "supersedes": [],
+      "tags": [
+        "datahub",
+        "product"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "DataHub project overview",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:23:32Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:23:51Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-bootstrap-development-standards-v1",
+      "expired": false,
+      "id": "STD-20260823-048D0D",
+      "kind": "standard",
+      "next_actions": [
+        "Encode these standards in repository documentation and CI during M0."
+      ],
+      "path": "long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "348e94a2051fe894c50a5c05d67ee36fea01e39949aaf27b105ae2113a19e88c",
+      "sources": [
+        "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
+        "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment."
+      ],
+      "status": "active",
+      "summary": "Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "standard",
+        "tooling"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "DataHub development and deployment standards",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:23:51Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "GitHub CLI is not installed; GitHub authentication and remote creation are pending."
+      ],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:24:19Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-task-m0-foundation-v1",
+      "expired": false,
+      "id": "TASK-20260823-9C0927",
+      "kind": "task",
+      "next_actions": [
+        "Create the baseline repository files and Docker Compose topology.",
+        "Install/authenticate GitHub CLI, create ting-aaa/DataHub, and configure GitFlow branches and CI gates."
+      ],
+      "path": "short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "4912fc9dc84f6fd53d650910b806c12c9c1e5b1fc93637e0289ddd984d8cf0d7",
+      "sources": [
+        "Current task assigned by the user and main agent on 2026-08-24.",
+        "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection."
+      ],
+      "status": "active",
+      "summary": "Initialize the repository and deliver a verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the approved GitFlow process.",
+      "supersedes": [],
+      "tags": [
+        "active",
+        "docker",
+        "m0"
+      ],
+      "task_id": "",
+      "tier": "short",
+      "title": "Bootstrap M0 Docker-first DataHub foundation",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:24:19Z",
+      "valid_as_of": "2026-08-24"
+    }
+  ],
+  "schema_version": 1,
+  "type_registry": {
+    "generation": 1,
+    "schema_version": 1,
+    "sha256": "ff649487c6fc837a55ea58f749f702660ac5d9bb82aee9ef001862f5e3e9ab19",
+    "types": [
+      {
+        "builtin": true,
+        "context_priority": 100,
+        "current_version": 1,
+        "description": "Reasoning over known inputs, implications, and tradeoffs.",
+        "directory": "analyses",
+        "id_prefix": "ANL",
+        "min_confidence": "low",
+        "name": "analysis",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 120,
+        "current_version": 1,
+        "description": "Durable system structure, interfaces, and constraints.",
+        "directory": "architecture",
+        "id_prefix": "ARCH",
+        "min_confidence": "high",
+        "name": "architecture",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": true,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "long"
+      },
+      {
+        "builtin": true,
+        "context_priority": 110,
+        "current_version": 1,
+        "description": "Accepted choices, rationale, and rejected alternatives.",
+        "directory": "decisions",
+        "id_prefix": "DEC",
+        "min_confidence": "high",
+        "name": "decision",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": true,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "long"
+      },
+      {
+        "builtin": true,
+        "context_priority": 90,
+        "current_version": 1,
+        "description": "Session or agent transfer state and exact next actions.",
+        "directory": "handoffs",
+        "id_prefix": "HANDOFF",
+        "min_confidence": "low",
+        "name": "handoff",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 5,
+        "current_version": 1,
+        "description": "Untriaged temporary memory proposals.",
+        "directory": "inbox",
+        "id_prefix": "MEM",
+        "min_confidence": "low",
+        "name": "inbox",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "temp"
+      },
+      {
+        "builtin": true,
+        "context_priority": 95,
+        "current_version": 1,
+        "description": "Evidence-gathering work and its supported findings.",
+        "directory": "investigations",
+        "id_prefix": "INV",
+        "min_confidence": "low",
+        "name": "investigation",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 20,
+        "current_version": 1,
+        "description": "Temporary chronological events and observations.",
+        "directory": "logs",
+        "id_prefix": "LOG",
+        "min_confidence": "low",
+        "name": "log",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "temp"
+      },
+      {
+        "builtin": true,
+        "context_priority": 145,
+        "current_version": 1,
+        "description": "Repeatable or costly failure modes future work must avoid.",
+        "directory": "pitfalls",
+        "id_prefix": "PIT",
+        "min_confidence": "high",
+        "name": "pitfall",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": true,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "long"
+      },
+      {
+        "builtin": true,
+        "context_priority": 120,
+        "current_version": 1,
+        "description": "Ordered implementation or investigation steps for active work.",
+        "directory": "plans",
+        "id_prefix": "PLAN",
+        "min_confidence": "low",
+        "name": "plan",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 180,
+        "current_version": 1,
+        "description": "Project purpose, boundaries, stakeholders, and durable context.",
+        "directory": "project",
+        "id_prefix": "PROJ",
+        "min_confidence": "high",
+        "name": "project",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": true,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "long"
+      },
+      {
+        "builtin": true,
+        "context_priority": 60,
+        "current_version": 1,
+        "description": "Bounded progress, verification, audit, or outcome summary.",
+        "directory": "reports",
+        "id_prefix": "RPT",
+        "min_confidence": "low",
+        "name": "report",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 25,
+        "current_version": 1,
+        "description": "Temporary session-scoped notes and state.",
+        "directory": "sessions",
+        "id_prefix": "SES",
+        "min_confidence": "low",
+        "name": "session",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "temp"
+      },
+      {
+        "builtin": true,
+        "context_priority": 150,
+        "current_version": 1,
+        "description": "Accepted project conventions and operating rules.",
+        "directory": "standards",
+        "id_prefix": "STD",
+        "min_confidence": "high",
+        "name": "standard",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": true,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "long"
+      },
+      {
+        "builtin": true,
+        "context_priority": 130,
+        "current_version": 1,
+        "description": "Current work objective, status, ownership, and continuity.",
+        "directory": "tasks",
+        "id_prefix": "TASK",
+        "min_confidence": "low",
+        "name": "task",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "short"
+      },
+      {
+        "builtin": true,
+        "context_priority": 10,
+        "current_version": 1,
+        "description": "Temporary excerpts or references to raw tool evidence.",
+        "directory": "tool-output",
+        "id_prefix": "TOOL",
+        "min_confidence": "low",
+        "name": "tool-output",
+        "replaces": [],
+        "required_sections": [],
+        "requires_sources": false,
+        "review_days": null,
+        "status": "active",
+        "superseded_by": "",
+        "tier": "temp"
+      }
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# JavaScript
+node_modules/
+dist/
+.vite/
+
+# Local configuration and data
+.env
+.env.*
+!.env.example
+.data/
+
+# Project memory runtime lock
+.project-memory/.runtime/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs and coverage
+*.log
+coverage/
+lcov.info
