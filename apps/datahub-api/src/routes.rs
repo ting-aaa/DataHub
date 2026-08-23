@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::{Path, State},
+    extract::{DefaultBodyLimit, Path, State},
     http::HeaderMap,
     routing::{get, post, put},
 };
@@ -8,18 +8,23 @@ use datahub_auth::{digest_token, hash_password, issue_token, verify_password};
 use datahub_export::{
     ExportError, generate_code_for_audience, generate_csv_for_audience, generate_json_for_audience,
 };
+use datahub_formula::{
+    EvaluationRuntime, FormulaDefinition, FormulaSet, evaluate_formulas, parse_formula,
+};
 use datahub_kernel::{
     Audience, BuildId, CompilationTarget, ConfigRow, ConfigValue, FieldId, ProjectAction,
     ProjectId, ProjectRole, RevisionId, RowId, SchemaDefinition, SchemaId, SessionId, TableViewId,
     UserId, validate_row, validate_schema,
 };
 use datahub_persistence_pg::{
-    BuildArtifact, BuildRecord, ProjectRecord, SessionPrincipal, StoredRow, StoredSchema,
-    SyncStatus, UserAccount, add_project_member, create_initial_user, create_project,
-    create_session, create_user, list_builds, list_projects, list_rows, list_schemas, project_role,
-    record_build, row_exists, save_row, save_schema, session_principal, sync_status,
-    user_by_username, user_count,
+    BuildArtifact, BuildRecord, ProjectRecord, RowWrite, SessionPrincipal, StoredFormulaSet,
+    StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member, create_initial_user,
+    create_project, create_session, create_user, list_builds, list_projects, list_rows,
+    list_schemas, load_formula_set, project_role, record_build, row_exists, save_formula_set,
+    save_row, save_rows_atomic, save_schema, session_principal, sync_status, user_by_username,
+    user_count,
 };
+use datahub_xlsx::{VersionedRow, XlsxError, export_workbook, import_workbook};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::{Postgres, QueryBuilder, Row};
@@ -27,6 +32,7 @@ use sqlx::{Postgres, QueryBuilder, Row};
 use crate::{AppState, error::ApiError};
 
 const SESSION_TTL_SECONDS: i32 = 12 * 60 * 60;
+const XLSX_BODY_LIMIT: usize = 64 * 1024 * 1024;
 
 pub(crate) fn router() -> Router<AppState> {
     Router::new()
@@ -55,6 +61,30 @@ pub(crate) fn router() -> Router<AppState> {
         .route(
             "/projects/{project_id}/schemas/{schema_id}/rows/{row_id}",
             put(update_row_handler),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/formulas",
+            get(formulas).put(save_formulas),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/formulas/preview",
+            post(preview_formulas),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/formulas/apply",
+            post(apply_formulas),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/xlsx/export",
+            post(export_xlsx),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/xlsx/preview",
+            post(preview_xlsx).layer(DefaultBodyLimit::max(XLSX_BODY_LIMIT)),
+        )
+        .route(
+            "/projects/{project_id}/schemas/{schema_id}/xlsx/commit",
+            post(commit_xlsx).layer(DefaultBodyLimit::max(XLSX_BODY_LIMIT)),
         )
         .route(
             "/projects/{project_id}/schemas/{schema_id}/views",
@@ -639,6 +669,356 @@ async fn save_row_handler(
         )
         .await?,
     ))
+}
+
+#[derive(Deserialize)]
+struct FormulaInput {
+    field_id: FieldId,
+    source: String,
+}
+
+#[derive(Deserialize)]
+struct SaveFormulaSetRequest {
+    definitions: Vec<FormulaInput>,
+    expected_version: Option<i64>,
+}
+
+#[derive(Deserialize)]
+struct FormulaRunRequest {
+    #[serde(default = "default_formula_runtime")]
+    runtime: EvaluationRuntime,
+}
+
+const fn default_formula_runtime() -> EvaluationRuntime {
+    EvaluationRuntime::Native
+}
+
+#[derive(Serialize)]
+struct FormulaChange {
+    row_id: RowId,
+    expected_version: i64,
+    before: ConfigRow,
+    after: ConfigRow,
+}
+
+async fn formulas(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+) -> Result<Json<Option<StoredFormulaSet>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    Ok(Json(load_formula_set(&state.pool, schema_id).await?))
+}
+
+async fn save_formulas(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+    Json(request): Json<SaveFormulaSetRequest>,
+) -> Result<Json<StoredFormulaSet>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let existing = load_formula_set(&state.pool, schema_id).await?;
+    match (&existing, request.expected_version) {
+        (Some(_), None) => {
+            return Err(ApiError::bad_request(
+                "expected_version is required when updating formulas",
+            ));
+        }
+        (None, Some(_)) => return Err(ApiError::conflict("formula set does not exist")),
+        _ => {}
+    }
+    let formula_set = build_formula_set(&schema.definition, request.definitions)?;
+    let document = serde_json::to_value(formula_set)
+        .map_err(|_| ApiError::internal("formula serialization failed"))?;
+    Ok(Json(
+        save_formula_set(
+            &state.pool,
+            project_id,
+            schema_id,
+            schema.revision_id,
+            &document,
+            principal.user_id,
+            request.expected_version,
+        )
+        .await?,
+    ))
+}
+
+async fn preview_formulas(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+    Json(request): Json<FormulaRunRequest>,
+) -> Result<Json<Vec<FormulaChange>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let formula_set = current_formula_set(&state, schema_id, schema.revision_id).await?;
+    let rows = list_rows(&state.pool, schema_id).await?;
+    Ok(Json(compute_formula_changes(
+        &schema.definition,
+        &formula_set,
+        rows,
+        request.runtime,
+    )?))
+}
+
+async fn apply_formulas(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+    Json(request): Json<FormulaRunRequest>,
+) -> Result<Json<Vec<StoredRow>>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let formula_set = current_formula_set(&state, schema_id, schema.revision_id).await?;
+    let rows = list_rows(&state.pool, schema_id).await?;
+    let writes = compute_formula_changes(&schema.definition, &formula_set, rows, request.runtime)?
+        .into_iter()
+        .map(|change| RowWrite {
+            row: change.after,
+            expected_version: Some(change.expected_version),
+        })
+        .collect::<Vec<_>>();
+    Ok(Json(
+        save_rows_atomic(
+            &state.pool,
+            &writes,
+            principal.user_id,
+            project_id,
+            "formula.applied",
+        )
+        .await?,
+    ))
+}
+
+fn build_formula_set(
+    schema: &SchemaDefinition,
+    inputs: Vec<FormulaInput>,
+) -> Result<FormulaSet, ApiError> {
+    if inputs.len() > 256 || inputs.iter().any(|input| input.source.len() > 4096) {
+        return Err(ApiError::bad_request(
+            "a formula set supports at most 256 formulas of 4096 bytes each",
+        ));
+    }
+    let definitions = inputs
+        .into_iter()
+        .map(|input| {
+            if !schema.fields.iter().any(|field| field.id == input.field_id) {
+                return Err(ApiError::validation(
+                    json!({"formula": "target field does not exist"}),
+                ));
+            }
+            let expression = parse_formula(&input.source, schema).map_err(formula_error)?;
+            Ok(FormulaDefinition {
+                field_id: input.field_id,
+                source: input.source,
+                expression,
+            })
+        })
+        .collect::<Result<Vec<_>, ApiError>>()?;
+    FormulaSet::from_definitions(definitions).map_err(formula_error)
+}
+
+async fn current_formula_set(
+    state: &AppState,
+    schema_id: SchemaId,
+    schema_revision_id: RevisionId,
+) -> Result<FormulaSet, ApiError> {
+    let stored = load_formula_set(&state.pool, schema_id)
+        .await?
+        .ok_or(datahub_persistence_pg::RepositoryError::NotFound)?;
+    if stored.schema_revision_id != schema_revision_id {
+        return Err(ApiError::conflict(
+            "formula set must be saved against the current schema revision",
+        ));
+    }
+    serde_json::from_value(stored.document)
+        .map_err(|_| ApiError::internal("stored formula set is invalid"))
+}
+
+fn compute_formula_changes(
+    schema: &SchemaDefinition,
+    formulas: &FormulaSet,
+    rows: Vec<StoredRow>,
+    runtime: EvaluationRuntime,
+) -> Result<Vec<FormulaChange>, ApiError> {
+    let mut changes = Vec::new();
+    for stored in rows {
+        let results =
+            evaluate_formulas(formulas, &stored.row.values, runtime).map_err(formula_error)?;
+        let mut after = stored.row.clone();
+        for (field_id, value) in results {
+            let field = schema
+                .fields
+                .iter()
+                .find(|field| field.id == field_id)
+                .ok_or_else(|| {
+                    ApiError::validation(json!({"formula": "target field does not exist"}))
+                })?;
+            after
+                .values
+                .insert(field_id, value.to_config(&field.ty).map_err(formula_error)?);
+        }
+        if after.values != stored.row.values {
+            changes.push(FormulaChange {
+                row_id: stored.row.id,
+                expected_version: stored.version,
+                before: stored.row,
+                after,
+            });
+        }
+    }
+    Ok(changes)
+}
+
+#[derive(Serialize)]
+struct XlsxArtifact {
+    file_name: String,
+    content_type: &'static str,
+    content: Vec<u8>,
+}
+
+#[derive(Deserialize)]
+struct XlsxPayload {
+    content: Vec<u8>,
+}
+
+#[derive(Serialize)]
+struct XlsxPreview {
+    created: usize,
+    updated: usize,
+    rows: Vec<datahub_xlsx::ImportedRow>,
+}
+
+async fn export_xlsx(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+) -> Result<Json<XlsxArtifact>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let rows = list_rows(&state.pool, schema_id)
+        .await?
+        .into_iter()
+        .map(|stored| VersionedRow {
+            row: stored.row,
+            version: stored.version,
+        })
+        .collect::<Vec<_>>();
+    let content =
+        export_workbook(&schema.definition, schema.revision_id, &rows).map_err(xlsx_error)?;
+    Ok(Json(XlsxArtifact {
+        file_name: format!("{}.xlsx", schema.definition.name),
+        content_type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        content,
+    }))
+}
+
+async fn preview_xlsx(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+    Json(payload): Json<XlsxPayload>,
+) -> Result<Json<XlsxPreview>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let imported = import_workbook(&payload.content, &schema.definition, schema.revision_id)
+        .map_err(xlsx_error)?;
+    validate_import(&schema.definition, &imported.rows)?;
+    let created = imported
+        .rows
+        .iter()
+        .filter(|row| row.expected_version.is_none())
+        .count();
+    let updated = imported.rows.len() - created;
+    Ok(Json(XlsxPreview {
+        created,
+        updated,
+        rows: imported.rows,
+    }))
+}
+
+async fn commit_xlsx(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path((project_id, schema_id)): Path<(ProjectId, SchemaId)>,
+    Json(payload): Json<XlsxPayload>,
+) -> Result<Json<Vec<StoredRow>>, ApiError> {
+    let principal = authenticate(&state, &headers, true).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Write).await?;
+    let schema = current_schema(&state, project_id, schema_id).await?;
+    let imported = import_workbook(&payload.content, &schema.definition, schema.revision_id)
+        .map_err(xlsx_error)?;
+    validate_import(&schema.definition, &imported.rows)?;
+    let writes = imported
+        .rows
+        .into_iter()
+        .map(|imported| RowWrite {
+            row: imported.row,
+            expected_version: imported.expected_version,
+        })
+        .collect::<Vec<_>>();
+    Ok(Json(
+        save_rows_atomic(
+            &state.pool,
+            &writes,
+            principal.user_id,
+            project_id,
+            "xlsx.imported",
+        )
+        .await?,
+    ))
+}
+
+fn validate_import(
+    schema: &SchemaDefinition,
+    rows: &[datahub_xlsx::ImportedRow],
+) -> Result<(), ApiError> {
+    let issues = rows
+        .iter()
+        .flat_map(|imported| validate_row(schema, &imported.row))
+        .collect::<Vec<_>>();
+    if issues.is_empty() {
+        Ok(())
+    } else {
+        Err(ApiError::validation(json!(issues)))
+    }
+}
+
+async fn current_schema(
+    state: &AppState,
+    project_id: ProjectId,
+    schema_id: SchemaId,
+) -> Result<StoredSchema, ApiError> {
+    list_schemas(&state.pool, project_id)
+        .await?
+        .into_iter()
+        .find(|schema| schema.definition.id == schema_id)
+        .ok_or_else(|| datahub_persistence_pg::RepositoryError::NotFound.into())
+}
+
+#[allow(clippy::needless_pass_by_value)]
+fn formula_error(error: datahub_formula::FormulaError) -> ApiError {
+    ApiError::validation(json!({"formula": error.to_string()}))
+}
+
+fn xlsx_error(error: XlsxError) -> ApiError {
+    match error {
+        XlsxError::ForeignSchema { .. } | XlsxError::StaleRevision { .. } => {
+            ApiError::conflict(error.to_string())
+        }
+        XlsxError::Writer(_) | XlsxError::Reader(_) | XlsxError::Json(_) => {
+            ApiError::bad_request("XLSX file could not be read")
+        }
+        other => ApiError::validation(json!({"xlsx": other.to_string()})),
+    }
 }
 
 #[derive(Deserialize)]

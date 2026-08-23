@@ -62,6 +62,21 @@ pub struct StoredRow {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct StoredFormulaSet {
+    pub schema_id: SchemaId,
+    pub schema_revision_id: RevisionId,
+    pub document: Value,
+    pub version: i64,
+    pub revision_id: RevisionId,
+}
+
+#[derive(Debug, Clone)]
+pub struct RowWrite {
+    pub row: ConfigRow,
+    pub expected_version: Option<i64>,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct BuildArtifact {
     pub path: String,
     pub media_type: String,
@@ -439,34 +454,75 @@ pub async fn save_row(
     project_id: ProjectId,
     expected_version: Option<i64>,
 ) -> Result<StoredRow, RepositoryError> {
+    let mut saved = save_rows_atomic(
+        pool,
+        &[RowWrite {
+            row: row.clone(),
+            expected_version,
+        }],
+        actor,
+        project_id,
+        "row.saved",
+    )
+    .await?;
+    saved.pop().ok_or(RepositoryError::NotFound)
+}
+
+/// Saves a group of rows, revisions, audit records, and outbox records atomically.
+///
+/// # Errors
+/// Returns conflict, serialization, or database errors. No row is committed if
+/// any optimistic version check fails.
+pub async fn save_rows_atomic(
+    pool: &PgPool,
+    writes: &[RowWrite],
+    actor: UserId,
+    project_id: ProjectId,
+    action: &str,
+) -> Result<Vec<StoredRow>, RepositoryError> {
+    let mut tx = pool.begin().await?;
+    let mut saved = Vec::with_capacity(writes.len());
+    for write in writes {
+        saved.push(save_row_in_transaction(&mut tx, write, actor, project_id, action).await?);
+    }
+    tx.commit().await?;
+    Ok(saved)
+}
+
+async fn save_row_in_transaction(
+    tx: &mut Transaction<'_, Postgres>,
+    write: &RowWrite,
+    actor: UserId,
+    project_id: ProjectId,
+    action: &str,
+) -> Result<StoredRow, RepositoryError> {
     let revision_id = RevisionId::new();
-    let mut stored_row = row.clone();
+    let mut stored_row = write.row.clone();
     stored_row.revision_id = revision_id;
     let document = serde_json::to_value(&stored_row)?;
-    let mut tx = pool.begin().await?;
-    let version = if let Some(expected) = expected_version {
+    let version = if let Some(expected) = write.expected_version {
         let version: Option<i64> = sqlx::query_scalar(
             "UPDATE datahub_config_rows SET document = $1, version = version + 1, current_revision_id = $2, updated_by = $3, updated_at = NOW() WHERE id = $4 AND schema_id = $5 AND version = $6 RETURNING version",
         )
         .bind(&document)
         .bind(revision_id.as_uuid())
         .bind(actor.as_uuid())
-        .bind(row.id.as_uuid())
-        .bind(row.schema_id.as_uuid())
+        .bind(write.row.id.as_uuid())
+        .bind(write.row.schema_id.as_uuid())
         .bind(expected)
-        .fetch_optional(&mut *tx)
+        .fetch_optional(&mut **tx)
         .await?;
         version.ok_or(RepositoryError::Conflict)?
     } else {
         sqlx::query(
             "INSERT INTO datahub_config_rows (id, schema_id, document, version, current_revision_id, created_by, updated_by) VALUES ($1, $2, $3, 1, $4, $5, $5)",
         )
-        .bind(row.id.as_uuid())
-        .bind(row.schema_id.as_uuid())
+        .bind(write.row.id.as_uuid())
+        .bind(write.row.schema_id.as_uuid())
         .bind(&document)
         .bind(revision_id.as_uuid())
         .bind(actor.as_uuid())
-        .execute(&mut *tx)
+        .execute(&mut **tx)
         .await?;
         1
     };
@@ -474,35 +530,34 @@ pub async fn save_row(
         "INSERT INTO datahub_row_revisions (revision_id, row_id, version, snapshot, actor_id) VALUES ($1, $2, $3, $4, $5)",
     )
     .bind(revision_id.as_uuid())
-    .bind(row.id.as_uuid())
+    .bind(write.row.id.as_uuid())
     .bind(version)
     .bind(&document)
     .bind(actor.as_uuid())
-    .execute(&mut *tx)
+    .execute(&mut **tx)
     .await?;
     sqlx::query(
         "INSERT INTO datahub_data_revisions (revision_id, project_id, schema_id, row_id, row_revision_id, actor_id) VALUES ($1, $2, $3, $4, $5, $6)",
     )
     .bind(RevisionId::new().as_uuid())
     .bind(project_id.as_uuid())
-    .bind(row.schema_id.as_uuid())
-    .bind(row.id.as_uuid())
+    .bind(write.row.schema_id.as_uuid())
+    .bind(write.row.id.as_uuid())
     .bind(revision_id.as_uuid())
     .bind(actor.as_uuid())
-    .execute(&mut *tx)
+    .execute(&mut **tx)
     .await?;
     append_events(
-        &mut tx,
+        tx,
         actor,
         Some(project_id),
-        "row.saved",
+        action,
         "config_row",
-        row.id.as_uuid(),
-        &json!({"schema_id": row.schema_id, "version": version}),
-        &format!("row:{}:version:{version}", row.id),
+        write.row.id.as_uuid(),
+        &json!({"schema_id": write.row.schema_id, "version": version}),
+        &format!("{action}:{}:version:{version}", write.row.id),
     )
     .await?;
-    tx.commit().await?;
     Ok(StoredRow {
         row: stored_row,
         version,
@@ -524,6 +579,98 @@ pub async fn list_rows(
     .fetch_all(pool)
     .await?;
     rows.iter().map(row_from_row).collect()
+}
+
+/// Loads the current formula set for a schema.
+///
+/// # Errors
+/// Returns database errors when the lookup fails.
+pub async fn load_formula_set(
+    pool: &PgPool,
+    schema_id: SchemaId,
+) -> Result<Option<StoredFormulaSet>, RepositoryError> {
+    let row = sqlx::query(
+        "SELECT schema_id, schema_revision_id, document, version, current_revision_id FROM datahub_formula_sets WHERE schema_id = $1",
+    )
+    .bind(schema_id.as_uuid())
+    .fetch_optional(pool)
+    .await?;
+    row.as_ref().map(formula_set_from_row).transpose()
+}
+
+/// Creates or optimistically updates a formula set and its immutable revision.
+///
+/// # Errors
+/// Returns conflict or database errors.
+#[allow(clippy::too_many_arguments)]
+pub async fn save_formula_set(
+    pool: &PgPool,
+    project_id: ProjectId,
+    schema_id: SchemaId,
+    schema_revision_id: RevisionId,
+    document: &Value,
+    actor: UserId,
+    expected_version: Option<i64>,
+) -> Result<StoredFormulaSet, RepositoryError> {
+    let revision_id = RevisionId::new();
+    let mut tx = pool.begin().await?;
+    let version = if let Some(expected) = expected_version {
+        let version: Option<i64> = sqlx::query_scalar(
+            "UPDATE datahub_formula_sets SET schema_revision_id = $1, document = $2, version = version + 1, current_revision_id = $3, updated_by = $4, updated_at = NOW() WHERE schema_id = $5 AND project_id = $6 AND version = $7 RETURNING version",
+        )
+        .bind(schema_revision_id.as_uuid())
+        .bind(document)
+        .bind(revision_id.as_uuid())
+        .bind(actor.as_uuid())
+        .bind(schema_id.as_uuid())
+        .bind(project_id.as_uuid())
+        .bind(expected)
+        .fetch_optional(&mut *tx)
+        .await?;
+        version.ok_or(RepositoryError::Conflict)?
+    } else {
+        sqlx::query(
+            "INSERT INTO datahub_formula_sets (schema_id, project_id, schema_revision_id, document, version, current_revision_id, created_by, updated_by) VALUES ($1, $2, $3, $4, 1, $5, $6, $6)",
+        )
+        .bind(schema_id.as_uuid())
+        .bind(project_id.as_uuid())
+        .bind(schema_revision_id.as_uuid())
+        .bind(document)
+        .bind(revision_id.as_uuid())
+        .bind(actor.as_uuid())
+        .execute(&mut *tx)
+        .await?;
+        1
+    };
+    sqlx::query(
+        "INSERT INTO datahub_formula_revisions (revision_id, schema_id, version, snapshot, actor_id) VALUES ($1, $2, $3, $4, $5)",
+    )
+    .bind(revision_id.as_uuid())
+    .bind(schema_id.as_uuid())
+    .bind(version)
+    .bind(document)
+    .bind(actor.as_uuid())
+    .execute(&mut *tx)
+    .await?;
+    append_events(
+        &mut tx,
+        actor,
+        Some(project_id),
+        "formula_set.saved",
+        "formula_set",
+        schema_id.as_uuid(),
+        &json!({"schema_revision_id": schema_revision_id, "version": version}),
+        &format!("formula-set:{schema_id}:version:{version}"),
+    )
+    .await?;
+    tx.commit().await?;
+    Ok(StoredFormulaSet {
+        schema_id,
+        schema_revision_id,
+        document: document.clone(),
+        version,
+        revision_id,
+    })
 }
 
 /// Checks whether a referenced row exists in the declared schema.
@@ -706,7 +853,7 @@ pub async fn process_outbox_batch(pool: &PgPool, limit: i64) -> Result<u64, Repo
                 .execute(&mut *tx)
                 .await?;
             }
-            ("row.saved", Some(project_id)) => {
+            ("row.saved" | "formula.applied" | "xlsx.imported", Some(project_id)) => {
                 sqlx::query(
                     "INSERT INTO datahub_projection_rows (project_id, schema_id, row_id, document, source_version, source_event_id) SELECT $1, schema_id, id, document, version, $3 FROM datahub_config_rows WHERE id = $2 ON CONFLICT (project_id, schema_id, row_id) DO UPDATE SET document = EXCLUDED.document, source_version = EXCLUDED.source_version, source_event_id = EXCLUDED.source_event_id, synced_at = NOW() WHERE datahub_projection_rows.source_version <= EXCLUDED.source_version",
                 )
@@ -764,6 +911,16 @@ fn row_from_row(row: &sqlx::postgres::PgRow) -> Result<StoredRow, RepositoryErro
     Ok(StoredRow {
         row: serde_json::from_value(document)?,
         version: row.try_get("version")?,
+    })
+}
+
+fn formula_set_from_row(row: &sqlx::postgres::PgRow) -> Result<StoredFormulaSet, RepositoryError> {
+    Ok(StoredFormulaSet {
+        schema_id: SchemaId::from_uuid(row.try_get("schema_id")?),
+        schema_revision_id: RevisionId::from_uuid(row.try_get("schema_revision_id")?),
+        document: row.try_get("document")?,
+        version: row.try_get("version")?,
+        revision_id: RevisionId::from_uuid(row.try_get("current_revision_id")?),
     })
 }
 

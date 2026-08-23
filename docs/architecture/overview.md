@@ -44,6 +44,8 @@ DataHub/
 │   ├── datahub-kernel/      # Domain primitives without infrastructure coupling
 │   ├── datahub-auth/        # Argon2id credentials and opaque session tokens
 │   ├── datahub-export/      # Deterministic code and data artifacts
+│   ├── datahub-formula/     # Stable FieldId AST and Native/Wasmtime evaluation
+│   ├── datahub-xlsx/        # Stable-ID XLSX export/import validation
 │   └── datahub-persistence-pg/ # PostgreSQL pool and migrations
 ├── web/                     # Vue 3 administration console
 ├── migrations/              # Ordered SQLx migrations

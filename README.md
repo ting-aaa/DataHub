@@ -7,8 +7,10 @@ The current implementation includes local Argon2id accounts, bearer/CSRF
 sessions, project RBAC, immutable Schema/Data revisions, typed configuration
 validation, per-field C/S/E target filtering, multi-field Schema design,
 server-filtered VTable blocks with inline optimistic editing, deterministic
-Rust/C#/TypeScript plus JSON/CSV artifacts, and transactional-outbox projection
-to PostgreSQL. The build and sync state is visible in the web console.
+Rust/C#/TypeScript plus JSON/CSV artifacts, stable FieldId formulas with
+Native/Wasmtime execution, stable-ID XLSX preview/atomic import, and
+transactional-outbox projection to PostgreSQL. Formula, XLSX, build, and sync
+state is available through the web console and API.
 
 ## Run the stack
 
@@ -36,7 +38,8 @@ pwsh -NoProfile -File scripts/quality-gate.ps1
 The gate runs Rust and web checks, builds an isolated Docker stack on alternate
 loopback ports, verifies HTTP, RBAC, validation, target isolation, build
 artifacts, SQL migrations, outbox projection, and PostgreSQL volume persistence.
-It does not require a paid CI service.
+It also proves Native/Wasm formula parity and full XLSX rollback on a stale-row
+conflict. It does not require a paid CI service.
 
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.
