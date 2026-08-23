@@ -9,9 +9,7 @@
   "event_id": "datahub-handoff-m3-tableview-to-editing-v1",
   "id": "HANDOFF-20260823-CB0534",
   "kind": "handoff",
-  "next_actions": [
-    "Complete inline editing, conflicts, lazy prefetch/cache and richer schema design with automated acceptance."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -25,7 +23,7 @@
     "RPT-20260823-CA61E0",
     "PLAN-20260823-9B6D1E"
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4.",
   "supersedes": [
     "HANDOFF-20260823-5A07F4"
@@ -41,7 +39,7 @@
   "tier": "short",
   "title": "M3 TableView read path to inline editing handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T19:51:08Z",
+  "updated_at": "2026-08-23T20:11:04Z",
   "valid_as_of": "2026-08-24"
 }
 -->

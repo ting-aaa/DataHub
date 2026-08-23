@@ -10,7 +10,7 @@
   "id": "PLAN-20260823-9B6D1E",
   "kind": "plan",
   "next_actions": [
-    "Complete M3 inline VTable editing, lazy prefetch/cache and richer schema design, then run full M3 acceptance before M4."
+    "Integrate completed M3, then implement and verify M4 formula and XLSX capabilities."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -30,10 +30,11 @@
     "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
     "RPT-20260823-FE85CD",
     "RPT-20260823-118D95",
-    "RPT-20260823-CA61E0"
+    "RPT-20260823-CA61E0",
+    "RPT-20260823-E99D5D"
   ],
   "status": "active",
-  "summary": "M0-M2 and M3 TableView reads are complete; M3 editing/cache/designer work remains active and M4-M8 remain pending under the free local gate.",
+  "summary": "M0-M3 are complete; M4-M8 remain pending under the free automated local gate.",
   "supersedes": [],
   "tags": [
     "automated-testing",
@@ -46,7 +47,7 @@
   "tier": "short",
   "title": "DataHub v1 milestone plan with free local automation",
   "type_version": 1,
-  "updated_at": "2026-08-23T19:51:14Z",
+  "updated_at": "2026-08-23T20:11:04Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -58,7 +59,7 @@
 - M0 transition: completed on develop at squash commit 026cb6f; local quality gate passed.
 - M1 domain/kernel: completed, including resolved UUIDv7/type/target/testing gaps.
 - M2 persistence/auth: completed through migrations 0002-0003, revisions, audit/outbox, auth/RBAC, builds and projection foundations.
-- M3 schema/configuration UX: in progress; TableView read blocks, safe filters/sorts, expiry/revision and optimistic API updates work; inline editing, lazy prefetch/cache and richer design remain.
+- M3 schema/configuration UX: completed with multi-field design, typed rows, inline VTable editing, block prefetch/cache, optimistic saves, filter/sort and browser acceptance.
 - M4-M8: pending; partial export/build/projection foundations do not complete M5 or M7.
 
 ## M0 Transition - Completed
@@ -77,11 +78,11 @@ Add PostgreSQL migrations and SQLx repositories for projects, workspaces, schema
 
 Migrations 0002-0003, repository/API/auth layers and the worker implement the accepted M2 core: local Argon2id accounts, hashed bearer/CSRF, RBAC, projects/schema/rows, optimistic 409 conflicts, immutable schema/row/data revisions, audit/outbox, build artifacts and idempotent PostgreSQL projection processing.
 
-## M3 Schema and Configuration UX - In Progress
+## M3 Schema and Configuration UX - Completed
 
 Implement /api/v1 contracts and OpenAPI for schema and data workflows. Build Vue schema/type/target designers and a VTable grid with server-side filtering/sorting, 512-row blocks, sparse caching, typed editors, batch paste, undo/redo and field-level conflict presentation. Automate API integration and browser E2E scenarios.
 
-Bootstrap/login/project/schema/row/build/sync APIs and console flows work. Migration 0004 and the API provide 256-1024-row TableView blocks, safe server filters/sorts, expiry and data-revision snapshots. C/S/E audience is independent from language output, the current type builder supports integer/float/string/bool/inline enum/list/hard reference, and hard references are checked before save. Direct inline editing, lazy sparse prefetch/cache, conflict presentation, batch/undo behavior and richer multi-field design remain.
+Bootstrap/login/project/schema/row/build/sync APIs and console flows work. Migration 0004 and the API provide bounded TableView blocks, safe server filters/sorts, expiry and data-revision snapshots. Multi-field schema design, typed row creation, independent C/S/E targeting, hard-reference checks, inline VTable editing, optimistic versions, block prefetch/cache deduplication and browser filter/sort acceptance are implemented and verified.
 
 ## M4 Formula and XLSX - Pending
 

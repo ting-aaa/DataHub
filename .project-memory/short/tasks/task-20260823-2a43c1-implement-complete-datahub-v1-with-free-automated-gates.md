@@ -10,9 +10,9 @@
   "id": "TASK-20260823-2A43C1",
   "kind": "task",
   "next_actions": [
-    "Implement inline VTable cell editing with optimistic conflict presentation.",
-    "Add lazy block prefetch, bounded sparse caching, data-revision invalidation and expired-view recovery.",
-    "Expand the multi-field schema/type designer and finish M3 automated/browser acceptance."
+    "Integrate feature/m3-grid-editing into develop under the free local quality policy.",
+    "Implement the M4 FieldId formula AST, dependency graph, cycle diagnostics and Native/WASM parity.",
+    "Implement cached-value-only XLSX template/export/import preview, diff and atomic commit with automated round trips."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -25,10 +25,11 @@
     "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
     "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
     "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
-    "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534."
+    "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
+    "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74."
   ],
   "status": "active",
-  "summary": "M0-M2 are complete and M3 TableView reads are verified; inline editing, lazy prefetch/cache and richer schema design remain active, with M4-M8 pending.",
+  "summary": "M0-M3 are complete and fully verified; the active full-v1 task advances to pending M4 formula/XLSX work, with M5-M8 also pending.",
   "supersedes": [],
   "tags": [
     "active",
@@ -41,7 +42,7 @@
   "tier": "short",
   "title": "Implement complete DataHub v1 with free automated gates",
   "type_version": 1,
-  "updated_at": "2026-08-23T19:51:14Z",
+  "updated_at": "2026-08-23T20:11:04Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -62,7 +63,7 @@ Transition the existing M0 branch away from required GitHub checks and billing-d
 
 ## Progress
 
-M0-M2 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 now includes persisted TableViews with bounded blocks, safe server filtering/sorting, expiry and data-revision snapshots plus verified optimistic API updates. Inline VTable editing, lazy prefetch/cache and richer multi-field schema design remain.
+M0-M3 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4-M8 remain pending.
 
 ## Completion Criteria
 
