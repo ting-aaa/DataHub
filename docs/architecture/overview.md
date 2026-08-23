@@ -24,7 +24,7 @@ and Worker startup.
 
 - `datahub-api`: HTTP API and readiness endpoints.
 - `datahub-worker`: asynchronous build, import, validation, and sync jobs.
-- `datahub-plugin-host`: future Wasmtime/WASI isolation boundary.
+- `datahub-plugin-host`: Wasmtime Component/WIT capability sandbox and exact-version registry.
 - `datahub-cli`: one-shot administration and migration commands.
 - `web`: Vue console served by an unprivileged Nginx process.
 

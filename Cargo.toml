@@ -11,6 +11,7 @@ members = [
   "crates/datahub-persistence-pg",
   "crates/datahub-xlsx",
 ]
+exclude = ["examples/datahub-echo-plugin"]
 resolver = "2"
 
 [workspace.package]
@@ -35,19 +36,22 @@ datahub-persistence-pg = { path = "crates/datahub-persistence-pg" }
 datahub-xlsx = { path = "crates/datahub-xlsx" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+semver = { version = "1", features = ["serde"] }
 num-traits = "0.2"
 quick-xml = { version = "0.41", features = ["serialize"] }
 rust_xlsxwriter = "0.99"
 sha2 = "0.10"
 sqlx = { version = "0.8", default-features = false, features = ["json", "macros", "migrate", "postgres", "runtime-tokio-rustls", "uuid"] }
 thiserror = "2"
+toml = "1.1"
 tokio = { version = "1", features = ["macros", "net", "rt-multi-thread", "signal", "time"] }
 tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["trace"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 uuid = { version = "1", features = ["serde", "v7"] }
-wasmtime = { version = "48", default-features = false, features = ["cranelift", "runtime", "std", "wat"] }
+wasmtime = { version = "48", default-features = false, features = ["component-model", "cranelift", "runtime", "std", "wat"] }
+wit-component = "0.257"
 zip = { version = "8.6", default-features = false, features = ["deflate"] }
 
 [workspace.lints.rust]

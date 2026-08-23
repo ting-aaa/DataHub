@@ -10,7 +10,7 @@
   "id": "PLAN-20260823-9B6D1E",
   "kind": "plan",
   "next_actions": [
-    "Integrate completed M4, then implement and verify M5 deterministic build/export capabilities."
+    "Implement and verify the M6 Wasmtime Component/WIT plugin platform and deny-by-default sandbox."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -32,10 +32,11 @@
     "RPT-20260823-118D95",
     "RPT-20260823-CA61E0",
     "RPT-20260823-E99D5D",
-    "RPT-20260823-38DC17"
+    "RPT-20260823-38DC17",
+    "RPT-20260823-EE0875"
   ],
   "status": "active",
-  "summary": "M0-M4 are complete; M5-M8 remain pending under the free automated local gate.",
+  "summary": "M0-M5 are complete; M6-M8 remain pending under the free automated local gate.",
   "supersedes": [],
   "tags": [
     "automated-testing",
@@ -48,7 +49,7 @@
   "tier": "short",
   "title": "DataHub v1 milestone plan with free local automation",
   "type_version": 1,
-  "updated_at": "2026-08-23T20:42:56Z",
+  "updated_at": "2026-08-23T21:03:29Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -62,7 +63,8 @@
 - M2 persistence/auth: completed through migrations 0002-0003, revisions, audit/outbox, auth/RBAC, builds and projection foundations.
 - M3 schema/configuration UX: completed with multi-field design, typed rows, inline VTable editing, block prefetch/cache, optimistic saves, filter/sort and browser acceptance.
 - M4 formula/XLSX: completed with stable FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic persistence.
-- M5-M8: pending; partial export/build/projection foundations do not complete M5 or M7.
+- M5 deterministic build/export: completed and merged to develop at 2aaf6c8 with the full built-in artifact matrix and generated-code compilation.
+- M6-M8: pending; the plugin-host and projection foundations do not complete M6 or M7.
 
 ## M0 Transition - Completed
 
@@ -92,11 +94,11 @@ Implement FieldId-based formula AST, dependency graph, cycle detection, native/W
 
 The datahub-formula and datahub-xlsx crates, migration 0005, PostgreSQL repositories, API and Vue console complete the planned M4 flow. Formula parsing binds display names to stable FieldIds, reports full dependency cycles and evaluates with Native/Wasmtime parity. XLSX hidden metadata preserves schema/revision/field/row/version identity, rejects foreign or stale workbooks and missing formula caches, and commits atomically with audit/outbox coverage. The free gate passed 26 Rust tests, 10 Web tests and Docker/PostgreSQL acceptance.
 
-## M5 Deterministic Build and Export - Pending
+## M5 Deterministic Build and Export - Completed
 
 Implement build orchestration pinned to schema/data revisions, targets and plugin versions. Add Rust, C# and TypeScript generation plus JSON, CSV, XML, BSON, Protobuf and Lua data output, hashes and manifests. Golden-test all formats, parse round trips, deterministic rebuilds, Protobuf wire-ID stability, and actual generated-code compilation.
 
-Rust/C#/TypeScript plus JSON/CSV deterministic SHA-256 artifacts are an implemented foundation; XML/BSON/Protobuf/Lua and the full M5 acceptance matrix remain.
+Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifacts, stable FieldId-derived Protobuf tags, timestamp-free revision/plugin/artifact manifests, repeatable-read build snapshots and immutable PostgreSQL persistence are implemented. The gate parses all codecs, checks exact manifests and artifact hashes, compares identical rebuilds and compiles generated Rust/C#/TypeScript. The final gate passed 29 Rust tests, 10 Web tests, migrations 0001-0006 and five builds with 45 artifacts.
 
 ## M6 Plugin Platform - Pending
 

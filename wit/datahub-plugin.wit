@@ -1,0 +1,7 @@
+package datahub:plugin@1.0.0;
+
+world datahub-plugin {
+    /// Runs a plugin with a host-validated, JSON-encoded read-only input map.
+    /// The returned bytes become one host-validated output artifact.
+    export run: func(input: list<u8>) -> result<list<u8>, string>;
+}
