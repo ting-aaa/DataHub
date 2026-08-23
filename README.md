@@ -3,6 +3,12 @@
 DataHub is a Docker-first game configuration management and compilation platform.
 It uses Rust services, a Vue 3 console, and PostgreSQL as its canonical data store.
 
+The current implementation includes local Argon2id accounts, bearer/CSRF
+sessions, project RBAC, immutable Schema/Data revisions, typed configuration
+validation, C/S/E target filtering, VTable block views, deterministic
+Rust/C#/TypeScript plus JSON/CSV artifacts, and transactional-outbox projection
+to PostgreSQL. The build and sync state is visible in the web console.
+
 ## Run the stack
 
 Requirements: Docker Desktop with Docker Compose.
@@ -27,8 +33,9 @@ pwsh -NoProfile -File scripts/quality-gate.ps1
 ```
 
 The gate runs Rust and web checks, builds an isolated Docker stack on alternate
-loopback ports, verifies HTTP and SQL migrations, and proves PostgreSQL volume
-persistence. It does not require a paid CI service.
+loopback ports, verifies HTTP, RBAC, validation, target isolation, build
+artifacts, SQL migrations, outbox projection, and PostgreSQL volume persistence.
+It does not require a paid CI service.
 
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.

@@ -1,3 +1,6 @@
+mod error;
+mod routes;
+
 use axum::{Json, Router, extract::State, http::StatusCode, routing::get};
 use datahub_kernel::HealthPayload;
 use sqlx::PgPool;
@@ -7,7 +10,7 @@ const SERVICE: &str = "datahub-api";
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Clone)]
-struct AppState {
+pub(crate) struct AppState {
     pool: PgPool,
 }
 
@@ -15,6 +18,7 @@ pub fn router(pool: PgPool) -> Router {
     Router::new()
         .route("/health/live", get(live))
         .route("/health/ready", get(ready))
+        .nest("/v1", routes::router())
         .layer(TraceLayer::new_for_http())
         .with_state(AppState { pool })
 }

@@ -1,0 +1,16 @@
+{
+  "schema_id": "00000000-0000-0000-0000-000000000001",
+  "source_name": "monster table",
+  "emitted_name": "MonsterTable",
+  "target": "type_script",
+  "fields": [
+    {
+      "id": "00000000-0000-0000-0000-000000000003",
+      "source_name": "display name",
+      "emitted_name": "displayName",
+      "ty": {
+        "kind": "string"
+      }
+    }
+  ]
+}

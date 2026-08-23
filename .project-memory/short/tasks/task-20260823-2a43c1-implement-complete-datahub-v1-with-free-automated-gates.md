@@ -10,8 +10,9 @@
   "id": "TASK-20260823-2A43C1",
   "kind": "task",
   "next_actions": [
-    "Replace paid GitHub status/auto-merge requirements and integrate the verified M0 baseline under the local gate.",
-    "Start M1 domain-kernel implementation with automated unit and property tests."
+    "Implement inline VTable cell editing with optimistic conflict presentation.",
+    "Add lazy block prefetch, bounded sparse caching, data-revision invalidation and expired-view recovery.",
+    "Expand the multi-field schema/type designer and finish M3 automated/browser acceptance."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -21,10 +22,13 @@
   "sensitivity": "internal",
   "sources": [
     "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
-    "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA."
+    "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
+    "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
+    "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
+    "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534."
   ],
   "status": "active",
-  "summary": "Implement and verify the full DataHub v1 product through Docker-first milestone delivery and free local automated quality gates.",
+  "summary": "M0-M2 are complete and M3 TableView reads are verified; inline editing, lazy prefetch/cache and richer schema design remain active, with M4-M8 pending.",
   "supersedes": [],
   "tags": [
     "active",
@@ -37,7 +41,7 @@
   "tier": "short",
   "title": "Implement complete DataHub v1 with free automated gates",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:52:55Z",
+  "updated_at": "2026-08-23T19:51:14Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -55,6 +59,10 @@ Complete the typed schema/configuration domain, revisions and auditing, local ac
 ## Delivery Method
 
 Transition the existing M0 branch away from required GitHub checks and billing-dependent auto-merge, integrate it under the verified local gate, then deliver M1-M8 in bounded feature branches. Each milestone must include implementation, migrations/contracts where applicable, automated tests, Docker smoke or integration verification, documentation, and evidence before local GitFlow integration.
+
+## Progress
+
+M0-M2 are complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 now includes persisted TableViews with bounded blocks, safe server filtering/sorting, expiry and data-revision snapshots plus verified optimistic API updates. Inline VTable editing, lazy prefetch/cache and richer multi-field schema design remain.
 
 ## Completion Criteria
 

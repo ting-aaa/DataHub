@@ -1,6 +1,5 @@
 FROM rust:1.96-bookworm AS builder
 
-ARG APP
 WORKDIR /workspace
 
 COPY Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml ./
@@ -8,7 +7,13 @@ COPY apps ./apps
 COPY crates ./crates
 COPY migrations ./migrations
 
-RUN cargo build --locked --release --bin "${APP}" \
+RUN cargo build --locked --release --workspace --bins
+
+ARG APP
+RUN case "${APP}" in \
+        datahub-api|datahub-cli|datahub-plugin-host|datahub-worker) ;; \
+        *) echo "unsupported DataHub binary: ${APP}" >&2; exit 2 ;; \
+    esac \
     && mkdir -p /out \
     && cp "target/release/${APP}" /out/datahub
 
