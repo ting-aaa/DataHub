@@ -5,17 +5,17 @@
 ## Project Snapshot
 
 - **Project:** DataHub
-- **Generation:** 47
-- **Generated:** 2026-08-23T21:43:10Z
+- **Generation:** 52
+- **Generated:** 2026-08-24T15:39:55Z
 - **Active task:** [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md)
 - **Overview:** DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.
 
 ### Next Actions
 
-1. Commit and squash-integrate the verified feature/m7-release-sync work into develop.
-2. Implement M8 audit search, rate limiting, secret redaction, observability, backup/restore and operator runbooks.
-3. Pass the complete v1 demo and clean-checkout/fresh-volume performance, concurrency, security and recovery acceptance.
-4. Integrate verified M7, then implement and pass every M8 hardening and final-acceptance exit criterion.
+1. Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.
+2. Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.
+3. Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task.
+4. Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence.
 
 ### Blockers
 
@@ -25,13 +25,13 @@ _None recorded._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | M0-M7 are functionally complete and verified, with M7 pending integration; the active full-v1 task advances to the remaining M8 hardening and final acceptance work. | 2026-08-23T21:42:36Z |
+| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence. | 2026-08-24T15:38:24Z |
 
 ## Active Plans
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | M0-M7 are functionally complete, with M7 pending integration; M8 hardening and final acceptance remain pending under the free local gate. | 2026-08-23T21:42:36Z |
+| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion. | 2026-08-24T15:38:24Z |
 
 ## Current Analyses
 
@@ -45,7 +45,7 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-CAFFC2](short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md) | handoff | active | M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes. | 2026-08-23T21:42:31Z |
+| [HANDOFF-20260824-89F499](short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md) | handoff | active | All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task. | 2026-08-24T15:38:24Z |
 
 ## Current Project-specific Memory
 
@@ -59,8 +59,8 @@ _None._
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
 | [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
 | [PIT-20260823-C6E3B6](long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md) | pitfall | active | PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling. | 2026-08-23T18:44:16Z |
-| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T21:42:36Z |
-| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-23T18:53:29Z |
+| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-24T15:38:24Z |
+| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-24T15:38:24Z |
 
 ## Review Queue
 
@@ -70,25 +70,25 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
+| [HANDOFF-20260824-89F499](short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md) | handoff | active | All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task. | 2026-08-24T15:38:24Z |
+| [RPT-20260824-242227](short/reports/rpt-20260824-242227-m8-hardening-and-full-local-acceptance-completion-report.md) | report | superseded | M8 security, audit, observability, backup/restore and full local acceptance are complete on the feature branch; only GitHub integration and final release evidence remain. | 2026-08-24T15:38:24Z |
+| [RPT-20260824-61086A](short/reports/rpt-20260824-61086a-m8-final-gate-and-docker-registry-hardening-report.md) | report | completed | M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening. | 2026-08-24T15:38:17Z |
+| [HANDOFF-20260823-CAFFC2](short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md) | handoff | superseded | M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes. | 2026-08-24T15:14:00Z |
+| [RPT-20260823-9F7FDD](short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md) | report | completed | M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d. | 2026-08-24T15:14:00Z |
 | [HANDOFF-20260823-93F5C0](short/handoffs/handoff-20260823-93f5c0-m6-completion-to-m7-synchronization-release-and-rollback-han.md) | handoff | superseded | M6 is merged and fully verified; complete deterministic PostgreSQL projection planning, reliable outbox recovery and immutable release approval/publish/rollback on the clean M7 branch. | 2026-08-23T21:42:36Z |
-| [HANDOFF-20260823-CAFFC2](short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md) | handoff | active | M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes. | 2026-08-23T21:42:31Z |
-| [RPT-20260823-9F7FDD](short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md) | report | completed | M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are implemented and fully verified on the feature branch, pending integration. | 2026-08-23T21:42:01Z |
 | [HANDOFF-20260823-F2BBAB](short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md) | handoff | superseded | M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch. | 2026-08-23T21:23:21Z |
 | [RPT-20260823-1A4BFC](short/reports/rpt-20260823-1a4bfc-m6-wasmtime-plugin-platform-completion-report.md) | report | completed | M6 completes the versioned WIT Component contract, immutable package registry and deny-by-default Wasmtime sandbox, fully verified and merged to develop. | 2026-08-23T21:22:59Z |
 | [HANDOFF-20260823-E37206](short/handoffs/handoff-20260823-e37206-m4-completion-to-m5-deterministic-build-and-export-handoff.md) | handoff | superseded | M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5. | 2026-08-23T21:03:29Z |
 | [RPT-20260823-EE0875](short/reports/rpt-20260823-ee0875-m5-deterministic-build-and-export-completion-report.md) | report | completed | M5 completes deterministic revision-pinned manifests and the Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact matrix, fully verified and merged to develop. | 2026-08-23T21:03:10Z |
 | [HANDOFF-20260823-88CF74](short/handoffs/handoff-20260823-88cf74-m3-completion-to-m4-formula-and-xlsx-handoff.md) | handoff | superseded | M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips. | 2026-08-23T20:42:56Z |
 | [RPT-20260823-38DC17](short/reports/rpt-20260823-38dc17-m4-formula-and-xlsx-completion-report.md) | report | completed | M4 FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL commits are implemented and fully verified. | 2026-08-23T20:42:40Z |
-| [HANDOFF-20260823-CB0534](short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md) | handoff | superseded | M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4. | 2026-08-23T20:11:04Z |
-| [RPT-20260823-CA61E0](short/reports/rpt-20260823-ca61e0-m3-tableview-and-local-gate-hardening-checkpoint.md) | report | superseded | Historical M3 checkpoint superseded by RPT-20260823-E99D5D after inline editing, prefetch/cache and multi-field design were completed. | 2026-08-23T20:11:04Z |
-| [RPT-20260823-E99D5D](short/reports/rpt-20260823-e99d5d-m3-grid-editing-completion-report.md) | report | completed | M3 multi-field schema design, typed row creation, inline VTable editing, block prefetch/cache, optimistic saves and server filter/sort are implemented and fully verified. | 2026-08-23T20:10:47Z |
 
-_13 more record(s) are in `index.json`._
+_16 more record(s) are in `index.json`._
 
 ## Memory Map
 
 - Long-term records: 7
-- Short-term records: 26
+- Short-term records: 29
 - Temporary records: 0
 - Archived records: 0
 - Complete machine-readable inventory: [`index.json`](index.json)

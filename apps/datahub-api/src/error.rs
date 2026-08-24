@@ -9,6 +9,7 @@ pub(crate) struct ApiError {
     code: &'static str,
     message: String,
     details: Option<Value>,
+    retry_after: Option<u64>,
 }
 
 #[derive(Serialize)]
@@ -40,6 +41,16 @@ impl ApiError {
         Self::new(StatusCode::CONFLICT, "conflict", message)
     }
 
+    pub(crate) fn rate_limited(retry_after: u64) -> Self {
+        let mut error = Self::new(
+            StatusCode::TOO_MANY_REQUESTS,
+            "rate_limited",
+            "request rate limit exceeded",
+        );
+        error.retry_after = Some(retry_after.max(1));
+        error
+    }
+
     pub(crate) fn validation(details: Value) -> Self {
         let mut error = Self::new(
             StatusCode::UNPROCESSABLE_ENTITY,
@@ -60,6 +71,7 @@ impl ApiError {
             code,
             message: message.into(),
             details: None,
+            retry_after: None,
         }
     }
 }
@@ -97,7 +109,8 @@ impl From<sqlx::Error> for ApiError {
 
 impl IntoResponse for ApiError {
     fn into_response(self) -> axum::response::Response {
-        (
+        let retry_after = self.retry_after;
+        let mut response = (
             self.status,
             Json(ErrorBody {
                 code: self.code,
@@ -105,6 +118,14 @@ impl IntoResponse for ApiError {
                 details: self.details,
             }),
         )
-            .into_response()
+            .into_response();
+        if let Some(retry_after) = retry_after
+            && let Ok(value) = retry_after.to_string().parse()
+        {
+            response
+                .headers_mut()
+                .insert(axum::http::header::RETRY_AFTER, value);
+        }
+        response
     }
 }

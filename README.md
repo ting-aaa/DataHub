@@ -51,6 +51,12 @@ historical rollback reproducibility, DDL approval, poison-event dead lettering,
 checkpoint recovery, and full resync are exercised against the live Docker
 stack. It does not require a paid CI service.
 
+Operational hardening includes project-scoped paginated audit search,
+PostgreSQL-backed authentication/mutation limits, redacted `*_FILE` secret
+loading, request correlation IDs, bounded Prometheus metrics, and verified
+Docker-first backup/restore. See the [operator runbook](docs/operations/runbook.md)
+and [acceptance budgets](docs/operations/acceptance.md).
+
 See [Docker deployment](docs/deployment/docker.md) and the
 [architecture overview](docs/architecture/overview.md) for details.
 Plugin authors can start with the [plugin development guide](docs/development/plugins.md).

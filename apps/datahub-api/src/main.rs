@@ -8,7 +8,7 @@ use tracing::info;
 async fn main() -> Result<()> {
     datahub_kernel::init_tracing("datahub_api=info,tower_http=info");
 
-    let database_url = env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
+    let database_url = datahub_kernel::required_secret("DATABASE_URL")?;
     let bind = env::var("DATAHUB_API_BIND").unwrap_or_else(|_| "0.0.0.0:8080".to_owned());
     let pool = datahub_persistence_pg::connect(&database_url)
         .await
@@ -18,7 +18,8 @@ async fn main() -> Result<()> {
         .with_context(|| format!("failed to bind API listener to {bind}"))?;
 
     info!(%bind, "DataHub API listening");
-    axum::serve(listener, datahub_api::router(pool))
+    let config = datahub_api::ApiConfig::from_env()?;
+    axum::serve(listener, datahub_api::router_with_config(pool, config))
         .await
         .context("API server failed")
 }

@@ -1,8 +1,16 @@
 FROM rust:1.96-bookworm AS builder
 
+ARG RUSTUP_DIST_SERVER=https://rsproxy.cn
+ARG RUSTUP_UPDATE_ROOT=https://rsproxy.cn/rustup
+ARG CARGO_REGISTRIES_CRATES_IO_INDEX=sparse+https://rsproxy.cn/index/
+ENV RUSTUP_DIST_SERVER=${RUSTUP_DIST_SERVER} \
+    RUSTUP_UPDATE_ROOT=${RUSTUP_UPDATE_ROOT} \
+    CARGO_REGISTRIES_CRATES_IO_INDEX=${CARGO_REGISTRIES_CRATES_IO_INDEX}
+
 WORKDIR /workspace
 
 COPY Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml ./
+COPY .cargo ./.cargo
 COPY apps ./apps
 COPY crates ./crates
 COPY migrations ./migrations

@@ -11,7 +11,7 @@ async fn main() -> Result<()> {
         anyhow::bail!("unsupported command: {command}; expected `migrate`");
     }
 
-    let database_url = env::var("DATABASE_URL").context("DATABASE_URL must be set")?;
+    let database_url = datahub_kernel::required_secret("DATABASE_URL")?;
     let pool = datahub_persistence_pg::connect(&database_url)
         .await
         .context("failed to connect to PostgreSQL")?;

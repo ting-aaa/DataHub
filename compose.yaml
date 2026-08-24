@@ -21,6 +21,26 @@ services:
       retries: 12
       start_period: 10s
 
+  postgres-restore:
+    profiles: ["recovery"]
+    image: postgres:18.6-bookworm
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}_restore
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: UTC
+      PGTZ: UTC
+    volumes:
+      - postgres-restore-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+
   migrate:
     image: datahub-cli:${DATAHUB_IMAGE_TAG:-dev}
     build:
@@ -52,6 +72,9 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       DATAHUB_API_BIND: 0.0.0.0:8080
       RUST_LOG: datahub_api=info,tower_http=info
+      DATAHUB_AUTH_RATE_LIMIT: ${DATAHUB_AUTH_RATE_LIMIT:-10}
+      DATAHUB_MUTATION_RATE_LIMIT: ${DATAHUB_MUTATION_RATE_LIMIT:-240}
+      DATAHUB_RATE_LIMIT_WINDOW_SECONDS: ${DATAHUB_RATE_LIMIT_WINDOW_SECONDS:-60}
     ports:
       - "127.0.0.1:${DATAHUB_API_PORT:-8080}:8080"
     depends_on:
@@ -143,3 +166,4 @@ services:
 
 volumes:
   postgres-data:
+  postgres-restore-data:

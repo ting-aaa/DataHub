@@ -4,7 +4,7 @@ use datahub_kernel::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use sqlx::{PgPool, Postgres, Row, Transaction};
+use sqlx::{PgPool, Postgres, QueryBuilder, Row, Transaction};
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -161,6 +161,48 @@ pub struct ReleaseRecord {
     pub manifest: Value,
     pub approved_by: Option<UserId>,
     pub rollback_of: Option<ReleaseId>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct AuditFilter {
+    pub actor_id: Option<UserId>,
+    pub action: Option<String>,
+    pub entity_type: Option<String>,
+    pub entity_id: Option<Uuid>,
+    pub correlation_id: Option<Uuid>,
+    pub created_from: Option<String>,
+    pub created_until: Option<String>,
+    pub before_id: Option<Uuid>,
+    pub limit: i64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct AuditEventRecord {
+    pub id: Uuid,
+    pub actor_id: Option<UserId>,
+    pub project_id: ProjectId,
+    pub action: String,
+    pub entity_type: String,
+    pub entity_id: Option<Uuid>,
+    pub correlation_id: Option<Uuid>,
+    pub details: Value,
+    pub created_at: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct RateLimitDecision {
+    pub allowed: bool,
+    pub request_count: i64,
+    pub retry_after_seconds: u64,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct OperationalMetrics {
+    pub outbox_pending: i64,
+    pub outbox_retrying: i64,
+    pub outbox_dead_lettered: i64,
+    pub checkpoints_failed: i64,
+    pub published_releases: i64,
 }
 
 /// Counts local accounts.
@@ -1684,6 +1726,125 @@ pub async fn rollback_release(
     release(pool, project_id, id).await
 }
 
+/// Searches one project's audit history with stable reverse-chronological pagination.
+///
+/// # Errors
+/// Returns database errors, including invalid timestamp filters.
+pub async fn search_audit_events(
+    pool: &PgPool,
+    project_id: ProjectId,
+    filter: &AuditFilter,
+) -> Result<Vec<AuditEventRecord>, RepositoryError> {
+    let mut query = QueryBuilder::<Postgres>::new(
+        "SELECT id, actor_id, action, entity_type, entity_id, correlation_id, details, created_at::text AS created_at FROM datahub_audit_events WHERE project_id = ",
+    );
+    query.push_bind(project_id.as_uuid());
+    if let Some(actor_id) = filter.actor_id {
+        query.push(" AND actor_id = ").push_bind(actor_id.as_uuid());
+    }
+    if let Some(action) = filter.action.as_deref() {
+        query.push(" AND action = ").push_bind(action);
+    }
+    if let Some(entity_type) = filter.entity_type.as_deref() {
+        query.push(" AND entity_type = ").push_bind(entity_type);
+    }
+    if let Some(entity_id) = filter.entity_id {
+        query.push(" AND entity_id = ").push_bind(entity_id);
+    }
+    if let Some(correlation_id) = filter.correlation_id {
+        query
+            .push(" AND correlation_id = ")
+            .push_bind(correlation_id);
+    }
+    if let Some(created_from) = filter.created_from.as_deref() {
+        query
+            .push(" AND created_at >= ")
+            .push_bind(created_from)
+            .push("::timestamptz");
+    }
+    if let Some(created_until) = filter.created_until.as_deref() {
+        query
+            .push(" AND created_at <= ")
+            .push_bind(created_until)
+            .push("::timestamptz");
+    }
+    if let Some(before_id) = filter.before_id {
+        query.push(" AND (created_at, id) < (SELECT created_at, id FROM datahub_audit_events WHERE project_id = ")
+            .push_bind(project_id.as_uuid())
+            .push(" AND id = ")
+            .push_bind(before_id)
+            .push(")");
+    }
+    query
+        .push(" ORDER BY created_at DESC, id DESC LIMIT ")
+        .push_bind(filter.limit.clamp(1, 200));
+    let rows = query.build().fetch_all(pool).await?;
+    rows.iter()
+        .map(|row| {
+            Ok(AuditEventRecord {
+                id: row.try_get("id")?,
+                actor_id: row
+                    .try_get::<Option<Uuid>, _>("actor_id")?
+                    .map(UserId::from_uuid),
+                project_id,
+                action: row.try_get("action")?,
+                entity_type: row.try_get("entity_type")?,
+                entity_id: row.try_get("entity_id")?,
+                correlation_id: row.try_get("correlation_id")?,
+                details: row.try_get("details")?,
+                created_at: row.try_get("created_at")?,
+            })
+        })
+        .collect()
+}
+
+/// Atomically accounts for a fixed-window request budget.
+///
+/// # Errors
+/// Returns database errors.
+pub async fn enforce_rate_limit(
+    pool: &PgPool,
+    scope: &str,
+    key_hash: &str,
+    maximum: i64,
+    window_seconds: i64,
+) -> Result<RateLimitDecision, RepositoryError> {
+    let row = sqlx::query(
+        "INSERT INTO datahub_rate_limit_buckets (scope, key_hash, window_started_at, request_count) VALUES ($1, $2, to_timestamp(floor(extract(epoch FROM NOW()) / $3) * $3), 1) ON CONFLICT (scope, key_hash, window_started_at) DO UPDATE SET request_count = datahub_rate_limit_buckets.request_count + 1 RETURNING request_count, GREATEST(1, CEIL($3 - MOD(extract(epoch FROM NOW()), $3)))::bigint AS retry_after",
+    )
+    .bind(scope)
+    .bind(key_hash)
+    .bind(window_seconds)
+    .fetch_one(pool)
+    .await?;
+    let request_count: i64 = row.try_get("request_count")?;
+    let retry_after: i64 = row.try_get("retry_after")?;
+    Ok(RateLimitDecision {
+        allowed: request_count <= maximum,
+        request_count,
+        retry_after_seconds: u64::try_from(retry_after).unwrap_or(1),
+    })
+}
+
+/// Reads bounded operational gauges for the Prometheus endpoint.
+///
+/// # Errors
+/// Returns database errors.
+pub async fn operational_metrics(pool: &PgPool) -> Result<OperationalMetrics, RepositoryError> {
+    let row = sqlx::query(
+        "SELECT (SELECT COUNT(*) FROM datahub_outbox_events WHERE processed_at IS NULL AND dead_lettered_at IS NULL AND last_error IS NULL) AS outbox_pending, (SELECT COUNT(*) FROM datahub_outbox_events WHERE processed_at IS NULL AND dead_lettered_at IS NULL AND last_error IS NOT NULL) AS outbox_retrying, (SELECT COUNT(*) FROM datahub_outbox_events WHERE dead_lettered_at IS NOT NULL) AS outbox_dead_lettered, (SELECT COUNT(*) FROM datahub_sync_checkpoints WHERE status = 'failed') AS checkpoints_failed, (SELECT COUNT(*) FROM datahub_releases WHERE status = 'published') AS published_releases",
+    )
+    .fetch_one(pool)
+    .await?;
+    Ok(OperationalMetrics {
+        outbox_pending: row.try_get("outbox_pending")?,
+        outbox_retrying: row.try_get("outbox_retrying")?,
+        outbox_dead_lettered: row.try_get("outbox_dead_lettered")?,
+        checkpoints_failed: row.try_get("checkpoints_failed")?,
+        published_releases: row.try_get("published_releases")?,
+    })
+}
+
 fn user_from_row(row: &sqlx::postgres::PgRow) -> Result<UserAccount, RepositoryError> {
     Ok(UserAccount {
         id: UserId::from_uuid(row.try_get("id")?),
@@ -1743,7 +1904,7 @@ async fn append_events(
     idempotency_key: &str,
 ) -> Result<(), RepositoryError> {
     sqlx::query(
-        "INSERT INTO datahub_audit_events (id, actor_id, project_id, action, entity_type, entity_id, details) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+        "INSERT INTO datahub_audit_events (id, actor_id, project_id, action, entity_type, entity_id, details, correlation_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
     )
     .bind(AuditEventId::new().as_uuid())
     .bind(actor.as_uuid())
@@ -1752,6 +1913,7 @@ async fn append_events(
     .bind(entity_type)
     .bind(entity_id)
     .bind(details)
+    .bind(datahub_kernel::current_correlation_id().unwrap_or_else(Uuid::now_v7))
     .execute(&mut **tx)
     .await?;
     sqlx::query(

@@ -7,9 +7,9 @@
     "temp_compaction_count": 10,
     "temp_review_days": 7
   },
-  "generation": 47,
-  "last_reindexed_at": "2026-08-23T21:43:10Z",
+  "generation": 52,
+  "last_reindexed_at": "2026-08-24T15:39:55Z",
   "project_name": "DataHub",
   "schema_version": 1,
-  "updated_at": "2026-08-23T21:43:10Z"
+  "updated_at": "2026-08-24T15:39:55Z"
 }
