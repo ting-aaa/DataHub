@@ -40,7 +40,7 @@ semver = { version = "1", features = ["serde"] }
 num-traits = "0.2"
 quick-xml = { version = "0.41", features = ["serialize"] }
 rust_xlsxwriter = "0.99"
-sha2 = "0.10"
+sha2 = "0.11"
 sqlx = { version = "0.8", default-features = false, features = ["json", "macros", "migrate", "postgres", "runtime-tokio-rustls", "uuid"] }
 thiserror = "2"
 toml = "1.1"
