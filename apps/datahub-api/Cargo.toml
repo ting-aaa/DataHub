@@ -1,0 +1,30 @@
+[package]
+name = "datahub-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+axum.workspace = true
+datahub-auth.workspace = true
+datahub-export.workspace = true
+datahub-formula.workspace = true
+datahub-kernel.workspace = true
+datahub-persistence-pg.workspace = true
+datahub-xlsx.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sqlx.workspace = true
+tokio.workspace = true
+tower-http.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+
+[dev-dependencies]
+tower.workspace = true
+
+[lints]
+workspace = true

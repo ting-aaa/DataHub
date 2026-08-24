@@ -5,33 +5,33 @@
 ## Project Snapshot
 
 - **Project:** DataHub
-- **Generation:** 10
-- **Generated:** 2026-08-23T18:24:47Z
-- **Active task:** [TASK-20260823-9C0927](short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md)
+- **Generation:** 52
+- **Generated:** 2026-08-24T15:39:55Z
+- **Active task:** [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md)
 - **Overview:** DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.
 
 ### Next Actions
 
-1. Create the baseline repository files and Docker Compose topology.
-2. Install/authenticate GitHub CLI, create ting-aaa/DataHub, and configure GitFlow branches and CI gates.
-3. Implement steps in order on feature/m0-foundation and capture exact verification evidence.
+1. Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.
+2. Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.
+3. Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task.
+4. Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence.
 
 ### Blockers
 
-- GitHub CLI is not installed; GitHub authentication and remote creation are pending.
-- Remote repository work requires GitHub CLI installation and authentication.
+_None recorded._
 
 ## Active Tasks
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [TASK-20260823-9C0927](short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md) | task | active | Initialize the repository and deliver a verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the approved GitFlow process. | 2026-08-23T18:24:19Z |
+| [TASK-20260823-2A43C1](short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md) | task | active | M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence. | 2026-08-24T15:38:24Z |
 
 ## Active Plans
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [PLAN-20260823-686A1E](short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md) | plan | active | Build and verify the complete M0 repository, Docker Compose application topology, PostgreSQL baseline, CI gates, and GitFlow integration. | 2026-08-23T18:24:30Z |
+| [PLAN-20260823-9B6D1E](short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md) | plan | active | M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion. | 2026-08-24T15:38:24Z |
 
 ## Current Analyses
 
@@ -45,7 +45,7 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | active | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:24:41Z |
+| [HANDOFF-20260824-89F499](short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md) | handoff | active | All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task. | 2026-08-24T15:38:24Z |
 
 ## Current Project-specific Memory
 
@@ -55,11 +55,12 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [ARCH-20260823-F3A201](long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md) | architecture | active | DataHub targets a Docker Compose full-stack topology with Rust services, a Vue console, and PostgreSQL as the canonical store. | 2026-08-23T18:23:41Z |
-| [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | active | The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:24:09Z |
+| [ARCH-20260823-F3A201](long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md) | architecture | active | DataHub implements a Docker Compose full-stack boundary with Rust services, a Vue console, Nginx, and PostgreSQL as the canonical store. | 2026-08-23T18:44:19Z |
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
-| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-23T18:23:32Z |
-| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-23T18:23:51Z |
+| [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-23T18:52:45Z |
+| [PIT-20260823-C6E3B6](long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md) | pitfall | active | PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling. | 2026-08-23T18:44:16Z |
+| [PROJ-20260823-0128D7](long/project/proj-20260823-0128d7-datahub-project-overview.md) | project | active | DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database. | 2026-08-24T15:38:24Z |
+| [STD-20260823-048D0D](long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md) | standard | active | Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification. | 2026-08-24T15:38:24Z |
 
 ## Review Queue
 
@@ -69,14 +70,25 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
-| [HANDOFF-20260823-323477](short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md) | handoff | active | Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending. | 2026-08-23T18:24:41Z |
-| [DEC-20260823-9EC766](long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md) | decision | active | The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes. | 2026-08-23T18:24:09Z |
-| [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-23T18:24:01Z |
+| [HANDOFF-20260824-89F499](short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md) | handoff | active | All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task. | 2026-08-24T15:38:24Z |
+| [RPT-20260824-242227](short/reports/rpt-20260824-242227-m8-hardening-and-full-local-acceptance-completion-report.md) | report | superseded | M8 security, audit, observability, backup/restore and full local acceptance are complete on the feature branch; only GitHub integration and final release evidence remain. | 2026-08-24T15:38:24Z |
+| [RPT-20260824-61086A](short/reports/rpt-20260824-61086a-m8-final-gate-and-docker-registry-hardening-report.md) | report | completed | M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening. | 2026-08-24T15:38:17Z |
+| [HANDOFF-20260823-CAFFC2](short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md) | handoff | superseded | M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes. | 2026-08-24T15:14:00Z |
+| [RPT-20260823-9F7FDD](short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md) | report | completed | M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d. | 2026-08-24T15:14:00Z |
+| [HANDOFF-20260823-93F5C0](short/handoffs/handoff-20260823-93f5c0-m6-completion-to-m7-synchronization-release-and-rollback-han.md) | handoff | superseded | M6 is merged and fully verified; complete deterministic PostgreSQL projection planning, reliable outbox recovery and immutable release approval/publish/rollback on the clean M7 branch. | 2026-08-23T21:42:36Z |
+| [HANDOFF-20260823-F2BBAB](short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md) | handoff | superseded | M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch. | 2026-08-23T21:23:21Z |
+| [RPT-20260823-1A4BFC](short/reports/rpt-20260823-1a4bfc-m6-wasmtime-plugin-platform-completion-report.md) | report | completed | M6 completes the versioned WIT Component contract, immutable package registry and deny-by-default Wasmtime sandbox, fully verified and merged to develop. | 2026-08-23T21:22:59Z |
+| [HANDOFF-20260823-E37206](short/handoffs/handoff-20260823-e37206-m4-completion-to-m5-deterministic-build-and-export-handoff.md) | handoff | superseded | M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5. | 2026-08-23T21:03:29Z |
+| [RPT-20260823-EE0875](short/reports/rpt-20260823-ee0875-m5-deterministic-build-and-export-completion-report.md) | report | completed | M5 completes deterministic revision-pinned manifests and the Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact matrix, fully verified and merged to develop. | 2026-08-23T21:03:10Z |
+| [HANDOFF-20260823-88CF74](short/handoffs/handoff-20260823-88cf74-m3-completion-to-m4-formula-and-xlsx-handoff.md) | handoff | superseded | M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips. | 2026-08-23T20:42:56Z |
+| [RPT-20260823-38DC17](short/reports/rpt-20260823-38dc17-m4-formula-and-xlsx-completion-report.md) | report | completed | M4 FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL commits are implemented and fully verified. | 2026-08-23T20:42:40Z |
+
+_16 more record(s) are in `index.json`._
 
 ## Memory Map
 
-- Long-term records: 5
-- Short-term records: 3
+- Long-term records: 7
+- Short-term records: 29
 - Temporary records: 0
 - Archived records: 0
 - Complete machine-readable inventory: [`index.json`](index.json)

@@ -1,18 +1,18 @@
 {
-  "active_task_id": "TASK-20260823-9C0927",
+  "active_task_id": "TASK-20260823-2A43C1",
   "counts": {
     "archive": 0,
-    "long": 5,
-    "short": 3,
+    "long": 7,
+    "short": 29,
     "temp": 0
   },
-  "generated_at": "2026-08-23T18:24:47Z",
-  "generation": 10,
+  "generated_at": "2026-08-24T15:39:55Z",
+  "generation": 52,
   "project_name": "DataHub",
   "records": [
     {
       "blockers": [],
-      "confidence": "high",
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:41Z",
       "derived_from": [],
       "effective_status": "active",
@@ -21,7 +21,7 @@
       "id": "ARCH-20260823-F3A201",
       "kind": "architecture",
       "next_actions": [
-        "Materialize the topology in the M0 Docker Compose and workspace foundation."
+        "Build product capabilities on the verified M0 service and deployment boundaries."
       ],
       "path": "long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md",
       "review_after": "",
@@ -33,13 +33,14 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "aa5a704348feb25ce635cf65856e87b665c34fc7c2a47601489ce9930c03048b",
+      "sha256": "c7b05f76c7a1ef899eb581c067e6ce263b42fdcd43a7f96c29ec64dfbba1d022",
       "sources": [
         "User instructions and accepted development plans in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24 found no product implementation, so this record describes the target architecture only."
+        "Repository audit on 2026-08-24 found no product implementation, so this record originally described the target architecture only.",
+        "compose.yaml, Cargo.toml, web/package.json, migrations/0001_bootstrap.sql, and RPT-20260823-44414F."
       ],
       "status": "active",
-      "summary": "DataHub targets a Docker Compose full-stack topology with Rust services, a Vue console, and PostgreSQL as the canonical store.",
+      "summary": "DataHub implements a Docker Compose full-stack boundary with Rust services, a Vue console, Nginx, and PostgreSQL as the canonical store.",
       "supersedes": [],
       "tags": [
         "architecture",
@@ -48,9 +49,9 @@
       ],
       "task_id": "",
       "tier": "long",
-      "title": "Docker-first DataHub target architecture",
+      "title": "Docker-first DataHub architecture",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:41Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -58,14 +59,12 @@
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:09Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-bootstrap-github-gitflow-policy-v1",
       "expired": false,
       "id": "DEC-20260823-9EC766",
       "kind": "decision",
-      "next_actions": [
-        "Install and authenticate GitHub CLI, initialize Git, create the remote, and apply branch policy in M0."
-      ],
+      "next_actions": [],
       "path": "long/decisions/dec-20260823-9ec766-github-repository-and-gitflow-policy.md",
       "review_after": "",
       "schema_version": 1,
@@ -74,13 +73,15 @@
         ".github"
       ],
       "sensitivity": "internal",
-      "sha256": "86a1964414c89dafb1a221d43da6df40bfd6868f09d267e2c4fa7d7a33ee6239",
+      "sha256": "e7f5bf752ba71b0ed802aef0708ca5c53247455cb2afc6c19f65a101132b7e6d",
       "sources": [
         "Explicit user-approved repository and branch policy in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command."
+        "Repository audit on 2026-08-24: git status reported no Git repository; PowerShell could not resolve the gh command.",
+        "git remote, branch, log, and ls-remote verification on 2026-08-24; RPT-20260823-44414F.",
+        "Repository settings and protections verified by the main agent; PR #1 and RPT-20260823-49833C."
       ],
-      "status": "active",
-      "summary": "The planned public MIT repository is ting-aaa/DataHub, using CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
+      "status": "superseded",
+      "summary": "The public MIT repository ting-aaa/DataHub uses CI-gated GitFlow with squash feature merges and merge-commit releases/hotfixes.",
       "supersedes": [],
       "tags": [
         "decision",
@@ -91,7 +92,7 @@
       "tier": "long",
       "title": "GitHub repository and GitFlow policy",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:09Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -134,9 +135,56 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub CLI and authenticated remote access are pending."
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:52:45Z",
+      "derived_from": [
+        "RPT-20260823-49833C"
       ],
+      "effective_status": "active",
+      "event_id": "datahub-decision-free-local-quality-gates-v1",
+      "expired": false,
+      "id": "DEC-20260823-C69FFA",
+      "kind": "decision",
+      "next_actions": [
+        "Remove required GitHub status checks and auto-merge dependency, then encode the free local gate as repository commands."
+      ],
+      "path": "long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        ".",
+        ".github",
+        "deploy",
+        "tools"
+      ],
+      "sensitivity": "internal",
+      "sha256": "07aea5bfab260cda956989330814aecf531f65b0ec0d271ff16d9223eff3e728",
+      "sources": [
+        "Explicit user instruction on 2026-08-24 cancelling any workflow that requires payment and requiring full implementation with automated tests.",
+        "DEC-20260823-9EC766 and RPT-20260823-49833C document the superseded CI-gated GitHub Actions policy and billing lock."
+      ],
+      "status": "active",
+      "summary": "DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed.",
+      "supersedes": [
+        "DEC-20260823-9EC766"
+      ],
+      "tags": [
+        "decision",
+        "docker",
+        "gitflow",
+        "local-ci",
+        "no-paid-services"
+      ],
+      "task_id": "",
+      "tier": "long",
+      "title": "Free local Docker-first quality gate and GitFlow policy",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:52:45Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:41Z",
       "derived_from": [
@@ -146,14 +194,12 @@
         "DEC-20260823-A72203",
         "DEC-20260823-9EC766"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-bootstrap-to-m0-v1",
       "expired": false,
       "id": "HANDOFF-20260823-323477",
       "kind": "handoff",
-      "next_actions": [
-        "Begin M0 implementation with a task-specific context pack."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-323477-datahub-bootstrap-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -161,13 +207,13 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "bfe1b79e081f2e6907bf6163559552d4173a7ca41312a1ffdb8e8015d34fcbb8",
+      "sha256": "fa5e6f6bca9d0d71d891429fb06e6694e7103aff7c39d7584fc66a66bd83bc9d",
       "sources": [
         "Repository and environment audit on 2026-08-24.",
         "TASK-20260823-9C0927",
         "PLAN-20260823-686A1E"
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "Memory bootstrap is complete; M0 implementation starts from an empty non-Git workspace with Docker available and GitHub CLI/auth pending.",
       "supersedes": [],
       "tags": [
@@ -178,24 +224,636 @@
       "tier": "short",
       "title": "DataHub bootstrap handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:41Z",
+      "updated_at": "2026-08-23T18:44:19Z",
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "Remote repository work requires GitHub CLI installation and authentication."
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:48:18Z",
+      "derived_from": [
+        "HANDOFF-20260823-D2DC12",
+        "RPT-20260823-44414F"
       ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m0-github-billing-block-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-545AD6",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-545ad6-m0-github-billing-blocked-integration-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "a351b6722de4748d0a08e158e114d1185b7a3e97dbc86b072c4d87bcfef51aff",
+      "sources": [
+        "RPT-20260823-49833C"
+      ],
+      "status": "superseded",
+      "summary": "PR #1 is ready for protected automatic squash merge, but the user must clear the GitHub billing lock before required CI jobs can run.",
+      "supersedes": [
+        "HANDOFF-20260823-D2DC12"
+      ],
+      "tags": [
+        "blocker",
+        "github",
+        "handoff",
+        "m0"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 GitHub billing-blocked integration handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:53:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:43:00Z",
+      "derived_from": [
+        "HANDOFF-20260823-DE8966"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m2-to-m3-editing-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-5A07F4",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-5a07f4-m2-completion-to-m3-editing-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "de127c4cb664a72fc6dbf042ef9a34447e75f991c231d9a7f38e45fa9b704d2f",
+      "sources": [
+        "RPT-20260823-118D95",
+        "git status and verification reruns on 2026-08-24."
+      ],
+      "status": "superseded",
+      "summary": "M0-M2 are complete; M3 API/console flows work, but VTable block editing and richer schema design remain the active scope before M4.",
+      "supersedes": [
+        "HANDOFF-20260823-DE8966"
+      ],
+      "tags": [
+        "api",
+        "handoff",
+        "m3",
+        "vtable",
+        "web"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M2 completion to M3 editing handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:10:58Z",
+      "derived_from": [
+        "HANDOFF-20260823-CB0534"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m3-to-m4-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-88CF74",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-88cf74-m3-completion-to-m4-formula-and-xlsx-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "migrations",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "40d86b62a78c5942a5abe2d68f8a200d068dfc93cb20ff8dcbf8f30c5d262e45",
+      "sources": [
+        "RPT-20260823-E99D5D",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "superseded",
+      "summary": "M3 is fully verified; integrate its branch, then implement M4 FieldId formulas, Native/WASM parity and cached-value-only XLSX round trips.",
+      "supersedes": [
+        "HANDOFF-20260823-CB0534"
+      ],
+      "tags": [
+        "formula",
+        "handoff",
+        "m4",
+        "xlsx"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 completion to M4 formula and XLSX handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:42:56Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:23:17Z",
+      "derived_from": [
+        "HANDOFF-20260823-F2BBAB"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m6-to-m7-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-93F5C0",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-93f5c0-m6-completion-to-m7-synchronization-release-and-rollback-han.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-worker",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "d913664be62abbd6856632c5d3f762458e4843af5c26337a84958a5e957bdb9e",
+      "sources": [
+        "RPT-20260823-1A4BFC",
+        "PLAN-20260823-9B6D1E",
+        "Git evidence: clean feature/m7-release-sync at 636a131."
+      ],
+      "status": "superseded",
+      "summary": "M6 is merged and fully verified; complete deterministic PostgreSQL projection planning, reliable outbox recovery and immutable release approval/publish/rollback on the clean M7 branch.",
+      "supersedes": [
+        "HANDOFF-20260823-F2BBAB"
+      ],
+      "tags": [
+        "handoff",
+        "m7",
+        "postgresql",
+        "release",
+        "rollback",
+        "sync"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M6 completion to M7 synchronization release and rollback handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:42:36Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:42:31Z",
+      "derived_from": [
+        "HANDOFF-20260823-93F5C0"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m7-to-m8-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-CAFFC2",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "deploy",
+        "docs",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "cd9e0a9050a95e0bb92e9385db871995ec7ac21d4b3a71c5e106006b1117ba8a",
+      "sources": [
+        "RPT-20260823-9F7FDD",
+        "PLAN-20260823-9B6D1E",
+        "Curator Git audit: M7 complete in uncommitted feature/m7-release-sync working tree based on 636a131."
+      ],
+      "status": "superseded",
+      "summary": "M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes.",
+      "supersedes": [
+        "HANDOFF-20260823-93F5C0"
+      ],
+      "tags": [
+        "acceptance",
+        "backup",
+        "handoff",
+        "hardening",
+        "m8",
+        "observability",
+        "security"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M7 completion to M8 hardening and final acceptance handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:14:00Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:51:08Z",
+      "derived_from": [
+        "HANDOFF-20260823-5A07F4"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m3-tableview-to-editing-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-CB0534",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-cb0534-m3-tableview-read-path-to-inline-editing-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations/0004_table_views.sql",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "fc8ebbd8a3a8ddfb1db048d63ce8bb18c6b05550c516b0db85fd95df5cb45c71",
+      "sources": [
+        "RPT-20260823-CA61E0",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "superseded",
+      "summary": "M3 TableView reads and quality hardening are verified; inline cell editing, lazy prefetch/cache and richer multi-field schema design remain before M4.",
+      "supersedes": [
+        "HANDOFF-20260823-5A07F4"
+      ],
+      "tags": [
+        "editing",
+        "handoff",
+        "m3",
+        "tableview",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 TableView read path to inline editing handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:11:04Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:32Z",
+      "derived_from": [
+        "HANDOFF-20260823-323477",
+        "PLAN-20260823-686A1E"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m0-local-to-github-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-D2DC12",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-d2dc12-m0-local-foundation-to-github-integration-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "42c642f6ad1a8dc81a8035596ef9a98bb8af44363106519927071dcd683c9d4c",
+      "sources": [
+        "RPT-20260823-44414F",
+        "PIT-20260823-C6E3B6"
+      ],
+      "status": "superseded",
+      "summary": "Local M0 implementation and verification are complete; commit, push, PR, CI, and squash merge into develop remain.",
+      "supersedes": [
+        "HANDOFF-20260823-323477"
+      ],
+      "tags": [
+        "github",
+        "handoff",
+        "m0"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 local foundation to GitHub integration handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:48:21Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:53:25Z",
+      "derived_from": [
+        "HANDOFF-20260823-545AD6",
+        "TASK-20260823-9C0927"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-full-v1-local-gates-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-D301EA",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-d301ea-full-datahub-v1-implementation-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "e297bdb696a1f464eed2e9d0e8501fe0b86613185ffdda05516722cde8badfec",
+      "sources": [
+        "Explicit user scope change on 2026-08-24.",
+        "DEC-20260823-C69FFA, TASK-20260823-2A43C1, and PLAN-20260823-9B6D1E."
+      ],
+      "status": "superseded",
+      "summary": "The active objective is full DataHub v1 delivery through free local/Docker automated gates, beginning with removal of paid GitHub CI dependencies and M1 kernel work.",
+      "supersedes": [
+        "HANDOFF-20260823-545AD6"
+      ],
+      "tags": [
+        "docker",
+        "handoff",
+        "local-ci",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "Full DataHub v1 implementation handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:02:01Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:01:52Z",
+      "derived_from": [
+        "HANDOFF-20260823-D301EA"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m1-to-m2-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-DE8966",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-de8966-m1-kernel-to-m2-persistence-and-auth-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "migrations"
+      ],
+      "sensitivity": "internal",
+      "sha256": "f6637126949dafae6b1709572bbe3d3e0038720fb2cbe7b65702e7d919cfedcb",
+      "sources": [
+        "RPT-20260823-FE85CD",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "superseded",
+      "summary": "M0 transition is complete and the verified M1 kernel slice is ready for local integration; M2 persistence/auth is next with explicit M1 contract gaps retained.",
+      "supersedes": [
+        "HANDOFF-20260823-D301EA"
+      ],
+      "tags": [
+        "auth",
+        "handoff",
+        "m1",
+        "m2",
+        "persistence"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M1 kernel to M2 persistence and auth handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:43:06Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:42:52Z",
+      "derived_from": [
+        "HANDOFF-20260823-88CF74"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m4-to-m5-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-E37206",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-e37206-m4-completion-to-m5-deterministic-build-and-export-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "migrations",
+        "scripts",
+        "tests",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "4682c1aa00c3405401f8ff5916c60598c9d69251203f4d1492a11b1c9db74ef8",
+      "sources": [
+        "RPT-20260823-38DC17",
+        "PLAN-20260823-9B6D1E"
+      ],
+      "status": "superseded",
+      "summary": "M4 is fully verified; integrate its branch, then complete deterministic revision-pinned builds and the full built-in code/data export matrix in M5.",
+      "supersedes": [
+        "HANDOFF-20260823-88CF74"
+      ],
+      "tags": [
+        "build",
+        "deterministic",
+        "export",
+        "handoff",
+        "m5"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M4 completion to M5 deterministic build and export handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:03:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:03:24Z",
+      "derived_from": [
+        "HANDOFF-20260823-E37206"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-handoff-m5-to-m6-v1",
+      "expired": false,
+      "id": "HANDOFF-20260823-F2BBAB",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-plugin-host",
+        "crates",
+        "deploy",
+        "plugins",
+        "scripts",
+        "tests"
+      ],
+      "sensitivity": "internal",
+      "sha256": "e0a3f7a286bdf2f7987fbbdcca65d28fe8ee0b464ee2c916b6cc20bc23b486c2",
+      "sources": [
+        "RPT-20260823-EE0875",
+        "PLAN-20260823-9B6D1E",
+        "Git evidence: clean feature/m6-plugin-sandbox at 2aaf6c8."
+      ],
+      "status": "superseded",
+      "summary": "M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch.",
+      "supersedes": [
+        "HANDOFF-20260823-E37206"
+      ],
+      "tags": [
+        "handoff",
+        "m6",
+        "plugin",
+        "sandbox",
+        "wasmtime",
+        "wit"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M5 completion to M6 Wasmtime plugin platform handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:23:21Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-24T15:13:53Z",
+      "derived_from": [
+        "HANDOFF-20260823-CAFFC2"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m8-to-final-release-v1",
+      "expired": false,
+      "id": "HANDOFF-20260824-89F499",
+      "kind": "handoff",
+      "next_actions": [
+        "Commit and squash-integrate M8, then complete and verify the GitFlow v1 release before closing the task."
+      ],
+      "path": "short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "01e8248be992031dcf9d23baa680e4008c5bac31b137c92d9c979482af5e4a77",
+      "sources": [
+        "RPT-20260824-61086A",
+        "PLAN-20260823-9B6D1E",
+        "Curator Git audit: M8 complete in uncommitted feature/m8-hardening-acceptance working tree based on integrated M7 commit a986c5d."
+      ],
+      "status": "active",
+      "summary": "All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task.",
+      "supersedes": [
+        "HANDOFF-20260823-CAFFC2"
+      ],
+      "tags": [
+        "github",
+        "handoff",
+        "integration",
+        "m8",
+        "release",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 completion to final GitHub integration and v1 release handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:16Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-pitfall-m0-docker-pnpm-v1",
+      "expired": false,
+      "id": "PIT-20260823-C6E3B6",
+      "kind": "pitfall",
+      "next_actions": [
+        "Preserve these constraints in Compose, CI smoke tests, and deployment documentation."
+      ],
+      "path": "long/pitfalls/pit-20260823-c6e3b6-m0-docker-and-pnpm-bootstrap-pitfalls.md",
+      "review_after": "",
+      "schema_version": 1,
+      "scope": [
+        "compose.yaml",
+        "deploy/docker",
+        "pnpm-workspace.yaml"
+      ],
+      "sensitivity": "internal",
+      "sha256": "f65c1efe3cf060414cf883b70c6c68041218d3cb8ba6f4c8cd2d73e7dc688837",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
+        "compose.yaml lines 5, 16, 66-68, 87-89, 113-115, and 136-141; pnpm-workspace.yaml lines 4-5."
+      ],
+      "status": "active",
+      "summary": "PostgreSQL 18 volume paths, read-only non-root Nginx tmpfs mounts, pnpm 11 esbuild approval, and PowerShell SQL quoting require specific handling.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "nginx",
+        "pnpm",
+        "postgresql",
+        "powershell"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "long",
+      "title": "M0 Docker and pnpm bootstrap pitfalls",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:44:16Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
       "confidence": "high",
       "created_at": "2026-08-23T18:24:30Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-plan-m0-docker-foundation-v1",
       "expired": false,
       "id": "PLAN-20260823-686A1E",
       "kind": "plan",
-      "next_actions": [
-        "Implement steps in order on feature/m0-foundation and capture exact verification evidence."
-      ],
+      "next_actions": [],
       "path": "short/plans/plan-20260823-686a1e-m0-docker-first-implementation-plan.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -203,13 +861,15 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "f646c5770473ee63e54ce75acc07f66bbf0ff4a0df96135e93665b8fe27b6302",
+      "sha256": "bdde66e37888d061eb1281a9634cda50936fb2b62956ad7a21748b6075f9f204",
       "sources": [
         "Accepted DataHub development plans and Docker deployment instruction from the user on 2026-08-24.",
-        "TASK-20260823-9C0927"
+        "TASK-20260823-9C0927",
+        "RPT-20260823-44414F",
+        "RPT-20260823-49833C"
       ],
-      "status": "active",
-      "summary": "Build and verify the complete M0 repository, Docker Compose application topology, PostgreSQL baseline, CI gates, and GitFlow integration.",
+      "status": "completed",
+      "summary": "The M0 Docker-first implementation and local verification completed; the canceled paid-CI integration tail is replaced by PLAN-20260823-9B6D1E.",
       "supersedes": [],
       "tags": [
         "docker",
@@ -220,7 +880,68 @@
       "tier": "short",
       "title": "M0 Docker-first implementation plan",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:30Z",
+      "updated_at": "2026-08-23T18:53:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "high",
+      "created_at": "2026-08-23T18:53:11Z",
+      "derived_from": [
+        "PLAN-20260823-686A1E"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-plan-full-v1-local-automation-v1",
+      "expired": false,
+      "id": "PLAN-20260823-9B6D1E",
+      "kind": "plan",
+      "next_actions": [
+        "Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence."
+      ],
+      "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates",
+        "deploy",
+        "migrations",
+        "plugins",
+        "tests",
+        "tools",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "6ea26f10ea6502a1c9d06ff7611959dde946eb5035f6594e3a875826542a9779",
+      "sources": [
+        "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
+        "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
+        "RPT-20260823-FE85CD",
+        "RPT-20260823-118D95",
+        "RPT-20260823-CA61E0",
+        "RPT-20260823-E99D5D",
+        "RPT-20260823-38DC17",
+        "RPT-20260823-EE0875",
+        "RPT-20260823-1A4BFC",
+        "RPT-20260823-9F7FDD",
+        "RPT-20260824-242227",
+        "RPT-20260824-61086A"
+      ],
+      "status": "active",
+      "summary": "M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion.",
+      "supersedes": [],
+      "tags": [
+        "automated-testing",
+        "docker",
+        "local-ci",
+        "plan",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "DataHub v1 milestone plan with free local automation",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -234,7 +955,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Bootstrap the Docker-first M0 repository foundation."
+        "Integrate verified M8 and complete the final GitFlow v1 release with integrated runtime evidence."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -243,10 +964,24 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "a7d8f5b1003338a6028057d7f1c6d65675c423194bc984b2a3ae4c118f305330",
+      "sha256": "42a903f9a74c62d2ffe5ba83e00dc70e74c9d3a230e8166a7a8928b06a6c17c5",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
-        "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository."
+        "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
+        "RPT-20260823-44414F",
+        "RPT-20260823-49833C",
+        "DEC-20260823-C69FFA",
+        "TASK-20260823-2A43C1",
+        "RPT-20260823-FE85CD",
+        "RPT-20260823-118D95",
+        "RPT-20260823-CA61E0",
+        "RPT-20260823-E99D5D",
+        "RPT-20260823-38DC17",
+        "RPT-20260823-EE0875",
+        "RPT-20260823-1A4BFC",
+        "RPT-20260823-9F7FDD",
+        "RPT-20260824-242227",
+        "RPT-20260824-61086A"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -259,7 +994,590 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:32Z",
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:42:47Z",
+      "derived_from": [
+        "RPT-20260823-FE85CD"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m1-m2-m3-checkpoint-v1",
+      "expired": false,
+      "id": "RPT-20260823-118D95",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-118d95-m1-closure-m2-completion-and-m3-progress-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps",
+        "crates/datahub-auth",
+        "crates/datahub-export",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "migrations",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "a3a5a142a0d2bdbd5cd5f8c4dfe7d4d5be63f48c904493a11d049bd92f8442b8",
+      "sources": [
+        "Main-agent implementation and verification delta for TASK-20260823-2A43C1 at index generation 26.",
+        "Curator audit on 2026-08-24: source and migration search, cargo fmt/clippy/test, Vue typecheck/Vitest/build, git status/log, and scripts/quality-gate.ps1 inspection."
+      ],
+      "status": "superseded",
+      "summary": "Historical M1/M2/M3 checkpoint superseded by RPT-20260823-CA61E0 after TableView read APIs and gate hardening were completed.",
+      "supersedes": [
+        "RPT-20260823-FE85CD"
+      ],
+      "tags": [
+        "auth",
+        "m1",
+        "m2",
+        "m3",
+        "persistence",
+        "verification",
+        "web"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M1 closure, M2 completion, and M3 progress checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:51:14Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:22:59Z",
+      "derived_from": [
+        "RPT-20260823-EE0875"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m6-plugin-sandbox-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-1A4BFC",
+      "kind": "report",
+      "next_actions": [
+        "Continue M7 projection, release, approval and rollback implementation on feature/m7-release-sync."
+      ],
+      "path": "short/reports/rpt-20260823-1a4bfc-m6-wasmtime-plugin-platform-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-plugin-host",
+        "deploy/docker",
+        "docs/development/plugins.md",
+        "examples/datahub-echo-plugin",
+        "scripts/quality-gate.ps1",
+        "wit/datahub-plugin.wit"
+      ],
+      "sensitivity": "internal",
+      "sha256": "049d2bcbf0fc44b7ef451b70065fc36b19c446af4615f1493e71f934a86fc93d",
+      "sources": [
+        "Main-agent M6 completion delta and full local quality-gate result on 2026-08-24.",
+        "Git evidence: PR #6, feature commit 3a303a5 and squash commit 636a131; develop equals origin/develop.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 33 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M6 completes the versioned WIT Component contract, immutable package registry and deny-by-default Wasmtime sandbox, fully verified and merged to develop.",
+      "supersedes": [],
+      "tags": [
+        "m6",
+        "plugin",
+        "sandbox",
+        "wasmtime",
+        "wit"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M6 Wasmtime plugin platform completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:22:59Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:42:40Z",
+      "derived_from": [
+        "RPT-20260823-E99D5D"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m4-formula-xlsx-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-38DC17",
+      "kind": "report",
+      "next_actions": [
+        "Integrate M4 and begin M5 deterministic build/export acceptance."
+      ],
+      "path": "short/reports/rpt-20260823-38dc17-m4-formula-and-xlsx-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-formula",
+        "crates/datahub-persistence-pg",
+        "crates/datahub-xlsx",
+        "migrations/0005_formulas_xlsx.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "0712237f4b7eac4227d677a1f2b7270b7336002e196eff6dabd7d1ee77119a09",
+      "sources": [
+        "Main-agent completion delta for feature/m4-formula-xlsx on 2026-08-24.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 26 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M4 FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL commits are implemented and fully verified.",
+      "supersedes": [],
+      "tags": [
+        "formula",
+        "m4",
+        "postgresql",
+        "wasmtime",
+        "xlsx"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M4 formula and XLSX completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:42:40Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [
+        "GitHub CLI is not installed in the current shell; PR and repository-policy automation may require installation or another authenticated GitHub path."
+      ],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:44:06Z",
+      "derived_from": [],
+      "effective_status": "active",
+      "event_id": "datahub-report-m0-local-foundation-verified-v1",
+      "expired": false,
+      "id": "RPT-20260823-44414F",
+      "kind": "report",
+      "next_actions": [
+        "Commit and push feature/m0-foundation.",
+        "Open the PR to develop, verify CI, and complete the approved squash merge."
+      ],
+      "path": "short/reports/rpt-20260823-44414f-m0-docker-foundation-implementation-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "db068a98a65ff107eb9e1200c1b4733abcb968856fc7c89da0d75299a5ff932d",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
+        "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query."
+      ],
+      "status": "active",
+      "summary": "The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain.",
+      "supersedes": [],
+      "tags": [
+        "docker",
+        "m0",
+        "verification"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 Docker foundation implementation checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:44:06Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:48:08Z",
+      "derived_from": [],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m0-github-billing-block-v1",
+      "expired": false,
+      "id": "RPT-20260823-49833C",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-49833c-m0-github-integration-blocked-by-account-billing-lock.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        ".",
+        ".github"
+      ],
+      "sensitivity": "internal",
+      "sha256": "4d4524d090fc3519af9a8bdce27058fab5c283f2ec46dbd57fd2e2acee327d7a",
+      "sources": [
+        "Main-agent GitHub integration delta for TASK-20260823-9C0927 on 2026-08-24.",
+        "https://github.com/ting-aaa/DataHub/pull/1: open PR from feature/m0-foundation to develop at 66d7b8e with auto-merge squash enabled.",
+        "https://github.com/ting-aaa/DataHub/actions/runs/32659106075: Rust and Web annotations state jobs were not started because the account is locked due to a billing issue; Docker smoke skipped."
+      ],
+      "status": "superseded",
+      "summary": "Commit 66d7b8e and PR #1 are ready with protected CI-gated auto squash merge, but GitHub Actions cannot start while the user account is billing-locked.",
+      "supersedes": [],
+      "tags": [
+        "blocker",
+        "ci",
+        "github",
+        "m0"
+      ],
+      "task_id": "TASK-20260823-9C0927",
+      "tier": "short",
+      "title": "M0 GitHub integration blocked by account billing lock",
+      "type_version": 1,
+      "updated_at": "2026-08-23T18:53:29Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:42:01Z",
+      "derived_from": [
+        "RPT-20260823-1A4BFC"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m7-release-sync-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-9F7FDD",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-worker",
+        "crates/datahub-persistence-pg",
+        "migrations/0007_release_sync.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "3717a2b84a0563edc949a898a03fa2d2c1b6fa7a0468becd42024fc9728a0ab6",
+      "sources": [
+        "Main-agent M7 completion delta and full local quality-gate result on 2026-08-24.",
+        "Curator repository audit: feature/m7-release-sync working tree based on 636a131; migration/API/repository/UI/gate evidence inspected.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed.",
+        "Git evidence on 2026-08-24: M7 PR #7 squash-integrated at a986c5d; develop equals origin/develop."
+      ],
+      "status": "completed",
+      "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d.",
+      "supersedes": [],
+      "tags": [
+        "m7",
+        "postgresql",
+        "release",
+        "rollback",
+        "sync"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M7 synchronization release and rollback completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:14:00Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:50:56Z",
+      "derived_from": [
+        "RPT-20260823-118D95"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m3-tableview-quality-gate-v1",
+      "expired": false,
+      "id": "RPT-20260823-CA61E0",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-ca61e0-m3-tableview-and-local-gate-hardening-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "deploy/docker/rust.Dockerfile",
+        "migrations/0004_table_views.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "a20e0ddb72bb62cd587f767bb0a8aa80b7096b32f9c0c7a0147140f774998c0f",
+      "sources": [
+        "Main-agent M3 implementation and final quality-gate delta for TASK-20260823-2A43C1.",
+        "Curator audit on 2026-08-24: migration/API/UI/tooling source inspection, cargo fmt/clippy/test, web lint/typecheck/Vitest/build, git status and docker compose ps."
+      ],
+      "status": "superseded",
+      "summary": "Historical M3 checkpoint superseded by RPT-20260823-E99D5D after inline editing, prefetch/cache and multi-field design were completed.",
+      "supersedes": [
+        "RPT-20260823-118D95"
+      ],
+      "tags": [
+        "eslint",
+        "local-ci",
+        "m3",
+        "tableview",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 TableView and local gate hardening checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:11:04Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T20:10:47Z",
+      "derived_from": [
+        "RPT-20260823-CA61E0"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m3-grid-editing-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-E99D5D",
+      "kind": "report",
+      "next_actions": [
+        "Begin M4 FieldId formula engine, dependency/cycle handling, Native/WASM evaluation and XLSX round trips."
+      ],
+      "path": "short/reports/rpt-20260823-e99d5d-m3-grid-editing-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "crates/datahub-persistence-pg",
+        "migrations/0004_table_views.sql",
+        "scripts/quality-gate.ps1",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "94f8a4901ebda675e88531691362001bfb0db65cef8b7a48c65bd3942c13d01c",
+      "sources": [
+        "Main-agent M3 completion and browser acceptance delta for TASK-20260823-2A43C1.",
+        "Curator audit on 2026-08-24: feature/m3-grid-editing source inspection, cargo fmt/clippy/test and Web lint/typecheck/10 tests/build."
+      ],
+      "status": "completed",
+      "summary": "M3 multi-field schema design, typed row creation, inline VTable editing, block prefetch/cache, optimistic saves and server filter/sort are implemented and fully verified.",
+      "supersedes": [
+        "RPT-20260823-CA61E0"
+      ],
+      "tags": [
+        "completed",
+        "editing",
+        "m3",
+        "verification",
+        "vtable"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M3 grid editing completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T20:10:47Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T21:03:10Z",
+      "derived_from": [
+        "RPT-20260823-38DC17"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m5-deterministic-export-complete-v1",
+      "expired": false,
+      "id": "RPT-20260823-EE0875",
+      "kind": "report",
+      "next_actions": [
+        "Continue M6 Wasmtime Component/WIT plugin platform implementation on feature/m6-plugin-sandbox."
+      ],
+      "path": "short/reports/rpt-20260823-ee0875-m5-deterministic-build-and-export-completion-report.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "README.md",
+        "apps/datahub-api",
+        "crates/datahub-export",
+        "crates/datahub-persistence-pg",
+        "docs/product/v1-plan.md",
+        "migrations/0006_deterministic_builds.sql",
+        "scripts/quality-gate.ps1"
+      ],
+      "sensitivity": "internal",
+      "sha256": "5ed68e2d18bd021ccf57891d45b0a8e87fd5941e8ce5017516f2eb5bdb0a82fb",
+      "sources": [
+        "Main-agent M5 completion delta and full local quality-gate result on 2026-08-24.",
+        "Git evidence: PR #5, feature commit 49a7f3e and squash commit 2aaf6c8; develop equals origin/develop.",
+        "Curator repository audit and cargo test --workspace --all-features -- --test-threads=2: 29 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M5 completes deterministic revision-pinned manifests and the Rust/C#/TypeScript plus JSON/CSV/XML/BSON/Protobuf/Lua artifact matrix, fully verified and merged to develop.",
+      "supersedes": [],
+      "tags": [
+        "build",
+        "deterministic",
+        "export",
+        "m5",
+        "protobuf"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M5 deterministic build and export completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-23T21:03:10Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T19:01:37Z",
+      "derived_from": [],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m0-transition-m1-kernel-v1",
+      "expired": false,
+      "id": "RPT-20260823-FE85CD",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260823-fe85cd-m0-transition-and-m1-kernel-checkpoint.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "Cargo.lock",
+        "Cargo.toml",
+        "crates/datahub-kernel",
+        "scripts"
+      ],
+      "sensitivity": "internal",
+      "sha256": "28919c41f246b81519a3df58453c3c81a7d6450c9b82ac824a79b109c064a4dc",
+      "sources": [
+        "Main-agent implementation delta for TASK-20260823-2A43C1 at index generation 23.",
+        "Curator audit on 2026-08-24: git branch/log/ls-remote, scripts/quality-gate.ps1, kernel sources, Cargo manifests, cargo fmt, cargo clippy, and cargo test.",
+        "RPT-20260823-118D95 resolves the previously recorded M1 gaps."
+      ],
+      "status": "superseded",
+      "summary": "Historical M0/M1 checkpoint; its M1 gap assessment was subsequently resolved and is superseded by RPT-20260823-118D95.",
+      "supersedes": [],
+      "tags": [
+        "domain-kernel",
+        "local-ci",
+        "m0",
+        "m1",
+        "verification"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M0 transition and M1 kernel checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-23T19:43:06Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-24T15:13:28Z",
+      "derived_from": [
+        "RPT-20260823-9F7FDD"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m8-hardening-acceptance-complete-v1",
+      "expired": false,
+      "id": "RPT-20260824-242227",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260824-242227-m8-hardening-and-full-local-acceptance-completion-report.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-plugin-host",
+        "compose.yaml",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "docs/operations",
+        "migrations/0008_hardening.sql",
+        "scripts",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "c2c81a37f83de459ace13c38057f6643bc98b9b0edb2c84682b179c97e608be2",
+      "sources": [
+        "Main-agent M8 completion delta and scripts/quality-gate.ps1 exit 0 on 2026-08-24.",
+        "Curator repository audit: feature/m8-hardening-acceptance working tree based on a986c5d; migration/API/kernel/persistence/UI/operations/gate evidence inspected.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed."
+      ],
+      "status": "superseded",
+      "summary": "M8 security, audit, observability, backup/restore and full local acceptance are complete on the feature branch; only GitHub integration and final release evidence remain.",
+      "supersedes": [],
+      "tags": [
+        "acceptance",
+        "backup",
+        "hardening",
+        "m8",
+        "observability",
+        "security"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 hardening and full local acceptance completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-24T15:38:17Z",
+      "derived_from": [
+        "RPT-20260824-242227"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m8-final-gate-docker-registry-v1",
+      "expired": false,
+      "id": "RPT-20260824-61086A",
+      "kind": "report",
+      "next_actions": [
+        "Commit and integrate M8, then complete and verify the GitFlow v1 release before closing the task."
+      ],
+      "path": "short/reports/rpt-20260824-61086a-m8-final-gate-and-docker-registry-hardening-report.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        ".cargo/config.toml",
+        "apps",
+        "crates/datahub-kernel",
+        "deploy/docker/rust.Dockerfile",
+        "scripts/quality-gate.ps1"
+      ],
+      "sensitivity": "internal",
+      "sha256": "ab2f43ddfa3f5f4da497d920cee389623aa905cd05c337f94a391a55e8754686",
+      "sources": [
+        "Main-agent post-generation-50 M8 final-gate delta on 2026-08-24.",
+        "Curator repository audit of Cargo mirror, Dockerfile, JSON tracing and secret tests.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 38 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening.",
+      "supersedes": [
+        "RPT-20260824-242227"
+      ],
+      "tags": [
+        "acceptance",
+        "docker",
+        "m8",
+        "rsproxy",
+        "security",
+        "tracing"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 final gate and Docker registry hardening report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:17Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -273,7 +1591,7 @@
       "id": "STD-20260823-048D0D",
       "kind": "standard",
       "next_actions": [
-        "Encode these standards in repository documentation and CI during M0."
+        "Enforce these standards in future milestones and extend CI as product capabilities are added."
       ],
       "path": "long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md",
       "review_after": "",
@@ -282,10 +1600,12 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "348e94a2051fe894c50a5c05d67ee36fea01e39949aaf27b105ae2113a19e88c",
+      "sha256": "7c8ffb424a65a2330d66b6ca9b2c12fa09af5c577a9560e6dfc18f653eb5f586",
       "sources": [
         "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
-        "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment."
+        "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment.",
+        "compose.yaml, deploy/docker, .github/workflows/ci.yml, and RPT-20260823-44414F.",
+        "DEC-20260823-C69FFA"
       ],
       "status": "active",
       "summary": "Use uv for Python, Docker-first deployment artifacts, migration-managed PostgreSQL, secret-safe configuration, and evidence-backed verification.",
@@ -299,25 +1619,76 @@
       "tier": "long",
       "title": "DataHub development and deployment standards",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:23:51Z",
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub CLI is not installed; GitHub authentication and remote creation are pending."
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-23T18:52:55Z",
+      "derived_from": [
+        "TASK-20260823-9C0927"
       ],
+      "effective_status": "active",
+      "event_id": "datahub-task-full-v1-local-gates-v1",
+      "expired": false,
+      "id": "TASK-20260823-2A43C1",
+      "kind": "task",
+      "next_actions": [
+        "Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.",
+        "Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.",
+        "Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task."
+      ],
+      "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
+      "review_after": "2026-09-06",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "2cd3a7dd77d478147a2a259b91cd3daacd13891d80b0cf14e78b75f7cefa759d",
+      "sources": [
+        "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
+        "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
+        "RPT-20260823-FE85CD and HANDOFF-20260823-DE8966.",
+        "RPT-20260823-118D95 and HANDOFF-20260823-5A07F4.",
+        "RPT-20260823-CA61E0 and HANDOFF-20260823-CB0534.",
+        "RPT-20260823-E99D5D and HANDOFF-20260823-88CF74.",
+        "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
+        "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB.",
+        "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
+        "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2.",
+        "RPT-20260824-242227 and HANDOFF-20260824-89F499.",
+        "RPT-20260824-61086A."
+      ],
+      "status": "active",
+      "summary": "M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence.",
+      "supersedes": [],
+      "tags": [
+        "active",
+        "automated-testing",
+        "docker",
+        "local-ci",
+        "v1"
+      ],
+      "task_id": "",
+      "tier": "short",
+      "title": "Implement complete DataHub v1 with free automated gates",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:24:19Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-task-m0-foundation-v1",
       "expired": false,
       "id": "TASK-20260823-9C0927",
       "kind": "task",
-      "next_actions": [
-        "Create the baseline repository files and Docker Compose topology.",
-        "Install/authenticate GitHub CLI, create ting-aaa/DataHub, and configure GitFlow branches and CI gates."
-      ],
+      "next_actions": [],
       "path": "short/tasks/task-20260823-9c0927-bootstrap-m0-docker-first-datahub-foundation.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -325,13 +1696,17 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "4912fc9dc84f6fd53d650910b806c12c9c1e5b1fc93637e0289ddd984d8cf0d7",
+      "sha256": "5e3c0fcc704b1341cb76416d2f4234147066869755b96bf8e030179bfca5a0c8",
       "sources": [
         "Current task assigned by the user and main agent on 2026-08-24.",
-        "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection."
+        "Environment audit commands on 2026-08-24: docker version, docker compose version, tool version checks, git status, and port 5432 inspection.",
+        "RPT-20260823-44414F",
+        "HANDOFF-20260823-D2DC12",
+        "RPT-20260823-49833C",
+        "HANDOFF-20260823-545AD6"
       ],
-      "status": "active",
-      "summary": "Initialize the repository and deliver a verified Docker-first Rust/Vue/PostgreSQL M0 foundation through the approved GitFlow process.",
+      "status": "completed",
+      "summary": "The Docker-first M0 foundation and local verification are complete; the remaining paid-CI integration workflow was canceled by user direction and moved into the full-v1 transition plan.",
       "supersedes": [],
       "tags": [
         "active",
@@ -342,7 +1717,7 @@
       "tier": "short",
       "title": "Bootstrap M0 Docker-first DataHub foundation",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:19Z",
+      "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
     }
   ],
