@@ -1,18 +1,13 @@
 <!-- PROJECT_MEMORY
 {
-  "blockers": [
-    "GitHub CLI is not installed in the current shell; PR and repository-policy automation may require installation or another authenticated GitHub path."
-  ],
+  "blockers": [],
   "confidence": "confirmed",
   "created_at": "2026-08-23T18:44:06Z",
   "derived_from": [],
   "event_id": "datahub-report-m0-local-foundation-verified-v1",
   "id": "RPT-20260823-44414F",
   "kind": "report",
-  "next_actions": [
-    "Commit and push feature/m0-foundation.",
-    "Open the PR to develop, verify CI, and complete the approved squash merge."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -21,10 +16,11 @@
   "sensitivity": "internal",
   "sources": [
     "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
-    "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query."
+    "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query.",
+    "RPT-20260824-976431 closes the complete M0-M8 and v0.1.0 release program."
   ],
-  "status": "active",
-  "summary": "The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain.",
+  "status": "superseded",
+  "summary": "Historical M0 foundation checkpoint superseded by the integrated DataHub v0.1.0 final acceptance report.",
   "supersedes": [],
   "tags": [
     "docker",
@@ -35,7 +31,7 @@
   "tier": "short",
   "title": "M0 Docker foundation implementation checkpoint",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:44:06Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -54,7 +50,7 @@ The implementation delta additionally reports that a marker inserted into Postgr
 
 ## Remaining Work
 
-Commit and push feature/m0-foundation, open its pull request to develop, observe GitHub Actions, enable or complete CI-gated squash merge, and confirm the merged develop state. GitHub CLI is still unavailable in the current shell, although the public remote is reachable through Git.
+Resolved by the subsequent free local gate transition and M0-M8 integration. Final release evidence is recorded in RPT-20260824-976431.
 
 ## Noted Warning
 

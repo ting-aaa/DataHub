@@ -1,13 +1,13 @@
 {
-  "active_task_id": "TASK-20260823-2A43C1",
+  "active_task_id": "",
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 29,
+    "short": 31,
     "temp": 0
   },
-  "generated_at": "2026-08-24T15:39:55Z",
-  "generation": 52,
+  "generated_at": "2026-08-24T15:55:49Z",
+  "generation": 56,
   "project_name": "DataHub",
   "records": [
     {
@@ -21,7 +21,7 @@
       "id": "ARCH-20260823-F3A201",
       "kind": "architecture",
       "next_actions": [
-        "Build product capabilities on the verified M0 service and deployment boundaries."
+        "Preserve these verified service and deployment boundaries in future maintenance."
       ],
       "path": "long/architecture/arch-20260823-f3a201-docker-first-datahub-target-architecture.md",
       "review_after": "",
@@ -33,7 +33,7 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "c7b05f76c7a1ef899eb581c067e6ce263b42fdcd43a7f96c29ec64dfbba1d022",
+      "sha256": "bef7878250e4479f3739f0264bed7865d7fe5ef16df2f64a0e00012c0e7aa5e9",
       "sources": [
         "User instructions and accepted development plans in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24 found no product implementation, so this record originally described the target architecture only.",
@@ -51,7 +51,7 @@
       "tier": "long",
       "title": "Docker-first DataHub architecture",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:44:19Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -105,9 +105,7 @@
       "expired": false,
       "id": "DEC-20260823-A72203",
       "kind": "decision",
-      "next_actions": [
-        "Implement these decisions through the milestone plan without expanding v1 scope."
-      ],
+      "next_actions": [],
       "path": "long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md",
       "review_after": "",
       "schema_version": 1,
@@ -115,7 +113,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "ccf1c83cc869f97943475afd20a893f0968324c951cafd822de4665a6f1eb38f",
+      "sha256": "bb4080f9cade5fbdf23e6168477af8ff702d86595436d7a9b7a06586b84901df",
       "sources": [
         "Explicit user decisions summarized in the DataHub planning conversation on 2026-08-24."
       ],
@@ -131,7 +129,7 @@
       "tier": "long",
       "title": "Initial DataHub platform and v1 capability choices",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:24:01Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -147,7 +145,7 @@
       "id": "DEC-20260823-C69FFA",
       "kind": "decision",
       "next_actions": [
-        "Remove required GitHub status checks and auto-merge dependency, then encode the free local gate as repository commands."
+        "Keep scripts/quality-gate.ps1 as the required free local acceptance gate for future changes."
       ],
       "path": "long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md",
       "review_after": "",
@@ -159,7 +157,7 @@
         "tools"
       ],
       "sensitivity": "internal",
-      "sha256": "07aea5bfab260cda956989330814aecf531f65b0ec0d271ff16d9223eff3e728",
+      "sha256": "65d02ed2175bc9d764a1d32f98f561d83b17aca44631248fbbb0289aad1436b7",
       "sources": [
         "Explicit user instruction on 2026-08-24 cancelling any workflow that requires payment and requiring full implementation with automated tests.",
         "DEC-20260823-9EC766 and RPT-20260823-49833C document the superseded CI-gated GitHub Actions policy and billing lock."
@@ -180,7 +178,7 @@
       "tier": "long",
       "title": "Free local Docker-first quality gate and GitFlow policy",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:52:45Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -754,18 +752,61 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-24T15:53:15Z",
+      "derived_from": [
+        "HANDOFF-20260824-89F499"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-handoff-v0-1-0-maintenance-baseline-v1",
+      "expired": false,
+      "id": "HANDOFF-20260824-4978F1",
+      "kind": "handoff",
+      "next_actions": [],
+      "path": "short/handoffs/handoff-20260824-4978f1-datahub-v0-1-0-closure-and-maintenance-baseline-handoff.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "6885339b02d74ec280865d8103b7a639baada8418afb5c27c1552b431b21e211",
+      "sources": [
+        "RPT-20260824-976431",
+        "PLAN-20260823-9B6D1E",
+        "Curator Git and live runtime audit on 2026-08-24."
+      ],
+      "status": "completed",
+      "summary": "DataHub v0.1.0 is fully integrated and accepted; future maintenance starts from reconciled develop with no remaining v0.1.0 implementation blocker.",
+      "supersedes": [
+        "HANDOFF-20260824-89F499"
+      ],
+      "tags": [
+        "closure",
+        "handoff",
+        "maintenance",
+        "release",
+        "v0.1.0"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "DataHub v0.1.0 closure and maintenance baseline handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:53:15Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-24T15:13:53Z",
       "derived_from": [
         "HANDOFF-20260823-CAFFC2"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m8-to-final-release-v1",
       "expired": false,
       "id": "HANDOFF-20260824-89F499",
       "kind": "handoff",
-      "next_actions": [
-        "Commit and squash-integrate M8, then complete and verify the GitFlow v1 release before closing the task."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md",
       "review_after": "2026-09-07",
       "schema_version": 1,
@@ -773,14 +814,15 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "01e8248be992031dcf9d23baa680e4008c5bac31b137c92d9c979482af5e4a77",
+      "sha256": "0f7a11d1161ece2b8ca3549035746cfb02c47fdb5d5170a27cdf56723c0237be",
       "sources": [
         "RPT-20260824-61086A",
         "PLAN-20260823-9B6D1E",
-        "Curator Git audit: M8 complete in uncommitted feature/m8-hardening-acceptance working tree based on integrated M7 commit a986c5d."
+        "Curator Git audit: M8 complete in uncommitted feature/m8-hardening-acceptance working tree based on integrated M7 commit a986c5d.",
+        "RPT-20260824-976431 and HANDOFF-20260824-4978F1."
       ],
-      "status": "active",
-      "summary": "All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task.",
+      "status": "superseded",
+      "summary": "The pending M8/release integration handoff is resolved and superseded by the completed v0.1.0 maintenance baseline handoff.",
       "supersedes": [
         "HANDOFF-20260823-CAFFC2"
       ],
@@ -796,7 +838,7 @@
       "tier": "short",
       "title": "M8 completion to final GitHub integration and v1 release handoff",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:24Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -890,14 +932,12 @@
       "derived_from": [
         "PLAN-20260823-686A1E"
       ],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-plan-full-v1-local-automation-v1",
       "expired": false,
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
-      "next_actions": [
-        "Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence."
-      ],
+      "next_actions": [],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -912,7 +952,7 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "6ea26f10ea6502a1c9d06ff7611959dde946eb5035f6594e3a875826542a9779",
+      "sha256": "a53a4a712ebbae48dc983d4a75eb876bea552cc25582304d276a749609c744d1",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
@@ -925,10 +965,11 @@
         "RPT-20260823-1A4BFC",
         "RPT-20260823-9F7FDD",
         "RPT-20260824-242227",
-        "RPT-20260824-61086A"
+        "RPT-20260824-61086A",
+        "RPT-20260824-976431"
       ],
-      "status": "active",
-      "summary": "M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion.",
+      "status": "completed",
+      "summary": "M0-M8, clean-clone acceptance, M8 integration, the v0.1.0 release merge and main-to-develop reconciliation are complete.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -941,7 +982,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:24Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -954,9 +995,7 @@
       "expired": false,
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
-      "next_actions": [
-        "Integrate verified M8 and complete the final GitFlow v1 release with integrated runtime evidence."
-      ],
+      "next_actions": [],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
       "schema_version": 1,
@@ -964,7 +1003,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "42a903f9a74c62d2ffe5ba83e00dc70e74c9d3a230e8166a7a8928b06a6c17c5",
+      "sha256": "54b8b9e38f54428a895ddcb32e9f13614a7bac0aa79a0c272a09446297a83159",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -981,7 +1020,9 @@
         "RPT-20260823-1A4BFC",
         "RPT-20260823-9F7FDD",
         "RPT-20260824-242227",
-        "RPT-20260824-61086A"
+        "RPT-20260824-61086A",
+        "RPT-20260824-976431",
+        "HANDOFF-20260824-4978F1"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -994,7 +1035,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:24Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1150,21 +1191,16 @@
       "valid_as_of": "2026-08-24"
     },
     {
-      "blockers": [
-        "GitHub CLI is not installed in the current shell; PR and repository-policy automation may require installation or another authenticated GitHub path."
-      ],
+      "blockers": [],
       "confidence": "confirmed",
       "created_at": "2026-08-23T18:44:06Z",
       "derived_from": [],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-report-m0-local-foundation-verified-v1",
       "expired": false,
       "id": "RPT-20260823-44414F",
       "kind": "report",
-      "next_actions": [
-        "Commit and push feature/m0-foundation.",
-        "Open the PR to develop, verify CI, and complete the approved squash merge."
-      ],
+      "next_actions": [],
       "path": "short/reports/rpt-20260823-44414f-m0-docker-foundation-implementation-checkpoint.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -1172,13 +1208,14 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "db068a98a65ff107eb9e1200c1b4733abcb968856fc7c89da0d75299a5ff932d",
+      "sha256": "df7e6cb9a3f04a5969a808feb1876e07395a4b72c72e9dcd54548700af828df3",
       "sources": [
         "Main-agent implementation delta for TASK-20260823-9C0927 on 2026-08-24.",
-        "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query."
+        "Curator rerun on 2026-08-24: cargo fmt/clippy/test, Vue typecheck/Vitest/build, git ls-remote, docker compose config/ps, HTTP probes, and SQLx migration query.",
+        "RPT-20260824-976431 closes the complete M0-M8 and v0.1.0 release program."
       ],
-      "status": "active",
-      "summary": "The M0 full-stack foundation and local verification are complete; feature commit, PR, CI, and squash merge into develop remain.",
+      "status": "superseded",
+      "summary": "Historical M0 foundation checkpoint superseded by the integrated DataHub v0.1.0 final acceptance report.",
       "supersedes": [],
       "tags": [
         "docker",
@@ -1189,7 +1226,7 @@
       "tier": "short",
       "title": "M0 Docker foundation implementation checkpoint",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:44:06Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1535,14 +1572,12 @@
       "derived_from": [
         "RPT-20260824-242227"
       ],
-      "effective_status": "completed",
+      "effective_status": "superseded",
       "event_id": "datahub-report-m8-final-gate-docker-registry-v1",
       "expired": false,
       "id": "RPT-20260824-61086A",
       "kind": "report",
-      "next_actions": [
-        "Commit and integrate M8, then complete and verify the GitFlow v1 release before closing the task."
-      ],
+      "next_actions": [],
       "path": "short/reports/rpt-20260824-61086a-m8-final-gate-and-docker-registry-hardening-report.md",
       "review_after": "2026-09-07",
       "schema_version": 1,
@@ -1554,13 +1589,13 @@
         "scripts/quality-gate.ps1"
       ],
       "sensitivity": "internal",
-      "sha256": "ab2f43ddfa3f5f4da497d920cee389623aa905cd05c337f94a391a55e8754686",
+      "sha256": "db1b3d308e87a4977a1e43254f72f85f6c0262c3859aefecf7c5fc31617820c1",
       "sources": [
         "Main-agent post-generation-50 M8 final-gate delta on 2026-08-24.",
         "Curator repository audit of Cargo mirror, Dockerfile, JSON tracing and secret tests.",
         "Curator cargo test --workspace --all-features -- --test-threads=2: 38 tests and doctests passed."
       ],
-      "status": "completed",
+      "status": "superseded",
       "summary": "M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening.",
       "supersedes": [
         "RPT-20260824-242227"
@@ -1577,7 +1612,52 @@
       "tier": "short",
       "title": "M8 final gate and Docker registry hardening report",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:17Z",
+      "updated_at": "2026-08-24T15:53:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-24T15:53:03Z",
+      "derived_from": [
+        "RPT-20260824-61086A"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-v0-1-0-final-release-v1",
+      "expired": false,
+      "id": "RPT-20260824-976431",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260824-976431-datahub-v0-1-0-release-and-final-acceptance-report.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "9a8523f75c2488ba653279ef152e08da9271a0304ff703ed0fb5f8945d48f827",
+      "sources": [
+        "User-supplied final integration and clean-clone quality-gate evidence on 2026-08-24.",
+        "Curator Git audit: PR commit graph 16d328f -> c97fbef -> 6bbe5cc; origin/main and origin/develop match.",
+        "Curator live Compose/API/Web/metrics/PostgreSQL audit on 2026-08-24."
+      ],
+      "status": "completed",
+      "summary": "DataHub v0.1.0 is integrated through M8, release and reconciliation PRs and passes clean-clone quality and retained-volume Docker/PostgreSQL acceptance.",
+      "supersedes": [
+        "RPT-20260824-61086A"
+      ],
+      "tags": [
+        "acceptance",
+        "docker",
+        "gitflow",
+        "release",
+        "v0.1.0"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "DataHub v0.1.0 release and final acceptance report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:53:03Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1591,7 +1671,7 @@
       "id": "STD-20260823-048D0D",
       "kind": "standard",
       "next_actions": [
-        "Enforce these standards in future milestones and extend CI as product capabilities are added."
+        "Enforce these standards in future maintenance without introducing a paid required gate."
       ],
       "path": "long/standards/std-20260823-048d0d-datahub-development-and-deployment-standards.md",
       "review_after": "",
@@ -1600,7 +1680,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "7c8ffb424a65a2330d66b6ca9b2c12fa09af5c577a9560e6dfc18f653eb5f586",
+      "sha256": "35a35ee4a791275b46bcf0629cdc60951dd59f4622245288c66afac5b08f5c38",
       "sources": [
         "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
         "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment.",
@@ -1619,7 +1699,7 @@
       "tier": "long",
       "title": "DataHub development and deployment standards",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:24Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1629,16 +1709,12 @@
       "derived_from": [
         "TASK-20260823-9C0927"
       ],
-      "effective_status": "active",
+      "effective_status": "completed",
       "event_id": "datahub-task-full-v1-local-gates-v1",
       "expired": false,
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
-      "next_actions": [
-        "Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.",
-        "Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.",
-        "Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task."
-      ],
+      "next_actions": [],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -1646,7 +1722,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "2cd3a7dd77d478147a2a259b91cd3daacd13891d80b0cf14e78b75f7cefa759d",
+      "sha256": "2ca1659d3775aa8ca7cfca789df4163259376287a80fe4a49cd80590f53221d1",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
@@ -1659,14 +1735,15 @@
         "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
         "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2.",
         "RPT-20260824-242227 and HANDOFF-20260824-89F499.",
-        "RPT-20260824-61086A."
+        "RPT-20260824-61086A.",
+        "RPT-20260824-976431 and HANDOFF-20260824-4978F1."
       ],
-      "status": "active",
-      "summary": "M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence.",
+      "status": "completed",
+      "summary": "DataHub v0.1.0 M0-M8, free automated acceptance, GitFlow release integration and retained-volume Docker/PostgreSQL verification are complete.",
       "supersedes": [],
       "tags": [
-        "active",
         "automated-testing",
+        "completed",
         "docker",
         "local-ci",
         "v1"
@@ -1675,7 +1752,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-24T15:38:24Z",
+      "updated_at": "2026-08-24T15:53:24Z",
       "valid_as_of": "2026-08-24"
     },
     {

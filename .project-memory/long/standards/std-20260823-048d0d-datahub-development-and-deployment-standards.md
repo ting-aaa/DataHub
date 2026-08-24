@@ -8,7 +8,7 @@
   "id": "STD-20260823-048D0D",
   "kind": "standard",
   "next_actions": [
-    "Enforce these standards in future milestones and extend CI as product capabilities are added."
+    "Enforce these standards in future maintenance without introducing a paid required gate."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -34,7 +34,7 @@
   "tier": "long",
   "title": "DataHub development and deployment standards",
   "type_version": 1,
-  "updated_at": "2026-08-24T15:38:24Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
