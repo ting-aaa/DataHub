@@ -2,7 +2,10 @@ use std::{
     collections::BTreeMap,
     fs,
     path::{Component as PathComponent, Path, PathBuf},
-    sync::mpsc,
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        mpsc,
+    },
     thread,
     time::Duration,
 };
@@ -21,6 +24,25 @@ wasmtime::component::bindgen!({
 
 const MAX_MANIFEST_BYTES: u64 = 64 * 1024;
 const MAX_COMPONENT_BYTES: u64 = 64 * 1024 * 1024;
+static PLUGIN_RUNS: AtomicU64 = AtomicU64::new(0);
+static PLUGIN_TRAPS: AtomicU64 = AtomicU64::new(0);
+static PLUGIN_QUOTA_REJECTIONS: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Debug, Clone, Copy, Serialize)]
+pub struct PluginMetrics {
+    pub runs: u64,
+    pub traps: u64,
+    pub quota_rejections: u64,
+}
+
+#[must_use]
+pub fn plugin_metrics() -> PluginMetrics {
+    PluginMetrics {
+        runs: PLUGIN_RUNS.load(Ordering::Relaxed),
+        traps: PLUGIN_TRAPS.load(Ordering::Relaxed),
+        quota_rejections: PLUGIN_QUOTA_REJECTIONS.load(Ordering::Relaxed),
+    }
+}
 
 #[derive(Debug, Error)]
 pub enum PluginError {
@@ -282,6 +304,26 @@ impl PluginRegistry {
 /// Returns declaration, quota, compilation, instantiation, trap, timeout, fuel,
 /// memory, or guest errors.
 pub fn run_plugin(
+    package: &PluginPackage,
+    request: &PluginRunRequest,
+) -> Result<PluginOutput, PluginError> {
+    PLUGIN_RUNS.fetch_add(1, Ordering::Relaxed);
+    let result = run_plugin_inner(package, request);
+    if let Err(error) = &result {
+        match error {
+            PluginError::InputQuotaExceeded | PluginError::OutputQuotaExceeded => {
+                PLUGIN_QUOTA_REJECTIONS.fetch_add(1, Ordering::Relaxed);
+            }
+            PluginError::Execution(_) | PluginError::Guest(_) => {
+                PLUGIN_TRAPS.fetch_add(1, Ordering::Relaxed);
+            }
+            _ => {}
+        }
+    }
+    result
+}
+
+fn run_plugin_inner(
     package: &PluginPackage,
     request: &PluginRunRequest,
 ) -> Result<PluginOutput, PluginError> {

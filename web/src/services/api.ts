@@ -145,6 +145,18 @@ export interface ReleaseRecord {
   rollback_of: string | null
 }
 
+export interface AuditEventRecord {
+  id: string
+  actor_id: string | null
+  project_id: string
+  action: string
+  entity_type: string
+  entity_id: string | null
+  correlation_id: string | null
+  details: Record<string, unknown>
+  created_at: string
+}
+
 export interface TableView {
   view_id: string
   total_rows: number

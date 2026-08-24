@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, env};
 use anyhow::{Context, Result};
 use axum::{Json, Router, routing::get};
 use datahub_kernel::HealthPayload;
-use datahub_plugin_host::{PluginPackage, PluginRunRequest, run_plugin};
+use datahub_plugin_host::{PluginPackage, PluginRunRequest, plugin_metrics, run_plugin};
 use sha2::{Digest, Sha256};
 use tokio::net::TcpListener;
 use tracing::info;
@@ -35,10 +35,21 @@ async fn main() -> Result<()> {
         return Ok(());
     }
     let bind = env::var("DATAHUB_PLUGIN_HOST_BIND").unwrap_or_else(|_| "0.0.0.0:8081".to_owned());
-    let app = Router::new().route(
-        "/health/live",
-        get(|| async { Json(HealthPayload::healthy(SERVICE, VERSION)) }),
-    );
+    let app = Router::new()
+        .route(
+            "/health/live",
+            get(|| async { Json(HealthPayload::healthy(SERVICE, VERSION)) }),
+        )
+        .route(
+            "/metrics",
+            get(|| async {
+                let metrics = plugin_metrics();
+                format!(
+                    "datahub_plugin_runs_total {}\ndatahub_plugin_traps_total {}\ndatahub_plugin_quota_rejections_total {}\n",
+                    metrics.runs, metrics.traps, metrics.quota_rejections
+                )
+            }),
+        );
     let listener = TcpListener::bind(&bind)
         .await
         .with_context(|| format!("failed to bind plugin host listener to {bind}"))?;

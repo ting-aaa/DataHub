@@ -3,11 +3,11 @@
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 26,
+    "short": 29,
     "temp": 0
   },
-  "generated_at": "2026-08-23T21:43:10Z",
-  "generation": 47,
+  "generated_at": "2026-08-24T15:39:55Z",
+  "generation": 52,
   "project_name": "DataHub",
   "records": [
     {
@@ -423,14 +423,12 @@
       "derived_from": [
         "HANDOFF-20260823-93F5C0"
       ],
-      "effective_status": "active",
+      "effective_status": "superseded",
       "event_id": "datahub-handoff-m7-to-m8-v1",
       "expired": false,
       "id": "HANDOFF-20260823-CAFFC2",
       "kind": "handoff",
-      "next_actions": [
-        "Integrate M7, create the M8 branch and satisfy every hardening/final-acceptance exit criterion."
-      ],
+      "next_actions": [],
       "path": "short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -445,13 +443,13 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "cfb2573842e0fd548005d02df6b110e6a93ca5fb6840056fec5dc6592f572273",
+      "sha256": "cd9e0a9050a95e0bb92e9385db871995ec7ac21d4b3a71c5e106006b1117ba8a",
       "sources": [
         "RPT-20260823-9F7FDD",
         "PLAN-20260823-9B6D1E",
         "Curator Git audit: M7 complete in uncommitted feature/m7-release-sync working tree based on 636a131."
       ],
-      "status": "active",
+      "status": "superseded",
       "summary": "M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes.",
       "supersedes": [
         "HANDOFF-20260823-93F5C0"
@@ -469,7 +467,7 @@
       "tier": "short",
       "title": "M7 completion to M8 hardening and final acceptance handoff",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:42:31Z",
+      "updated_at": "2026-08-24T15:14:00Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -756,6 +754,54 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-24T15:13:53Z",
+      "derived_from": [
+        "HANDOFF-20260823-CAFFC2"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-handoff-m8-to-final-release-v1",
+      "expired": false,
+      "id": "HANDOFF-20260824-89F499",
+      "kind": "handoff",
+      "next_actions": [
+        "Commit and squash-integrate M8, then complete and verify the GitFlow v1 release before closing the task."
+      ],
+      "path": "short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "."
+      ],
+      "sensitivity": "internal",
+      "sha256": "01e8248be992031dcf9d23baa680e4008c5bac31b137c92d9c979482af5e4a77",
+      "sources": [
+        "RPT-20260824-61086A",
+        "PLAN-20260823-9B6D1E",
+        "Curator Git audit: M8 complete in uncommitted feature/m8-hardening-acceptance working tree based on integrated M7 commit a986c5d."
+      ],
+      "status": "active",
+      "summary": "All v1 functionality and local acceptance pass; commit/squash M8 into develop, complete the GitFlow release to main and record final integrated evidence before closing the task.",
+      "supersedes": [
+        "HANDOFF-20260823-CAFFC2"
+      ],
+      "tags": [
+        "github",
+        "handoff",
+        "integration",
+        "m8",
+        "release",
+        "v1"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 completion to final GitHub integration and v1 release handoff",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:44:16Z",
       "derived_from": [],
       "effective_status": "active",
@@ -850,7 +896,7 @@
       "id": "PLAN-20260823-9B6D1E",
       "kind": "plan",
       "next_actions": [
-        "Integrate verified M7, then implement and pass every M8 hardening and final-acceptance exit criterion."
+        "Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence."
       ],
       "path": "short/plans/plan-20260823-9b6d1e-datahub-v1-milestone-plan-with-free-local-automation.md",
       "review_after": "2026-09-06",
@@ -866,7 +912,7 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "053940f23609fcebe95c5564bc3b0a596b17c52ac889b63540650340ec5df31a",
+      "sha256": "6ea26f10ea6502a1c9d06ff7611959dde946eb5035f6594e3a875826542a9779",
       "sources": [
         "Explicit user scope change on 2026-08-24 and accepted DataHub v1 plans.",
         "TASK-20260823-2A43C1 and DEC-20260823-C69FFA.",
@@ -877,10 +923,12 @@
         "RPT-20260823-38DC17",
         "RPT-20260823-EE0875",
         "RPT-20260823-1A4BFC",
-        "RPT-20260823-9F7FDD"
+        "RPT-20260823-9F7FDD",
+        "RPT-20260824-242227",
+        "RPT-20260824-61086A"
       ],
       "status": "active",
-      "summary": "M0-M7 are functionally complete, with M7 pending integration; M8 hardening and final acceptance remain pending under the free local gate.",
+      "summary": "M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion.",
       "supersedes": [],
       "tags": [
         "automated-testing",
@@ -893,7 +941,7 @@
       "tier": "short",
       "title": "DataHub v1 milestone plan with free local automation",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:42:36Z",
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -907,7 +955,7 @@
       "id": "PROJ-20260823-0128D7",
       "kind": "project",
       "next_actions": [
-        "Integrate verified M7 and complete M8 hardening, backup/recovery and full clean-environment acceptance."
+        "Integrate verified M8 and complete the final GitFlow v1 release with integrated runtime evidence."
       ],
       "path": "long/project/proj-20260823-0128d7-datahub-project-overview.md",
       "review_after": "",
@@ -916,7 +964,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "548495b2e10ba32dff13c8f91e55efd33a04bb8575ec502186b464607e2d0d7f",
+      "sha256": "42a903f9a74c62d2ffe5ba83e00dc70e74c9d3a230e8166a7a8928b06a6c17c5",
       "sources": [
         "User instructions in the DataHub planning conversation on 2026-08-24.",
         "Repository audit on 2026-08-24: Get-ChildItem -Force returned only .project-memory and git status reported no Git repository.",
@@ -931,7 +979,9 @@
         "RPT-20260823-38DC17",
         "RPT-20260823-EE0875",
         "RPT-20260823-1A4BFC",
-        "RPT-20260823-9F7FDD"
+        "RPT-20260823-9F7FDD",
+        "RPT-20260824-242227",
+        "RPT-20260824-61086A"
       ],
       "status": "active",
       "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -944,7 +994,7 @@
       "tier": "long",
       "title": "DataHub project overview",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:42:36Z",
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1195,9 +1245,7 @@
       "expired": false,
       "id": "RPT-20260823-9F7FDD",
       "kind": "report",
-      "next_actions": [
-        "Commit and integrate M7, then execute M8 hardening and final acceptance."
-      ],
+      "next_actions": [],
       "path": "short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md",
       "review_after": "2026-09-06",
       "schema_version": 1,
@@ -1210,14 +1258,15 @@
         "web"
       ],
       "sensitivity": "internal",
-      "sha256": "fa25f2cc0494a32faf06e8812eb1e7f520d81312290ef2690c4d0208c48cb0ca",
+      "sha256": "3717a2b84a0563edc949a898a03fa2d2c1b6fa7a0468becd42024fc9728a0ab6",
       "sources": [
         "Main-agent M7 completion delta and full local quality-gate result on 2026-08-24.",
         "Curator repository audit: feature/m7-release-sync working tree based on 636a131; migration/API/repository/UI/gate evidence inspected.",
-        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed."
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed.",
+        "Git evidence on 2026-08-24: M7 PR #7 squash-integrated at a986c5d; develop equals origin/develop."
       ],
       "status": "completed",
-      "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are implemented and fully verified on the feature branch, pending integration.",
+      "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d.",
       "supersedes": [],
       "tags": [
         "m7",
@@ -1230,7 +1279,7 @@
       "tier": "short",
       "title": "M7 synchronization release and rollback completion report",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:42:01Z",
+      "updated_at": "2026-08-24T15:14:00Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1430,6 +1479,110 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-24T15:13:28Z",
+      "derived_from": [
+        "RPT-20260823-9F7FDD"
+      ],
+      "effective_status": "superseded",
+      "event_id": "datahub-report-m8-hardening-acceptance-complete-v1",
+      "expired": false,
+      "id": "RPT-20260824-242227",
+      "kind": "report",
+      "next_actions": [],
+      "path": "short/reports/rpt-20260824-242227-m8-hardening-and-full-local-acceptance-completion-report.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        "apps/datahub-api",
+        "apps/datahub-plugin-host",
+        "compose.yaml",
+        "crates/datahub-kernel",
+        "crates/datahub-persistence-pg",
+        "docs/operations",
+        "migrations/0008_hardening.sql",
+        "scripts",
+        "web"
+      ],
+      "sensitivity": "internal",
+      "sha256": "c2c81a37f83de459ace13c38057f6643bc98b9b0edb2c84682b179c97e608be2",
+      "sources": [
+        "Main-agent M8 completion delta and scripts/quality-gate.ps1 exit 0 on 2026-08-24.",
+        "Curator repository audit: feature/m8-hardening-acceptance working tree based on a986c5d; migration/API/kernel/persistence/UI/operations/gate evidence inspected.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed."
+      ],
+      "status": "superseded",
+      "summary": "M8 security, audit, observability, backup/restore and full local acceptance are complete on the feature branch; only GitHub integration and final release evidence remain.",
+      "supersedes": [],
+      "tags": [
+        "acceptance",
+        "backup",
+        "hardening",
+        "m8",
+        "observability",
+        "security"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 hardening and full local acceptance completion report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:24Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-24T15:38:17Z",
+      "derived_from": [
+        "RPT-20260824-242227"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-m8-final-gate-docker-registry-v1",
+      "expired": false,
+      "id": "RPT-20260824-61086A",
+      "kind": "report",
+      "next_actions": [
+        "Commit and integrate M8, then complete and verify the GitFlow v1 release before closing the task."
+      ],
+      "path": "short/reports/rpt-20260824-61086a-m8-final-gate-and-docker-registry-hardening-report.md",
+      "review_after": "2026-09-07",
+      "schema_version": 1,
+      "scope": [
+        ".cargo/config.toml",
+        "apps",
+        "crates/datahub-kernel",
+        "deploy/docker/rust.Dockerfile",
+        "scripts/quality-gate.ps1"
+      ],
+      "sensitivity": "internal",
+      "sha256": "ab2f43ddfa3f5f4da497d920cee389623aa905cd05c337f94a391a55e8754686",
+      "sources": [
+        "Main-agent post-generation-50 M8 final-gate delta on 2026-08-24.",
+        "Curator repository audit of Cargo mirror, Dockerfile, JSON tracing and secret tests.",
+        "Curator cargo test --workspace --all-features -- --test-threads=2: 38 tests and doctests passed."
+      ],
+      "status": "completed",
+      "summary": "M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening.",
+      "supersedes": [
+        "RPT-20260824-242227"
+      ],
+      "tags": [
+        "acceptance",
+        "docker",
+        "m8",
+        "rsproxy",
+        "security",
+        "tracing"
+      ],
+      "task_id": "TASK-20260823-2A43C1",
+      "tier": "short",
+      "title": "M8 final gate and Docker registry hardening report",
+      "type_version": 1,
+      "updated_at": "2026-08-24T15:38:17Z",
+      "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:51Z",
       "derived_from": [],
       "effective_status": "active",
@@ -1447,7 +1600,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "f3c174a294f8860e6419a70891a22a51616f3aff0da33f9266b5c64c6a3c7a21",
+      "sha256": "7c8ffb424a65a2330d66b6ca9b2c12fa09af5c577a9560e6dfc18f653eb5f586",
       "sources": [
         "Workspace AGENTS.md instruction supplied by the user: use uv manager python env.",
         "User instruction on 2026-08-24: PostgreSQL runs in local Docker Desktop and DataHub is intended for Docker deployment.",
@@ -1466,7 +1619,7 @@
       "tier": "long",
       "title": "DataHub development and deployment standards",
       "type_version": 1,
-      "updated_at": "2026-08-23T18:53:29Z",
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {
@@ -1482,9 +1635,9 @@
       "id": "TASK-20260823-2A43C1",
       "kind": "task",
       "next_actions": [
-        "Commit and squash-integrate the verified feature/m7-release-sync work into develop.",
-        "Implement M8 audit search, rate limiting, secret redaction, observability, backup/restore and operator runbooks.",
-        "Pass the complete v1 demo and clean-checkout/fresh-volume performance, concurrency, security and recovery acceptance."
+        "Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.",
+        "Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.",
+        "Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task."
       ],
       "path": "short/tasks/task-20260823-2a43c1-implement-complete-datahub-v1-with-free-automated-gates.md",
       "review_after": "2026-09-06",
@@ -1493,7 +1646,7 @@
         "."
       ],
       "sensitivity": "internal",
-      "sha256": "e1cedec80efd241c6506100b0cf182239fb87acc9b2910e89398a6f9b0c65f1a",
+      "sha256": "2cd3a7dd77d478147a2a259b91cd3daacd13891d80b0cf14e78b75f7cefa759d",
       "sources": [
         "Explicit user instruction on 2026-08-24 to cancel paid workflows, change the plan, fully implement DataHub, and automate tests.",
         "PROJ-20260823-0128D7, ARCH-20260823-F3A201, DEC-20260823-A72203, and DEC-20260823-C69FFA.",
@@ -1504,10 +1657,12 @@
         "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
         "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB.",
         "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
-        "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2."
+        "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2.",
+        "RPT-20260824-242227 and HANDOFF-20260824-89F499.",
+        "RPT-20260824-61086A."
       ],
       "status": "active",
-      "summary": "M0-M7 are functionally complete and verified, with M7 pending integration; the active full-v1 task advances to the remaining M8 hardening and final acceptance work.",
+      "summary": "M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence.",
       "supersedes": [],
       "tags": [
         "active",
@@ -1520,7 +1675,7 @@
       "tier": "short",
       "title": "Implement complete DataHub v1 with free automated gates",
       "type_version": 1,
-      "updated_at": "2026-08-23T21:42:36Z",
+      "updated_at": "2026-08-24T15:38:24Z",
       "valid_as_of": "2026-08-24"
     },
     {

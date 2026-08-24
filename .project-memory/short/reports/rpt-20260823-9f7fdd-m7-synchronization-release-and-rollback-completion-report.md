@@ -9,9 +9,7 @@
   "event_id": "datahub-report-m7-release-sync-complete-v1",
   "id": "RPT-20260823-9F7FDD",
   "kind": "report",
-  "next_actions": [
-    "Commit and integrate M7, then execute M8 hardening and final acceptance."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -26,10 +24,11 @@
   "sources": [
     "Main-agent M7 completion delta and full local quality-gate result on 2026-08-24.",
     "Curator repository audit: feature/m7-release-sync working tree based on 636a131; migration/API/repository/UI/gate evidence inspected.",
-    "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed."
+    "Curator cargo test --workspace --all-features -- --test-threads=2: 35 tests and doctests passed.",
+    "Git evidence on 2026-08-24: M7 PR #7 squash-integrated at a986c5d; develop equals origin/develop."
   ],
   "status": "completed",
-  "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are implemented and fully verified on the feature branch, pending integration.",
+  "summary": "M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d.",
   "supersedes": [],
   "tags": [
     "m7",
@@ -42,7 +41,7 @@
   "tier": "short",
   "title": "M7 synchronization release and rollback completion report",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:42:01Z",
+  "updated_at": "2026-08-24T15:14:00Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -51,7 +50,7 @@
 
 ## Repository State
 
-M7 functionality is complete and verified on feature/m7-release-sync, but it is not yet committed or merged. HEAD, develop and origin/develop remain at the M6 squash commit 636a131. Product, documentation, migration 0007 and project-memory changes are present in the working tree.
+M7 is complete and integrated through PR #7 as squash commit a986c5d. develop and origin/develop both resolve to that commit; the M7 feature branch has transitioned to the M8 branch.
 
 ## Projection Planning and Recovery
 
@@ -79,4 +78,4 @@ An earlier full gate exposed an incorrect project association in full_resync: ca
 
 ## Milestone Status
 
-M0-M7 are functionally complete. M8 remains pending, so TASK-20260823-2A43C1 stays active. M7 still requires commit, PR/squash integration and branch deletion before M8 begins. The local Docker gate remains canonical. No paid dependency, secret or sensitive data was encountered.
+M0-M7 are complete and integrated. M8 implementation is tracked by RPT-20260824-242227. The local Docker gate remains canonical. No paid dependency, secret or sensitive data was encountered.

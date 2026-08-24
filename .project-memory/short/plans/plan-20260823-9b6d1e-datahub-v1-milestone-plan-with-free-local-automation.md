@@ -10,7 +10,7 @@
   "id": "PLAN-20260823-9B6D1E",
   "kind": "plan",
   "next_actions": [
-    "Integrate verified M7, then implement and pass every M8 hardening and final-acceptance exit criterion."
+    "Integrate verified M8, complete the GitFlow v1 release to main and record final integrated evidence."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -35,10 +35,12 @@
     "RPT-20260823-38DC17",
     "RPT-20260823-EE0875",
     "RPT-20260823-1A4BFC",
-    "RPT-20260823-9F7FDD"
+    "RPT-20260823-9F7FDD",
+    "RPT-20260824-242227",
+    "RPT-20260824-61086A"
   ],
   "status": "active",
-  "summary": "M0-M7 are functionally complete, with M7 pending integration; M8 hardening and final acceptance remain pending under the free local gate.",
+  "summary": "M0-M8 are functionally complete and the full local gate passes; M8 feature and v1 release integration remain before plan completion.",
   "supersedes": [],
   "tags": [
     "automated-testing",
@@ -51,7 +53,7 @@
   "tier": "short",
   "title": "DataHub v1 milestone plan with free local automation",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:42:36Z",
+  "updated_at": "2026-08-24T15:38:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -67,8 +69,8 @@
 - M4 formula/XLSX: completed with stable FieldId formulas, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic persistence.
 - M5 deterministic build/export: completed and merged to develop at 2aaf6c8 with the full built-in artifact matrix and generated-code compilation.
 - M6 plugin platform: completed and merged to develop at 636a131 with WIT Components, immutable exact-version installation and deny-by-default Wasmtime limits.
-- M7 synchronization/release/rollback: functionally completed and fully verified on feature/m7-release-sync; commit and squash integration remain.
-- M8 hardening/final acceptance: pending.
+- M7 synchronization/release/rollback: completed and integrated through PR #7 at a986c5d.
+- M8 hardening/final acceptance: functionally completed and fully verified on feature/m8-hardening-acceptance; GitHub/release integration remains.
 
 ## M0 Transition - Completed
 
@@ -114,11 +116,13 @@ The WIT datahub-plugin world, strict hash-verified manifest/registry, safe path/
 
 Implement PostgreSQL projection planning, compatible DDL, approval for destructive changes, outbox consumption, retry/dead-letter/checkpoints and full resync. Add immutable artifacts/releases, environment policy, approval, publish and rollback. Test retry idempotency, checkpoint recovery, failed migration plans and historical release reproducibility.
 
-Migration 0007, persistence/API/worker/UI changes and the local gate complete deterministic compatible/destructive projection plans, approval, bounded retry/dead-letter/checkpoints, full resync, environment policy and immutable release creation/approval/publish/rollback. The gate proved destructive 409/approval, poison-event isolation at five attempts, two-row resync while retaining dead letters, production approval, three immutable historical releases and restart persistence. The implementation remains uncommitted on feature/m7-release-sync and must be integrated before M8.
+Migration 0007, persistence/API/worker/UI changes and the local gate complete deterministic compatible/destructive projection plans, approval, bounded retry/dead-letter/checkpoints, full resync, environment policy and immutable release creation/approval/publish/rollback. The gate proved destructive 409/approval, poison-event isolation at five attempts, two-row resync while retaining dead letters, production approval, three immutable historical releases and restart persistence. M7 is integrated through PR #7 at a986c5d.
 
-## M8 Hardening and Acceptance - Pending
+## M8 Hardening and Acceptance - Completed, Pending Integration
 
 Complete audit search, rate limiting, secret handling, observability, backup/restore and runbooks. Exercise a full demo from schema creation through editing, formulas, XLSX, builds, releases and synchronization. Add large-table, concurrency, restart/persistence, security and recovery suites, then run the full local acceptance gate from a clean checkout and fresh Docker volumes.
+
+Migration 0008 and the API/kernel/persistence/plugin/UI/operations changes implement project-scoped audit search, fixed-window limits, external secret-file validation and redaction, tracked-file secret scanning, correlation IDs, bounded metrics, Docker backup/restore and operator runbooks. The final gate exits 0 with 38 Rust tests, 10 Web tests, a 142-file secret scan, five images, migrations 0001-0008, a 1,024-row fixture/1,027 projected rows, 200/409 concurrency, adversarial plugin and recovery suites, matching fresh-volume restore fingerprints, post-restore writes and restart persistence. JSON request-span tracing and three negative secret-file tests pass. Quality containers/volumes are cleaned up. The feature and final v1 release still require integration.
 
 ## Automated Quality Gate
 

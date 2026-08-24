@@ -9,6 +9,7 @@ import {
   api,
   loadSession,
   storeSession,
+  type AuditEventRecord,
   type BuildArtifact,
   type BuildRecord,
   type ConfigValue,
@@ -133,6 +134,7 @@ const sync = ref<SyncStatus | null>(null)
 const projectionPlans = ref<ProjectionPlan[]>([])
 const environments = ref<EnvironmentRecord[]>([])
 const releases = ref<ReleaseRecord[]>([])
+const auditEvents = ref<AuditEventRecord[]>([])
 const buildTarget = ref<'rust' | 'c_sharp' | 'type_script'>('rust')
 const buildAudience = ref<'client' | 'server' | 'editor'>('client')
 const formulaDrafts = ref<FormulaDraft[]>([{ key: uuidv7(), fieldId: '', source: '' }])
@@ -146,6 +148,7 @@ const credentials = reactive({ username: '', password: '' })
 const projectDraft = reactive({ name: '', description: '' })
 const environmentDraft = reactive({ name: 'production', requires_approval: true })
 const releaseDraft = reactive({ environment_id: '', build_id: '', version: '1.0.0' })
+const auditFilter = reactive({ action: '' })
 const schemaDraft = reactive({
   name: '',
   description: '',
@@ -802,17 +805,33 @@ async function refreshOperations(): Promise<void> {
     projectionPlans.value = []
     environments.value = []
     releases.value = []
+    auditEvents.value = []
     return
   }
-  ;[builds.value, sync.value, projectionPlans.value, environments.value, releases.value] = await Promise.all([
+  ;[builds.value, sync.value, projectionPlans.value, environments.value, releases.value, auditEvents.value] = await Promise.all([
     api<BuildRecord[]>(`/projects/${selectedProjectId.value}/builds`, {}, session.value),
     api<SyncStatus>(`/projects/${selectedProjectId.value}/sync-status`, {}, session.value),
     api<ProjectionPlan[]>(`/projects/${selectedProjectId.value}/projection-plans`, {}, session.value),
     api<EnvironmentRecord[]>(`/projects/${selectedProjectId.value}/environments`, {}, session.value),
     api<ReleaseRecord[]>(`/projects/${selectedProjectId.value}/releases`, {}, session.value),
+    api<AuditEventRecord[]>(`/projects/${selectedProjectId.value}/audit?limit=20`, {}, session.value),
   ])
   releaseDraft.environment_id ||= environments.value[0]?.id ?? ''
   releaseDraft.build_id ||= builds.value[0]?.id ?? ''
+}
+
+async function searchAudit(): Promise<void> {
+  const action = auditFilter.action.trim()
+  const query = action ? `?limit=50&action=${encodeURIComponent(action)}` : '?limit=50'
+  try {
+    auditEvents.value = await api<AuditEventRecord[]>(
+      `/projects/${selectedProjectId.value}/audit${query}`,
+      {},
+      session.value,
+    )
+  } catch (reason) {
+    showError(reason)
+  }
 }
 
 async function createBuild(): Promise<void> {
@@ -1486,6 +1505,25 @@ onMounted(initialize)
                   </div>
                 </el-collapse-item>
               </el-collapse>
+            </el-card>
+
+            <el-card shadow="never">
+              <template #header>
+                <div class="section-heading">
+                  <strong>项目审计</strong>
+                  <div class="row-create">
+                    <el-input v-model="auditFilter.action" placeholder="按 action 精确筛选" clearable />
+                    <el-button @click="searchAudit">检索</el-button>
+                  </div>
+                </div>
+              </template>
+              <el-table :data="auditEvents" max-height="360">
+                <el-table-column prop="created_at" label="时间" width="210" />
+                <el-table-column prop="action" label="Action" width="180" />
+                <el-table-column prop="entity_type" label="实体" width="150" />
+                <el-table-column prop="entity_id" label="ID" min-width="260" />
+                <el-table-column prop="correlation_id" label="Correlation" min-width="260" />
+              </el-table>
             </el-card>
           </div>
         </template>

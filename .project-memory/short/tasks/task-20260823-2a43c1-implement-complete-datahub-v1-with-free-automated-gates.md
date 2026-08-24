@@ -10,9 +10,9 @@
   "id": "TASK-20260823-2A43C1",
   "kind": "task",
   "next_actions": [
-    "Commit and squash-integrate the verified feature/m7-release-sync work into develop.",
-    "Implement M8 audit search, rate limiting, secret redaction, observability, backup/restore and operator runbooks.",
-    "Pass the complete v1 demo and clean-checkout/fresh-volume performance, concurrency, security and recovery acceptance."
+    "Commit and squash-integrate feature/m8-hardening-acceptance into develop under the free local gate policy.",
+    "Complete the GitFlow v1 release PR to main with a merge commit and verify the release tag/history.",
+    "Record final integrated Compose, migration, health, restart and backup/restore evidence before closing the task."
   ],
   "review_after": "2026-09-06",
   "schema_version": 1,
@@ -30,10 +30,12 @@
     "RPT-20260823-38DC17 and HANDOFF-20260823-E37206.",
     "RPT-20260823-EE0875 and HANDOFF-20260823-F2BBAB.",
     "RPT-20260823-1A4BFC and HANDOFF-20260823-93F5C0.",
-    "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2."
+    "RPT-20260823-9F7FDD and HANDOFF-20260823-CAFFC2.",
+    "RPT-20260824-242227 and HANDOFF-20260824-89F499.",
+    "RPT-20260824-61086A."
   ],
   "status": "active",
-  "summary": "M0-M7 are functionally complete and verified, with M7 pending integration; the active full-v1 task advances to the remaining M8 hardening and final acceptance work.",
+  "summary": "M0-M8 are functionally complete and the full local gate passes; the active full-v1 task now awaits M8 GitHub integration, v1 release integration and final integrated evidence.",
   "supersedes": [],
   "tags": [
     "active",
@@ -46,7 +48,7 @@
   "tier": "short",
   "title": "Implement complete DataHub v1 with free automated gates",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:42:36Z",
+  "updated_at": "2026-08-24T15:38:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -67,7 +69,7 @@ Transition the existing M0 branch away from required GitHub checks and billing-d
 
 ## Progress
 
-M0-M7 are functionally complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5 completes deterministic revision-pinned manifests, the Rust/C#/TypeScript and JSON/CSV/XML/BSON/Protobuf/Lua matrix, stable Protobuf tags and generated-code compilation. M6 completes versioned WIT Components, immutable plugin installation and deny-by-default Wasmtime isolation. M7 completes projection plans, retry/dead-letter/checkpoint/full-resync recovery and immutable release approval/publish/rollback. M7 still requires Git integration; M8 remains pending.
+M0-M8 are functionally complete. M1 covers UUIDv7, the accepted type system, TargetRule, deterministic IR and target safety. M2 covers PostgreSQL domain persistence, immutable revisions, audit/outbox, local accounts, token/CSRF handling and project RBAC. M3 completes multi-field schema design, typed row creation, inline VTable editing, bounded block loading/prefetch/cache, optimistic saves, server filtering/sorting and browser acceptance. M4 completes stable FieldId formulas, dependency/cycle diagnostics, Native/Wasmtime parity, cached-value-only XLSX round trips and atomic PostgreSQL application. M5 completes deterministic revision-pinned manifests and the complete built-in output matrix. M6 completes versioned WIT Components and deny-by-default Wasmtime isolation. M7 completes projection recovery and immutable release rollback and is integrated at a986c5d. M8 completes audit/rate-limit/secret/metrics hardening, backup/restore, operational docs and full local acceptance. M8 and the final v1 release still require Git integration.
 
 ## Completion Criteria
 

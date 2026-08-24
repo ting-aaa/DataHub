@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use axum::{
     Json, Router,
-    extract::{DefaultBodyLimit, Path, State},
+    extract::{DefaultBodyLimit, Path, Query, State},
     http::HeaderMap,
     routing::{get, post, put},
 };
@@ -22,15 +22,16 @@ use datahub_kernel::{
     SchemaDefinition, SchemaId, SessionId, TableViewId, UserId, validate_row, validate_schema,
 };
 use datahub_persistence_pg::{
-    BuildArtifact, BuildRecord, BuildSchemaSnapshot, EnvironmentRecord, ProjectRecord,
-    ProjectionPlan, ReleaseRecord, RowWrite, SessionPrincipal, StoredFormulaSet, StoredRow,
-    StoredSchema, SyncStatus, UserAccount, add_project_member, apply_projection_plan,
-    approve_projection_plan, approve_release, create_environment, create_initial_user,
-    create_project, create_projection_plan, create_release, create_session, create_user,
-    full_resync, list_builds, list_environments, list_projection_plans, list_projects,
-    list_releases, list_rows, list_schemas, load_build_snapshot, load_formula_set, project_role,
-    publish_release, record_build, rollback_release, row_exists, save_formula_set, save_row,
-    save_rows_atomic, save_schema, session_principal, sync_status, user_by_username, user_count,
+    AuditEventRecord, AuditFilter, BuildArtifact, BuildRecord, BuildSchemaSnapshot,
+    EnvironmentRecord, ProjectRecord, ProjectionPlan, ReleaseRecord, RowWrite, SessionPrincipal,
+    StoredFormulaSet, StoredRow, StoredSchema, SyncStatus, UserAccount, add_project_member,
+    apply_projection_plan, approve_projection_plan, approve_release, create_environment,
+    create_initial_user, create_project, create_projection_plan, create_release, create_session,
+    create_user, enforce_rate_limit, full_resync, list_builds, list_environments,
+    list_projection_plans, list_projects, list_releases, list_rows, list_schemas,
+    load_build_snapshot, load_formula_set, project_role, publish_release, record_build,
+    rollback_release, row_exists, save_formula_set, save_row, save_rows_atomic, save_schema,
+    search_audit_events, session_principal, sync_status, user_by_username, user_count,
 };
 use datahub_xlsx::{VersionedRow, XlsxError, export_workbook, import_workbook};
 use serde::{Deserialize, Serialize};
@@ -50,6 +51,7 @@ pub(crate) fn router() -> Router<AppState> {
         .route("/me", get(me))
         .route("/users", post(create_user_handler))
         .route("/projects", get(projects).post(create_project_handler))
+        .route("/projects/{project_id}/audit", get(audit_events))
         .route(
             "/projects/{project_id}/members/{user_id}",
             put(update_member_handler),
@@ -182,6 +184,7 @@ async fn bootstrap(
     State(state): State<AppState>,
     Json(credentials): Json<Credentials>,
 ) -> Result<Json<AuthResponse>, ApiError> {
+    enforce_auth_rate(&state, &credentials.username).await?;
     validate_username(&credentials.username)?;
     let password_hash = hash_password(&credentials.password)
         .map_err(|error| ApiError::bad_request(error.to_string()))?;
@@ -205,6 +208,7 @@ async fn login(
     State(state): State<AppState>,
     Json(credentials): Json<Credentials>,
 ) -> Result<Json<AuthResponse>, ApiError> {
+    enforce_auth_rate(&state, &credentials.username).await?;
     let user = user_by_username(&state.pool, &credentials.username)
         .await?
         .filter(|user| verify_password(&credentials.password, &user.password_hash))
@@ -1488,8 +1492,73 @@ async fn authenticate(
         if digest_token(csrf) != principal.csrf_digest {
             return Err(ApiError::forbidden("CSRF token is invalid"));
         }
+        let decision = enforce_rate_limit(
+            &state.pool,
+            "mutation",
+            &digest_token(&format!("user:{}", principal.user_id)),
+            state.config.mutation_rate_limit,
+            state.config.rate_limit_window_seconds,
+        )
+        .await?;
+        if !decision.allowed {
+            return Err(ApiError::rate_limited(decision.retry_after_seconds));
+        }
     }
     Ok(principal)
+}
+
+async fn enforce_auth_rate(state: &AppState, username: &str) -> Result<(), ApiError> {
+    let key = digest_token(&format!("auth:{}", username.trim().to_ascii_lowercase()));
+    let decision = enforce_rate_limit(
+        &state.pool,
+        "authentication",
+        &key,
+        state.config.auth_rate_limit,
+        state.config.rate_limit_window_seconds,
+    )
+    .await?;
+    if decision.allowed {
+        Ok(())
+    } else {
+        Err(ApiError::rate_limited(decision.retry_after_seconds))
+    }
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct AuditQuery {
+    actor_id: Option<UserId>,
+    action: Option<String>,
+    entity_type: Option<String>,
+    entity_id: Option<uuid::Uuid>,
+    correlation_id: Option<uuid::Uuid>,
+    created_from: Option<String>,
+    created_until: Option<String>,
+    before_id: Option<uuid::Uuid>,
+    limit: Option<i64>,
+}
+
+async fn audit_events(
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(project_id): Path<ProjectId>,
+    Query(query): Query<AuditQuery>,
+) -> Result<Json<Vec<AuditEventRecord>>, ApiError> {
+    let principal = authenticate(&state, &headers, false).await?;
+    authorize_project(&state, project_id, principal.user_id, ProjectAction::Read).await?;
+    let filter = AuditFilter {
+        actor_id: query.actor_id,
+        action: query.action.filter(|value| !value.is_empty()),
+        entity_type: query.entity_type.filter(|value| !value.is_empty()),
+        entity_id: query.entity_id,
+        correlation_id: query.correlation_id,
+        created_from: query.created_from.filter(|value| !value.is_empty()),
+        created_until: query.created_until.filter(|value| !value.is_empty()),
+        before_id: query.before_id,
+        limit: query.limit.unwrap_or(50),
+    };
+    Ok(Json(
+        search_audit_events(&state.pool, project_id, &filter).await?,
+    ))
 }
 
 async fn authorize_project(

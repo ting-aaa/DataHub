@@ -9,9 +9,7 @@
   "event_id": "datahub-handoff-m7-to-m8-v1",
   "id": "HANDOFF-20260823-CAFFC2",
   "kind": "handoff",
-  "next_actions": [
-    "Integrate M7, create the M8 branch and satisfy every hardening/final-acceptance exit criterion."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-06",
   "schema_version": 1,
   "scope": [
@@ -30,7 +28,7 @@
     "PLAN-20260823-9B6D1E",
     "Curator Git audit: M7 complete in uncommitted feature/m7-release-sync working tree based on 636a131."
   ],
-  "status": "active",
+  "status": "superseded",
   "summary": "M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes.",
   "supersedes": [
     "HANDOFF-20260823-93F5C0"
@@ -48,7 +46,7 @@
   "tier": "short",
   "title": "M7 completion to M8 hardening and final acceptance handoff",
   "type_version": 1,
-  "updated_at": "2026-08-23T21:42:31Z",
+  "updated_at": "2026-08-24T15:14:00Z",
   "valid_as_of": "2026-08-24"
 }
 -->

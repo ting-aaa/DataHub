@@ -1,10 +1,14 @@
 mod access;
+mod configuration;
+mod correlation;
 mod id;
 mod ir;
 mod schema;
 mod validation;
 
 pub use access::{ProjectAction, ProjectRole};
+pub use configuration::{ConfigurationError, required_secret};
+pub use correlation::{current_correlation_id, scope_correlation};
 pub use id::{
     AuditEventId, BuildId, CustomTypeId, EnvironmentId, FieldId, OutboxEventId, ProjectId,
     ProjectionPlanId, ReleaseId, RevisionId, RowId, SchemaId, SessionId, TableViewId, UserId,
@@ -53,7 +57,12 @@ impl HealthPayload {
 pub fn init_tracing(default_filter: &str) {
     let filter =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(default_filter));
-    let _ = tracing_subscriber::fmt().with_env_filter(filter).try_init();
+    let _ = tracing_subscriber::fmt()
+        .json()
+        .flatten_event(true)
+        .with_current_span(true)
+        .with_env_filter(filter)
+        .try_init();
 }
 
 #[cfg(test)]

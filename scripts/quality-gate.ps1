@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 $qualityProject = 'datahub-quality'
 $qualityRoot = Split-Path -Parent $PSScriptRoot
 $pluginTestRoot = $null
+$backupRoot = $null
 
 function Invoke-Checked {
     param(
@@ -27,6 +28,9 @@ try {
     }
     Invoke-Checked 'Rust tests' {
         cargo test --workspace --all-features -- --test-threads=2
+    }
+    Invoke-Checked 'Tracked-file secret scan' {
+        pwsh -NoProfile -File scripts/secret-scan.ps1
     }
 
     Write-Host '==> Wasmtime Component/WIT plugin sandbox tests'
@@ -98,6 +102,9 @@ max_output_bytes = 1048576
     $env:DATAHUB_API_PORT = '18080'
     $env:DATAHUB_WEB_PORT = '13000'
     $env:DATAHUB_IMAGE_TAG = 'quality'
+    $env:DATAHUB_AUTH_RATE_LIMIT = '3'
+    $env:DATAHUB_MUTATION_RATE_LIMIT = '5000'
+    $env:DATAHUB_RATE_LIMIT_WINDOW_SECONDS = '2'
 
     Invoke-Checked 'Validate Docker Compose' {
         docker compose -p $qualityProject config --quiet
@@ -115,6 +122,17 @@ max_output_bytes = 1048576
         $proxyReady.status -ne 'ok' -or $web.StatusCode -ne 200) {
         throw 'HTTP smoke tests returned an unexpected response'
     }
+    $metrics = Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:18080/metrics'
+    if ($metrics.StatusCode -ne 200 -or $metrics.Content -notmatch 'datahub_database_ready 1' -or
+        $metrics.Headers['X-Request-ID'] -notmatch '^[0-9a-f-]{36}$') {
+        throw 'API metrics or request correlation header is unavailable'
+    }
+    $pluginMetrics = docker compose -p $qualityProject exec -T plugin-host `
+        curl --fail --silent http://127.0.0.1:8081/metrics
+    $pluginMetricsText = $pluginMetrics -join "`n"
+    if ($LASTEXITCODE -ne 0 -or $pluginMetricsText -notmatch 'datahub_plugin_quota_rejections_total') {
+        throw 'Plugin metrics endpoint is unavailable'
+    }
 
     Write-Host '==> Authentication and RBAC integration tests'
     $apiRoot = 'http://127.0.0.1:13000/api/v1'
@@ -128,6 +146,42 @@ max_output_bytes = 1048576
     $adminHeaders = @{
         Authorization = "Bearer $($admin.token)"
         'X-CSRF-Token' = $admin.csrf_token
+    }
+
+    Write-Host '==> Authentication rate-limit and recovery-window tests'
+    for ($rateAttempt = 1; $rateAttempt -le 3; $rateAttempt++) {
+        $unauthorizedStatus = 0
+        try {
+            Invoke-RestMethod -Method Post -Uri "$apiRoot/auth/login" `
+                -ContentType 'application/json' `
+                -Body (@{ username = 'quality-rate-probe'; password = 'definitely-wrong-password' } | ConvertTo-Json) | Out-Null
+        }
+        catch { $unauthorizedStatus = [int]$_.Exception.Response.StatusCode }
+        if ($unauthorizedStatus -ne 401) {
+            throw "Rate-limit warm-up attempt $rateAttempt returned HTTP $unauthorizedStatus"
+        }
+    }
+    $limitedStatus = 0
+    try {
+        Invoke-RestMethod -Method Post -Uri "$apiRoot/auth/login" `
+            -Headers @{ 'X-Forwarded-For' = '203.0.113.77' } `
+            -ContentType 'application/json' `
+            -Body (@{ username = 'quality-rate-probe'; password = 'definitely-wrong-password' } | ConvertTo-Json) | Out-Null
+    }
+    catch { $limitedStatus = [int]$_.Exception.Response.StatusCode }
+    if ($limitedStatus -ne 429) {
+        throw "Authentication rate limit returned HTTP $limitedStatus instead of 429"
+    }
+    Start-Sleep -Seconds 3
+    $recoveredStatus = 0
+    try {
+        Invoke-RestMethod -Method Post -Uri "$apiRoot/auth/login" `
+            -ContentType 'application/json' `
+            -Body (@{ username = 'quality-rate-probe'; password = 'definitely-wrong-password' } | ConvertTo-Json) | Out-Null
+    }
+    catch { $recoveredStatus = [int]$_.Exception.Response.StatusCode }
+    if ($recoveredStatus -ne 401) {
+        throw "Authentication rate limit did not recover after its window: HTTP $recoveredStatus"
     }
     $viewer = Invoke-RestMethod -Method Post -Uri "$apiRoot/users" `
         -Headers $adminHeaders -ContentType 'application/json' `
@@ -664,6 +718,53 @@ serde_json = "1"
         throw 'Rollback did not republish the exact historical snapshot or preserve release history'
     }
 
+    Write-Host '==> Project-scoped audit filtering, correlation, pagination, and RBAC tests'
+    $publishedAuditResponse = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/audit?action=release.published&created_from=2000-01-01T00:00:00Z&created_until=2100-01-01T00:00:00Z&limit=20" `
+        -Headers $adminHeaders
+    $publishedAudit = @($publishedAuditResponse | ForEach-Object { $_ })
+    $releaseOneId = [guid]::Parse($releaseOne.id.ToString())
+    $releaseTwoId = [guid]::Parse($releaseTwo.id.ToString())
+    $projectIdValue = [guid]::Parse($project.id.ToString())
+    $releaseOneAudits = @($publishedAudit | Where-Object { [guid]::Parse($_.entity_id.ToString()) -eq $releaseOneId })
+    $releaseTwoAudits = @($publishedAudit | Where-Object { [guid]::Parse($_.entity_id.ToString()) -eq $releaseTwoId })
+    $foreignProjectAudits = @($publishedAudit | Where-Object { [guid]::Parse($_.project_id.ToString()) -ne $projectIdValue })
+    if ($publishedAudit.Count -lt 2 -or $releaseOneAudits.Count -ne 1 -or
+        $releaseTwoAudits.Count -ne 1 -or $foreignProjectAudits.Count -ne 0) {
+        $auditDiagnostic = $publishedAudit | ConvertTo-Json -Depth 5 -Compress
+        throw "Audit action/time filtering did not return releases $releaseOneId and $releaseTwoId for project ${projectIdValue}: $auditDiagnostic"
+    }
+    $correlatedAuditResponse = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/audit?correlation_id=$($publishedAudit[0].correlation_id)&limit=20" `
+        -Headers $adminHeaders
+    $correlatedAudit = @($correlatedAuditResponse | ForEach-Object { $_ })
+    if ($correlatedAudit.Count -ne 1 -or $correlatedAudit[0].id -ne $publishedAudit[0].id) {
+        throw 'Audit correlation filter did not return the originating event'
+    }
+    $auditPageResponse = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/audit?limit=2" -Headers $adminHeaders
+    $auditPage = @($auditPageResponse | ForEach-Object { $_ })
+    $nextAuditPageResponse = Invoke-RestMethod `
+        -Uri "$apiRoot/projects/$($project.id)/audit?limit=2&before_id=$($auditPage[-1].id)" `
+        -Headers $adminHeaders
+    $nextAuditPage = @($nextAuditPageResponse | ForEach-Object { $_ })
+    if ($auditPage.Count -ne 2 -or $nextAuditPage.Count -eq 0 -or
+        @($auditPage.id | Where-Object { $nextAuditPage.id -contains $_ }).Count -ne 0) {
+        throw 'Audit cursor pagination returned a duplicate or empty next page'
+    }
+    $privateProject = Invoke-RestMethod -Method Post -Uri "$apiRoot/projects" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ name = 'Private Audit Project'; description = 'RBAC boundary' } | ConvertTo-Json)
+    $crossProjectAuditStatus = 0
+    try {
+        Invoke-RestMethod -Uri "$apiRoot/projects/$($privateProject.id)/audit" `
+            -Headers $viewerHeaders | Out-Null
+    }
+    catch { $crossProjectAuditStatus = [int]$_.Exception.Response.StatusCode }
+    if ($crossProjectAuditStatus -ne 403) {
+        throw "Cross-project audit query returned HTTP $crossProjectAuditStatus instead of 403"
+    }
+
     Write-Host '==> Reference existence validation test'
     $referenceSchemaId = [guid]::NewGuid().ToString()
     $referenceFieldId = [guid]::NewGuid().ToString()
@@ -708,10 +809,181 @@ serde_json = "1"
         throw "Missing referenced row returned HTTP $referenceStatus instead of 422"
     }
 
+    Write-Host '==> Concurrent editor conflict and 1,024-row performance budget tests'
+    $concurrentValues = @{}
+    $concurrentValues[$fieldId] = @{ kind = 'integer'; value = 25 }
+    $concurrentRow = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ row = @{
+            id = [guid]::NewGuid().ToString()
+            schema_id = $schemaId
+            revision_id = $destructiveSchema.revision_id
+            values = $concurrentValues
+        }} | ConvertTo-Json -Depth 20)
+    $concurrentPayload = @{ row = $concurrentRow.row; expected_version = 1 } | ConvertTo-Json -Depth 20
+    $httpClient = [Net.Http.HttpClient]::new()
+    $requestOne = [Net.Http.HttpRequestMessage]::new(
+        [Net.Http.HttpMethod]::Put,
+        "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows/$($concurrentRow.row.id)"
+    )
+    $requestTwo = [Net.Http.HttpRequestMessage]::new(
+        [Net.Http.HttpMethod]::Put,
+        "$apiRoot/projects/$($project.id)/schemas/$schemaId/rows/$($concurrentRow.row.id)"
+    )
+    foreach ($request in @($requestOne, $requestTwo)) {
+        $request.Headers.TryAddWithoutValidation('Authorization', "Bearer $($admin.token)") | Out-Null
+        $request.Headers.TryAddWithoutValidation('X-CSRF-Token', $admin.csrf_token) | Out-Null
+        $request.Content = [Net.Http.StringContent]::new(
+            $concurrentPayload, [Text.Encoding]::UTF8, 'application/json'
+        )
+    }
+    $concurrencyTimer = [Diagnostics.Stopwatch]::StartNew()
+    $taskOne = $httpClient.SendAsync($requestOne)
+    $taskTwo = $httpClient.SendAsync($requestTwo)
+    $responseOne = $taskOne.GetAwaiter().GetResult()
+    $responseTwo = $taskTwo.GetAwaiter().GetResult()
+    $concurrencyTimer.Stop()
+    $concurrentStatuses = @([int]$responseOne.StatusCode, [int]$responseTwo.StatusCode) | Sort-Object
+    $responseOne.Dispose()
+    $responseTwo.Dispose()
+    $httpClient.Dispose()
+    if (($concurrentStatuses -join ',') -ne '200,409' -or $concurrencyTimer.Elapsed.TotalSeconds -gt 5) {
+        throw "Concurrent writers did not yield 200/409 within 5s: $($concurrentStatuses -join ',') in $($concurrencyTimer.Elapsed)"
+    }
+
+    $largeSql = @"
+BEGIN;
+CREATE TEMP TABLE quality_large_rows AS
+SELECT uuidv7() AS row_id, uuidv7() AS revision_id, uuidv7() AS data_revision_id,
+       ((value - 1) % 100) + 1 AS field_value
+FROM generate_series(1, 1024) AS value;
+INSERT INTO datahub_config_rows
+    (id, schema_id, document, version, current_revision_id, created_by, updated_by)
+SELECT row_id, '$schemaId',
+       jsonb_build_object(
+           'id', row_id::text,
+           'schema_id', '$schemaId',
+           'revision_id', revision_id::text,
+           'values', jsonb_build_object('$fieldId', jsonb_build_object('kind', 'integer', 'value', field_value))
+       ),
+       1, revision_id, '$($admin.user.id)', '$($admin.user.id)'
+FROM quality_large_rows;
+INSERT INTO datahub_row_revisions (revision_id, row_id, version, snapshot, actor_id)
+SELECT fixture.revision_id, fixture.row_id, 1, rows.document, '$($admin.user.id)'
+FROM quality_large_rows AS fixture
+JOIN datahub_config_rows AS rows ON rows.id = fixture.row_id;
+INSERT INTO datahub_data_revisions
+    (revision_id, project_id, schema_id, row_id, row_revision_id, actor_id)
+SELECT data_revision_id, '$($project.id)', '$schemaId', row_id, revision_id, '$($admin.user.id)'
+FROM quality_large_rows;
+COMMIT;
+"@
+    Invoke-Checked 'Insert stable-ID large-table fixture' {
+        docker compose -p $qualityProject exec -T postgres psql `
+            -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 -c $largeSql
+    }
+    $resyncTimer = [Diagnostics.Stopwatch]::StartNew()
+    $largeResync = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/sync/resync" `
+        -Headers $adminHeaders -ContentType 'application/json'
+    $resyncTimer.Stop()
+    if ($largeResync.projected_rows -ne 1027 -or $resyncTimer.Elapsed.TotalSeconds -gt 30) {
+        throw "Large-table resync exceeded budget or lost rows: $($largeResync.projected_rows) rows in $($resyncTimer.Elapsed)"
+    }
+    $viewTimer = [Diagnostics.Stopwatch]::StartNew()
+    $largeView = Invoke-RestMethod -Method Post `
+        -Uri "$apiRoot/projects/$($project.id)/schemas/$schemaId/views" `
+        -Headers $adminHeaders -ContentType 'application/json' `
+        -Body (@{ block_size = 256; filters = @(); sort = @() } | ConvertTo-Json)
+    $largeBlock = Invoke-RestMethod `
+        -Uri "$apiRoot/table-views/$($largeView.view_id)/blocks/0" -Headers $adminHeaders
+    $viewTimer.Stop()
+    if ($largeView.total_rows -ne 1027 -or $largeBlock.rows.Count -ne 256 -or
+        $viewTimer.Elapsed.TotalSeconds -gt 2) {
+        throw "Large-table first block exceeded budget: $($largeView.total_rows)/$($largeBlock.rows.Count) in $($viewTimer.Elapsed)"
+    }
+
+    $finalMetrics = (Invoke-WebRequest -UseBasicParsing -Uri 'http://127.0.0.1:18080/metrics').Content
+    if ($finalMetrics -notmatch 'datahub_outbox_events\{state="dead_lettered"\} 1' -or
+        $finalMetrics -notmatch 'datahub_releases_published 1' -or
+        $finalMetrics -notmatch 'datahub_http_responses_total\{class="4xx"\} [1-9]') {
+        throw 'Operational metrics did not expose tested failure/release states'
+    }
+
     Invoke-Checked 'Verify SQLx migration' {
         docker compose -p $qualityProject exec -T postgres psql `
             -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 `
             -c 'SELECT version, description, success FROM _sqlx_migrations ORDER BY version; SELECT COUNT(*) AS schema_revisions FROM datahub_schema_revisions; SELECT COUNT(*) AS row_revisions FROM datahub_row_revisions; SELECT COUNT(*) AS data_revisions FROM datahub_data_revisions; SELECT COUNT(*) AS builds FROM datahub_jobs WHERE kind = ''build''; SELECT COUNT(*) AS artifacts FROM datahub_build_artifacts; SELECT COUNT(*) AS projected_schemas FROM datahub_projection_schemas; SELECT COUNT(*) AS projected_rows FROM datahub_projection_rows; SELECT COUNT(*) AS projection_plans FROM datahub_projection_plans; SELECT COUNT(*) AS releases FROM datahub_releases; SELECT COUNT(*) AS audit_events FROM datahub_audit_events; SELECT COUNT(*) AS outbox_events FROM datahub_outbox_events;'
+    }
+
+    Write-Host '==> Fresh-volume PostgreSQL backup and restore integrity tests'
+    $backupRoot = [IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetTempPath()) "datahub-backup-$([guid]::NewGuid())"))
+    $backupTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+    if (-not $backupRoot.StartsWith($backupTempRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Backup test directory escaped the system temp root: $backupRoot"
+    }
+    New-Item -ItemType Directory -Path $backupRoot | Out-Null
+    $backupFile = Join-Path $backupRoot 'datahub-quality.dump'
+    $backupTimer = [Diagnostics.Stopwatch]::StartNew()
+    Invoke-Checked 'Create PostgreSQL backup' {
+        pwsh -NoProfile -File scripts/backup-postgres.ps1 `
+            -OutputPath $backupFile -ComposeProject $qualityProject `
+            -Service postgres -Database datahub_quality -User datahub_quality
+    }
+    Invoke-Checked 'Start fresh recovery PostgreSQL volume' {
+        docker compose -p $qualityProject --profile recovery up `
+            --detach postgres-restore --wait --wait-timeout 120
+    }
+    Invoke-Checked 'Restore PostgreSQL backup' {
+        pwsh -NoProfile -File scripts/restore-postgres.ps1 `
+            -InputPath $backupFile -ComposeProject $qualityProject `
+            -Service postgres-restore -Database datahub_quality_restore -User datahub_quality
+    }
+    $backupTimer.Stop()
+    if ($backupTimer.Elapsed.TotalSeconds -gt 120) {
+        throw "Backup/restore exceeded 120 second budget: $($backupTimer.Elapsed)"
+    }
+    $integrityQuery = @'
+SELECT concat_ws('|',
+  (SELECT COUNT(*) FROM datahub_users),
+  (SELECT COUNT(*) FROM datahub_projects),
+  (SELECT COUNT(*) FROM datahub_project_members),
+  (SELECT COUNT(*) FROM datahub_schemas),
+  (SELECT COUNT(*) FROM datahub_schema_revisions),
+  (SELECT COUNT(*) FROM datahub_config_rows),
+  (SELECT COUNT(*) FROM datahub_row_revisions),
+  (SELECT COUNT(*) FROM datahub_data_revisions),
+  (SELECT COUNT(*) FROM datahub_formula_sets),
+  (SELECT COUNT(*) FROM datahub_jobs),
+  (SELECT COUNT(*) FROM datahub_build_artifacts),
+  (SELECT COUNT(*) FROM datahub_projection_schemas),
+  (SELECT COUNT(*) FROM datahub_projection_rows),
+  (SELECT COUNT(*) FROM datahub_projection_plans),
+  (SELECT COUNT(*) FROM datahub_projection_schema_versions),
+  (SELECT COUNT(*) FROM datahub_environments),
+  (SELECT COUNT(*) FROM datahub_releases),
+  (SELECT COUNT(*) FROM datahub_audit_events),
+  (SELECT COUNT(*) FROM datahub_outbox_events),
+  (SELECT COUNT(*) FROM datahub_rate_limit_buckets),
+  (SELECT md5(COALESCE(string_agg(input_hash, '' ORDER BY id), '')) FROM datahub_jobs WHERE kind = 'build'),
+  (SELECT md5(COALESCE(string_agg(sha256, '' ORDER BY build_id, path), '')) FROM datahub_build_artifacts),
+  (SELECT md5(COALESCE(string_agg(manifest::text, '' ORDER BY id), '')) FROM datahub_jobs WHERE kind = 'build'),
+  (SELECT md5(COALESCE(string_agg(input_hash || manifest::text, '' ORDER BY id), '')) FROM datahub_releases)
+);
+'@
+    $sourceIntegrity = docker compose -p $qualityProject exec -T postgres psql `
+        -U datahub_quality -d datahub_quality -v ON_ERROR_STOP=1 -Atc $integrityQuery
+    if ($LASTEXITCODE -ne 0) { throw 'Source integrity query failed' }
+    $restoredIntegrity = docker compose -p $qualityProject exec -T postgres-restore psql `
+        -U datahub_quality -d datahub_quality_restore -v ON_ERROR_STOP=1 -Atc $integrityQuery
+    if ($LASTEXITCODE -ne 0 -or $sourceIntegrity.Trim() -ne $restoredIntegrity.Trim()) {
+        throw "Restored durable state differs from source.`nSource: $sourceIntegrity`nRestore: $restoredIntegrity"
+    }
+    Invoke-Checked 'Continue writing restored database' {
+        docker compose -p $qualityProject exec -T postgres-restore psql `
+            -U datahub_quality -d datahub_quality_restore -v ON_ERROR_STOP=1 `
+            -c "INSERT INTO datahub_system_info (key, value) VALUES ('restore-continuation', jsonb_build_object('verified', true));"
     }
 
     Invoke-Checked 'Insert persistence marker' {
@@ -756,6 +1028,17 @@ finally {
         }
         else {
             Write-Warning "Refused to remove unexpected plugin test directory: $resolvedPluginRoot"
+        }
+    }
+    if ($null -ne $backupRoot -and (Test-Path -LiteralPath $backupRoot)) {
+        $resolvedBackupRoot = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $backupRoot).Path)
+        $resolvedTempRoot = [IO.Path]::GetFullPath([IO.Path]::GetTempPath())
+        if ($resolvedBackupRoot.StartsWith($resolvedTempRoot, [StringComparison]::OrdinalIgnoreCase) -and
+            (Split-Path -Leaf $resolvedBackupRoot).StartsWith('datahub-backup-', [StringComparison]::Ordinal)) {
+            Remove-Item -LiteralPath $resolvedBackupRoot -Recurse -Force
+        }
+        else {
+            Write-Warning "Refused to remove unexpected backup test directory: $resolvedBackupRoot"
         }
     }
     Pop-Location

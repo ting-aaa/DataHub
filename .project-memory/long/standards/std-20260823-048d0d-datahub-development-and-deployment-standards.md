@@ -34,7 +34,7 @@
   "tier": "long",
   "title": "DataHub development and deployment standards",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:53:29Z",
+  "updated_at": "2026-08-24T15:38:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -43,7 +43,7 @@
 
 ## Tooling
 
-Run all Python commands through uv. The M0 baseline pins Rust 1.96 and uses Node 24 with pnpm 11.
+Run all Python commands through uv. The M0 baseline pins Rust 1.96 and uses Node 24 with pnpm 11. Repository `.cargo/config.toml` is the committed Cargo source of truth and currently replaces crates.io with rsproxy-sparse. Docker Rust builders must pass their own Rustup mirror defaults and copy the repository Cargo configuration; host Rustup environment variables are not inherited automatically by Docker builds.
 
 ## Deployment
 
