@@ -9,9 +9,7 @@
   "event_id": "datahub-report-m8-final-gate-docker-registry-v1",
   "id": "RPT-20260824-61086A",
   "kind": "report",
-  "next_actions": [
-    "Commit and integrate M8, then complete and verify the GitFlow v1 release before closing the task."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-07",
   "schema_version": 1,
   "scope": [
@@ -27,7 +25,7 @@
     "Curator repository audit of Cargo mirror, Dockerfile, JSON tracing and secret tests.",
     "Curator cargo test --workspace --all-features -- --test-threads=2: 38 tests and doctests passed."
   ],
-  "status": "completed",
+  "status": "superseded",
   "summary": "M8 final gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, five images and full recovery acceptance after repository/Docker rsproxy and JSON tracing hardening.",
   "supersedes": [
     "RPT-20260824-242227"
@@ -44,7 +42,7 @@
   "tier": "short",
   "title": "M8 final gate and Docker registry hardening report",
   "type_version": 1,
-  "updated_at": "2026-08-24T15:38:17Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -69,4 +67,4 @@ The curator independently reran the exact Rust test command and confirmed 38 tes
 
 ## Status
 
-This evidence supersedes the earlier 35-test M8 completion snapshot while preserving its functional findings. M0-M8 remain functionally complete. TASK-20260823-2A43C1 and PLAN-20260823-9B6D1E remain active pending feature PR, branch cleanup, GitFlow v1 release integration and final integrated evidence. No paid dependency, secret value or sensitive data was encountered.
+This evidence superseded the earlier 35-test M8 completion snapshot and is itself superseded by the integrated release report RPT-20260824-976431. No paid dependency, secret value or sensitive data was encountered.

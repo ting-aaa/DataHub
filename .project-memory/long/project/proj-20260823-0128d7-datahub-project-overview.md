@@ -7,9 +7,7 @@
   "event_id": "datahub-bootstrap-project-overview-v1",
   "id": "PROJ-20260823-0128D7",
   "kind": "project",
-  "next_actions": [
-    "Integrate verified M8 and complete the final GitFlow v1 release with integrated runtime evidence."
-  ],
+  "next_actions": [],
   "review_after": "",
   "schema_version": 1,
   "scope": [
@@ -32,7 +30,9 @@
     "RPT-20260823-1A4BFC",
     "RPT-20260823-9F7FDD",
     "RPT-20260824-242227",
-    "RPT-20260824-61086A"
+    "RPT-20260824-61086A",
+    "RPT-20260824-976431",
+    "HANDOFF-20260824-4978F1"
   ],
   "status": "active",
   "summary": "DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.",
@@ -45,7 +45,7 @@
   "tier": "long",
   "title": "DataHub project overview",
   "type_version": 1,
-  "updated_at": "2026-08-24T15:38:24Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
@@ -58,7 +58,7 @@ DataHub is a Docker-oriented Rust game configuration management and compilation 
 
 ## Current State
 
-The public repository exists at https://github.com/ting-aaa/DataHub. M0-M8 are functionally complete. M7 is integrated at a986c5d; M8 is verified in the uncommitted feature/m8-hardening-acceptance working tree based on that commit. The final free local/Docker gate passes 38 Rust tests, 10 Web tests, a 142-file secret scan, eight migrations, five images, JSON tracing, security/observability checks, 1,024-row/concurrency budgets, fresh-volume backup/restore and restart persistence; isolated quality resources are cleaned up. M8 and the v1 release await Git integration.
+The public repository exists at https://github.com/ting-aaa/DataHub. DataHub v0.1.0 completes M0-M8. M8 is integrated into develop at 16d328f, release PR #9 is merged to main at c97fbef, and reconciliation PR #10 is merged back to develop at 6bbe5cc. A fresh clone passed the free local/Docker gate with 38 Rust tests, 10 Web tests, a 143-file secret scan, eight migrations, five images, generated-code compilation, security/observability and 1,024-row/concurrency checks, fresh-volume backup/restore and restart persistence. The retained-volume deployment reports API version 0.1.0 and migration state 8|8.
 
 ## Product Boundaries
 
