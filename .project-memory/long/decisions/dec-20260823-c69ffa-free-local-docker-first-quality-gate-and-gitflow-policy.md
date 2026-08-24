@@ -10,7 +10,7 @@
   "id": "DEC-20260823-C69FFA",
   "kind": "decision",
   "next_actions": [
-    "Remove required GitHub status checks and auto-merge dependency, then encode the free local gate as repository commands."
+    "Keep scripts/quality-gate.ps1 as the required free local acceptance gate for future changes."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -41,7 +41,7 @@
   "tier": "long",
   "title": "Free local Docker-first quality gate and GitFlow policy",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:52:45Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->

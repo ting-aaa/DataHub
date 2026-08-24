@@ -8,7 +8,7 @@
   "id": "ARCH-20260823-F3A201",
   "kind": "architecture",
   "next_actions": [
-    "Build product capabilities on the verified M0 service and deployment boundaries."
+    "Preserve these verified service and deployment boundaries in future maintenance."
   ],
   "review_after": "",
   "schema_version": 1,
@@ -36,7 +36,7 @@
   "tier": "long",
   "title": "Docker-first DataHub architecture",
   "type_version": 1,
-  "updated_at": "2026-08-23T18:44:19Z",
+  "updated_at": "2026-08-24T15:53:24Z",
   "valid_as_of": "2026-08-24"
 }
 -->
