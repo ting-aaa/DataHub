@@ -9,10 +9,7 @@
   "event_id": "datahub-plan-v0-1-1-ui-label-fixes-v1",
   "id": "PLAN-20260825-10A55E",
   "kind": "plan",
-  "next_actions": [
-    "Commit and push feature/ui-label-polish, then open and squash-merge its PR into develop.",
-    "Confirm develop synchronization and feature-branch cleanup, then record closure evidence."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-08",
   "schema_version": 1,
   "scope": [
@@ -24,10 +21,12 @@
     "TASK-20260825-69F856",
     "DEC-20260823-C69FFA",
     "STD-20260823-048D0D",
-    "RPT-20260825-84B884"
+    "RPT-20260825-84B884",
+    "RPT-20260825-E793AF",
+    "HANDOFF-20260825-DBC1D1"
   ],
-  "status": "active",
-  "summary": "Implementation, regressions, browser checks and the full local gate are complete; only GitFlow integration and cleanup remain.",
+  "status": "completed",
+  "summary": "Implementation, regressions, browser/full-gate acceptance, PR #20 squash integration and feature-branch cleanup are complete.",
   "supersedes": [],
   "tags": [
     "maintenance",
@@ -40,7 +39,7 @@
   "tier": "short",
   "title": "v0.1.1 UI label maintenance plan",
   "type_version": 1,
-  "updated_at": "2026-08-25T16:26:33Z",
+  "updated_at": "2026-08-25T16:29:22Z",
   "valid_as_of": "2026-08-25"
 }
 -->
@@ -63,9 +62,9 @@ Add focused frontend tests for unsaved formula, saved numeric formula, legacy nu
 
 Run Web lint, typecheck, Vitest and production build during development. Run scripts/quality-gate.ps1 as the canonical final gate, retaining its Docker/PostgreSQL/runtime evidence and cleaning isolated quality resources.
 
-## Step 5 - GitFlow Integration - Pending
+## Step 5 - GitFlow Integration - Completed
 
-Commit and push the feature branch, open a PR to develop, and squash-merge only after the free local gate passes. Verify develop equals origin/develop at the squash commit and remove the feature branch. Return the implementation, verification, PR/commit and cleanup delta to the memory curator before closing the task.
+PR #20 squash-merged feature/ui-label-polish into develop at 86e03a6 after the free local gate passed. develop equals origin/develop, and the original local and remote feature branches are deleted. RPT-20260825-E793AF records final evidence.
 
 ## Guardrails
 
