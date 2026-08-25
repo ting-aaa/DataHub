@@ -28,6 +28,7 @@ import {
   type TypeAst,
 } from './services/api'
 import { formatConfigValue, initialDraftValue, parseConfigValue } from './services/config-values'
+import { formatBuildSelection, formatFormulaVersion } from './services/display-labels'
 import { fetchApiHealth, type HealthPayload } from './services/health'
 import { uuidv7 } from './services/uuidv7'
 
@@ -1309,7 +1310,7 @@ onMounted(initialize)
                 <div class="section-heading">
                   <div>
                     <strong>计算字段公式</strong>
-                    <small>FieldId AST · formula v{{ formulaVersion ?? 'new' }}</small>
+                    <small>{{ formatFormulaVersion(formulaVersion) }}</small>
                   </div>
                   <el-button plain :disabled="!canWrite" @click="addFormula">添加公式</el-button>
                 </div>
@@ -1486,7 +1487,7 @@ onMounted(initialize)
                   <el-option v-for="environment in environments" :key="environment.id" :label="environment.name" :value="environment.id" />
                 </el-select>
                 <el-select v-model="releaseDraft.build_id" placeholder="构建">
-                  <el-option v-for="build in builds" :key="build.id" :label="`${build.target} · ${build.input_hash?.slice(0, 8)}`" :value="build.id" />
+                  <el-option v-for="build in builds" :key="build.id" :label="formatBuildSelection(build)" :value="build.id" />
                 </el-select>
                 <el-input v-model="releaseDraft.version" placeholder="版本" />
                 <el-button type="primary" :disabled="!canWrite" @click="createReleaseRecord">创建发布</el-button>

@@ -1,13 +1,13 @@
 {
-  "active_task_id": "",
+  "active_task_id": "TASK-20260825-69F856",
   "counts": {
     "archive": 0,
     "long": 7,
-    "short": 31,
+    "short": 34,
     "temp": 0
   },
-  "generated_at": "2026-08-24T15:55:49Z",
-  "generation": 56,
+  "generated_at": "2026-08-25T16:27:15Z",
+  "generation": 61,
   "project_name": "DataHub",
   "records": [
     {
@@ -988,6 +988,54 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-25T15:55:40Z",
+      "derived_from": [
+        "PLAN-20260823-9B6D1E"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-plan-v0-1-1-ui-label-fixes-v1",
+      "expired": false,
+      "id": "PLAN-20260825-10A55E",
+      "kind": "plan",
+      "next_actions": [
+        "Commit and push feature/ui-label-polish, then open and squash-merge its PR into develop.",
+        "Confirm develop synchronization and feature-branch cleanup, then record closure evidence."
+      ],
+      "path": "short/plans/plan-20260825-10a55e-v0-1-1-ui-label-maintenance-plan.md",
+      "review_after": "2026-09-08",
+      "schema_version": 1,
+      "scope": [
+        "web/src",
+        "web/src/services"
+      ],
+      "sensitivity": "internal",
+      "sha256": "3399c7c4d37c47598eac1717b7936709d3de15c9cd6936f95598e91a69ab022c",
+      "sources": [
+        "TASK-20260825-69F856",
+        "DEC-20260823-C69FFA",
+        "STD-20260823-048D0D",
+        "RPT-20260825-84B884"
+      ],
+      "status": "active",
+      "summary": "Implementation, regressions, browser checks and the full local gate are complete; only GitFlow integration and cleanup remain.",
+      "supersedes": [],
+      "tags": [
+        "maintenance",
+        "plan",
+        "regression",
+        "ui",
+        "v0.1.1"
+      ],
+      "task_id": "TASK-20260825-69F856",
+      "tier": "short",
+      "title": "v0.1.1 UI label maintenance plan",
+      "type_version": 1,
+      "updated_at": "2026-08-25T16:26:33Z",
+      "valid_as_of": "2026-08-25"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:32Z",
       "derived_from": [],
       "effective_status": "active",
@@ -1663,6 +1711,54 @@
     {
       "blockers": [],
       "confidence": "confirmed",
+      "created_at": "2026-08-25T16:26:28Z",
+      "derived_from": [
+        "TASK-20260825-69F856",
+        "PLAN-20260825-10A55E"
+      ],
+      "effective_status": "completed",
+      "event_id": "datahub-report-v0-1-1-ui-label-acceptance-v1",
+      "expired": false,
+      "id": "RPT-20260825-84B884",
+      "kind": "report",
+      "next_actions": [
+        "Commit and push feature/ui-label-polish, open the develop PR and squash-merge it under the free local gate policy.",
+        "Verify develop/origin-develop equality and local/remote feature-branch cleanup, then close the task and plan."
+      ],
+      "path": "short/reports/rpt-20260825-84b884-v0-1-1-ui-label-implementation-and-acceptance-checkpoint.md",
+      "review_after": "2026-09-08",
+      "schema_version": 1,
+      "scope": [
+        "web/src/App.vue",
+        "web/src/services/display-labels.spec.ts",
+        "web/src/services/display-labels.ts"
+      ],
+      "sensitivity": "internal",
+      "sha256": "fdac0f1a53d44175b7b9bc153d2f8f018547e1261cadc11db07028d7a6ec0292",
+      "sources": [
+        "Main-agent implementation, browser and full quality-gate memory_delta on 2026-08-26.",
+        "Curator repository audit of feature/ui-label-polish based on develop 3d6fea5.",
+        "Curator pnpm test rerun: 5 files and 12 tests passed."
+      ],
+      "status": "completed",
+      "summary": "Formula and legacy-build labels are fixed and fully accepted locally; only feature-to-develop squash integration remains.",
+      "supersedes": [],
+      "tags": [
+        "acceptance",
+        "maintenance",
+        "ui",
+        "v0.1.1"
+      ],
+      "task_id": "TASK-20260825-69F856",
+      "tier": "short",
+      "title": "v0.1.1 UI label implementation and acceptance checkpoint",
+      "type_version": 1,
+      "updated_at": "2026-08-25T16:26:28Z",
+      "valid_as_of": "2026-08-26"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
       "created_at": "2026-08-23T18:23:51Z",
       "derived_from": [],
       "effective_status": "active",
@@ -1796,6 +1892,52 @@
       "type_version": 1,
       "updated_at": "2026-08-23T18:53:29Z",
       "valid_as_of": "2026-08-24"
+    },
+    {
+      "blockers": [],
+      "confidence": "confirmed",
+      "created_at": "2026-08-25T15:55:25Z",
+      "derived_from": [
+        "HANDOFF-20260824-4978F1"
+      ],
+      "effective_status": "active",
+      "event_id": "datahub-task-v0-1-1-ui-label-fixes-v1",
+      "expired": false,
+      "id": "TASK-20260825-69F856",
+      "kind": "task",
+      "next_actions": [
+        "Commit and push feature/ui-label-polish, open the develop PR and squash-merge it under the free local gate policy.",
+        "Verify develop/origin-develop equality and local/remote feature-branch cleanup, then close the task and plan."
+      ],
+      "path": "short/tasks/task-20260825-69f856-fix-formula-and-legacy-build-labels-for-v0-1-1-maintenance.md",
+      "review_after": "2026-09-08",
+      "schema_version": 1,
+      "scope": [
+        "web/src",
+        "web/src/services"
+      ],
+      "sensitivity": "internal",
+      "sha256": "eae5f854c517e55cefc32a8725301bec2685f23be24b797fd117b15f6c2e3ffa",
+      "sources": [
+        "User-directed maintenance objective and browser observations on 2026-08-25.",
+        "Curator audit: develop/origin-develop at 3d6fea5 with clean worktree; App.vue label expressions and api.ts nullable input_hash model.",
+        "RPT-20260825-84B884 records implemented labels, browser acceptance and the complete local quality gate."
+      ],
+      "status": "active",
+      "summary": "The two Vue labels, regressions, browser acceptance and full local gate are complete; GitFlow squash integration remains.",
+      "supersedes": [],
+      "tags": [
+        "maintenance",
+        "regression",
+        "ui",
+        "v0.1.1"
+      ],
+      "task_id": "",
+      "tier": "short",
+      "title": "Fix formula and legacy build labels for v0.1.1 maintenance",
+      "type_version": 1,
+      "updated_at": "2026-08-25T16:26:33Z",
+      "valid_as_of": "2026-08-25"
     }
   ],
   "schema_version": 1,
