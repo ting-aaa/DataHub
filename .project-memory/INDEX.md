@@ -5,14 +5,17 @@
 ## Project Snapshot
 
 - **Project:** DataHub
-- **Generation:** 56
-- **Generated:** 2026-08-24T15:55:49Z
-- **Active task:** _None or invalid._
+- **Generation:** 61
+- **Generated:** 2026-08-25T16:27:15Z
+- **Active task:** [TASK-20260825-69F856](short/tasks/task-20260825-69f856-fix-formula-and-legacy-build-labels-for-v0-1-1-maintenance.md)
 - **Overview:** DataHub is a Docker-oriented Rust game configuration management and compilation platform with a Vue web console and PostgreSQL as its canonical database.
 
 ### Next Actions
 
-_None recorded._
+1. Commit and push feature/ui-label-polish, open the develop PR and squash-merge it under the free local gate policy.
+2. Verify develop/origin-develop equality and local/remote feature-branch cleanup, then close the task and plan.
+3. Commit and push feature/ui-label-polish, then open and squash-merge its PR into develop.
+4. Confirm develop synchronization and feature-branch cleanup, then record closure evidence.
 
 ### Blockers
 
@@ -20,11 +23,15 @@ _None recorded._
 
 ## Active Tasks
 
-_None._
+| ID | Kind | Status | Summary | Updated |
+|---|---|---|---|---|
+| [TASK-20260825-69F856](short/tasks/task-20260825-69f856-fix-formula-and-legacy-build-labels-for-v0-1-1-maintenance.md) | task | active | The two Vue labels, regressions, browser acceptance and full local gate are complete; GitFlow squash integration remains. | 2026-08-25T16:26:33Z |
 
 ## Active Plans
 
-_None._
+| ID | Kind | Status | Summary | Updated |
+|---|---|---|---|---|
+| [PLAN-20260825-10A55E](short/plans/plan-20260825-10a55e-v0-1-1-ui-label-maintenance-plan.md) | plan | active | Implementation, regressions, browser checks and the full local gate are complete; only GitFlow integration and cleanup remain. | 2026-08-25T16:26:33Z |
 
 ## Current Analyses
 
@@ -61,6 +68,7 @@ _None._
 
 | ID | Kind | Status | Summary | Updated |
 |---|---|---|---|---|
+| [RPT-20260825-84B884](short/reports/rpt-20260825-84b884-v0-1-1-ui-label-implementation-and-acceptance-checkpoint.md) | report | completed | Formula and legacy-build labels are fixed and fully accepted locally; only feature-to-develop squash integration remains. | 2026-08-25T16:26:28Z |
 | [DEC-20260823-A72203](long/decisions/dec-20260823-a72203-initial-datahub-platform-and-v1-capability-choices.md) | decision | active | DataHub v1 uses Rust, Vue 3, PostgreSQL, Docker deployment, fixed built-in generators/codecs, local RBAC, and cached-only Excel formula imports. | 2026-08-24T15:53:24Z |
 | [DEC-20260823-C69FFA](long/decisions/dec-20260823-c69ffa-free-local-docker-first-quality-gate-and-gitflow-policy.md) | decision | active | DataHub uses automated local/Docker quality gates and manual GitFlow integration; paid GitHub Actions, required remote statuses, and billing-dependent auto-merge are not allowed. | 2026-08-24T15:53:24Z |
 | [HANDOFF-20260824-89F499](short/handoffs/handoff-20260824-89f499-m8-completion-to-final-github-integration-and-v1-release-han.md) | handoff | superseded | The pending M8/release integration handoff is resolved and superseded by the completed v0.1.0 maintenance baseline handoff. | 2026-08-24T15:53:24Z |
@@ -72,14 +80,13 @@ _None._
 | [HANDOFF-20260823-CAFFC2](short/handoffs/handoff-20260823-caffc2-m7-completion-to-m8-hardening-and-final-acceptance-handoff.md) | handoff | superseded | M7 is fully verified but pending integration; then complete audit/rate-limit/observability/backup hardening and prove the entire v1 from a clean checkout and fresh Docker volumes. | 2026-08-24T15:14:00Z |
 | [RPT-20260823-9F7FDD](short/reports/rpt-20260823-9f7fdd-m7-synchronization-release-and-rollback-completion-report.md) | report | completed | M7 deterministic projection planning/recovery and immutable release approval/publish/rollback are fully verified and integrated through PR #7 at a986c5d. | 2026-08-24T15:14:00Z |
 | [HANDOFF-20260823-93F5C0](short/handoffs/handoff-20260823-93f5c0-m6-completion-to-m7-synchronization-release-and-rollback-han.md) | handoff | superseded | M6 is merged and fully verified; complete deterministic PostgreSQL projection planning, reliable outbox recovery and immutable release approval/publish/rollback on the clean M7 branch. | 2026-08-23T21:42:36Z |
-| [HANDOFF-20260823-F2BBAB](short/handoffs/handoff-20260823-f2bbab-m5-completion-to-m6-wasmtime-plugin-platform-handoff.md) | handoff | superseded | M5 is merged and fully verified; implement the WIT/Component plugin contract, version pinning and deny-by-default Wasmtime sandbox on the clean M6 branch. | 2026-08-23T21:23:21Z |
 
-_18 more record(s) are in `index.json`._
+_19 more record(s) are in `index.json`._
 
 ## Memory Map
 
 - Long-term records: 7
-- Short-term records: 31
+- Short-term records: 34
 - Temporary records: 0
 - Archived records: 0
 - Complete machine-readable inventory: [`index.json`](index.json)
