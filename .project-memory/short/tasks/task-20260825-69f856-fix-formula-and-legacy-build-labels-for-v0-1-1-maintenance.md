@@ -9,10 +9,7 @@
   "event_id": "datahub-task-v0-1-1-ui-label-fixes-v1",
   "id": "TASK-20260825-69F856",
   "kind": "task",
-  "next_actions": [
-    "Commit and push feature/ui-label-polish, open the develop PR and squash-merge it under the free local gate policy.",
-    "Verify develop/origin-develop equality and local/remote feature-branch cleanup, then close the task and plan."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-08",
   "schema_version": 1,
   "scope": [
@@ -23,10 +20,11 @@
   "sources": [
     "User-directed maintenance objective and browser observations on 2026-08-25.",
     "Curator audit: develop/origin-develop at 3d6fea5 with clean worktree; App.vue label expressions and api.ts nullable input_hash model.",
-    "RPT-20260825-84B884 records implemented labels, browser acceptance and the complete local quality gate."
+    "RPT-20260825-84B884 records implemented labels, browser acceptance and the complete local quality gate.",
+    "RPT-20260825-E793AF and HANDOFF-20260825-DBC1D1 record PR #20 integration and final closure."
   ],
-  "status": "active",
-  "summary": "The two Vue labels, regressions, browser acceptance and full local gate are complete; GitFlow squash integration remains.",
+  "status": "completed",
+  "summary": "The two Vue label fixes passed full acceptance and were squash-integrated through PR #20 at 86e03a6 with branch cleanup complete.",
   "supersedes": [],
   "tags": [
     "maintenance",
@@ -38,7 +36,7 @@
   "tier": "short",
   "title": "Fix formula and legacy build labels for v0.1.1 maintenance",
   "type_version": 1,
-  "updated_at": "2026-08-25T16:26:33Z",
+  "updated_at": "2026-08-25T16:29:22Z",
   "valid_as_of": "2026-08-25"
 }
 -->
@@ -59,7 +57,7 @@ Limit product changes to the Vue presentation/helpers and focused frontend regre
 
 ## Progress
 
-Implementation and acceptance are complete on feature/ui-label-polish. Shared label helpers and two focused tests are present; Web checks, real-browser acceptance and the complete Docker-first quality gate passed. The task remains active only for commit, PR, squash merge and branch-cleanup verification described by RPT-20260825-84B884.
+Implementation and acceptance are complete. Shared label helpers and two focused tests are present; Web checks, real-browser acceptance and the complete Docker-first quality gate passed. PR #20 squash-integrated the work into develop at 86e03a6, and the original local and remote feature branches were removed. Final evidence is RPT-20260825-E793AF.
 
 ## Acceptance Criteria
 

@@ -10,10 +10,7 @@
   "event_id": "datahub-report-v0-1-1-ui-label-acceptance-v1",
   "id": "RPT-20260825-84B884",
   "kind": "report",
-  "next_actions": [
-    "Commit and push feature/ui-label-polish, open the develop PR and squash-merge it under the free local gate policy.",
-    "Verify develop/origin-develop equality and local/remote feature-branch cleanup, then close the task and plan."
-  ],
+  "next_actions": [],
   "review_after": "2026-09-08",
   "schema_version": 1,
   "scope": [
@@ -27,7 +24,7 @@
     "Curator repository audit of feature/ui-label-polish based on develop 3d6fea5.",
     "Curator pnpm test rerun: 5 files and 12 tests passed."
   ],
-  "status": "completed",
+  "status": "superseded",
   "summary": "Formula and legacy-build labels are fixed and fully accepted locally; only feature-to-develop squash integration remains.",
   "supersedes": [],
   "tags": [
@@ -40,7 +37,7 @@
   "tier": "short",
   "title": "v0.1.1 UI label implementation and acceptance checkpoint",
   "type_version": 1,
-  "updated_at": "2026-08-25T16:26:28Z",
+  "updated_at": "2026-08-25T16:29:22Z",
   "valid_as_of": "2026-08-26"
 }
 -->
@@ -69,4 +66,4 @@ The first Docker rebuild pulled newer layers because node:24-bookworm-slim and d
 
 ## Integration State
 
-Implementation and acceptance are complete, but TASK-20260825-69F856 remains active until the feature branch is committed, pushed, squash-merged into develop and deleted locally/remotely under the established free local GitFlow policy. No sensitive data was encountered.
+Implementation and acceptance were complete at this checkpoint. RPT-20260825-E793AF supersedes it with PR #20 integration, branch cleanup and task closure evidence. No sensitive data was encountered.

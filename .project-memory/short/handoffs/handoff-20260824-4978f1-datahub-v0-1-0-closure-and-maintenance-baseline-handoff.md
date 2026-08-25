@@ -21,8 +21,8 @@
     "PLAN-20260823-9B6D1E",
     "Curator Git and live runtime audit on 2026-08-24."
   ],
-  "status": "completed",
-  "summary": "DataHub v0.1.0 is fully integrated and accepted; future maintenance starts from reconciled develop with no remaining v0.1.0 implementation blocker.",
+  "status": "superseded",
+  "summary": "The v0.1.0 maintenance baseline is superseded by the completed v0.1.1 UI-label closeout handoff.",
   "supersedes": [
     "HANDOFF-20260824-89F499"
   ],
@@ -37,7 +37,7 @@
   "tier": "short",
   "title": "DataHub v0.1.0 closure and maintenance baseline handoff",
   "type_version": 1,
-  "updated_at": "2026-08-24T15:53:15Z",
+  "updated_at": "2026-08-25T16:29:22Z",
   "valid_as_of": "2026-08-24"
 }
 -->
