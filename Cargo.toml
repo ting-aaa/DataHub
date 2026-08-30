@@ -51,7 +51,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
 uuid = { version = "1", features = ["serde", "v7"] }
 wasmtime = { version = "48", default-features = false, features = ["component-model", "cranelift", "runtime", "std", "wat"] }
-wit-component = "0.257"
+wit-component = "0.258"
 zip = { version = "8.6", default-features = false, features = ["deflate"] }
 
 [workspace.lints.rust]
